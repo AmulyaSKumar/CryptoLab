@@ -6,6 +6,7 @@ const VigenereCipher = () => {
   const [key, setKey] = useState('');
   const [mode, setMode] = useState('encrypt');
   const [output, setOutput] = useState('');
+  const [steps, setSteps] = useState([]);
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState('tool');
   const [isReading, setIsReading] = useState(false);
@@ -13,13 +14,13 @@ const VigenereCipher = () => {
   const utteranceRef = useRef(null);
 
   const vigenere = (text, key, decrypt = false) => {
-    if (!text || !key) return '';
+    if (!text || !key) return [];
     
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     text = text.toUpperCase();
     key = key.toUpperCase();
     
-    let result = '';
+    const result = [];
     let keyIndex = 0;
     
     for (let i = 0; i < text.length; i++) {
@@ -36,10 +37,26 @@ const VigenereCipher = () => {
           newIndex = (textIndex + keyValue) % 26;
         }
         
-        result += alphabet[newIndex];
+        result.push({
+          char,
+          keyChar,
+          textIndex,
+          keyValue,
+          newIndex,
+          shifted: alphabet[newIndex],
+          process: `${char}(${textIndex}) ${decrypt ? '-' : '+'} ${keyChar}(${keyValue}) = ${newIndex} → ${alphabet[newIndex]}`
+        });
         keyIndex++;
       } else {
-        result += char;
+        result.push({
+          char,
+          keyChar: '',
+          textIndex: -1,
+          keyValue: -1,
+          newIndex: -1,
+          shifted: char,
+          process: 'Not a letter'
+        });
       }
     }
     
@@ -49,7 +66,8 @@ const VigenereCipher = () => {
   const handleCompute = () => {
     if (!input.trim() || !key.trim()) return;
     const result = vigenere(input, key, mode === 'decrypt');
-    setOutput(result);
+    setSteps(result);
+    setOutput(result.map(r => r.shifted).join(''));
   };
 
   const copyToClipboard = () => {
@@ -130,23 +148,21 @@ const VigenereCipher = () => {
                 onChange={(e) => setKey(e.target.value)}
                 placeholder="Enter keyword..."
               />
-              <div className="result-box" style={{ marginTop: '0.5rem', padding: '0.5rem' }}>
-                Example with key "{key || 'KEY'}": <br/>
-                A → {vigenere('A', key || 'KEY')} | 
-                B → {vigenere('B', key || 'KEY')} | 
-                C → {vigenere('C', key || 'KEY')}
-              </div>
             </div>
 
-            <div className="input-group">
-              <label>Mode</label>
-              <select
-                value={mode}
-                onChange={(e) => setMode(e.target.value)}
-              >
-                <option value="encrypt">Encrypt</option>
-                <option value="decrypt">Decrypt</option>
-              </select>
+            {/* Replace dropdown with toggle switch */}
+            <div className="input-group" style={{ display: 'flex', justifyContent: 'center' }}>
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={mode === 'decrypt'}
+                  onChange={(e) => setMode(e.target.checked ? 'decrypt' : 'encrypt')}
+                />
+                <span className="toggle-slider">
+                  <span className={`toggle-label ${mode === 'encrypt' ? 'active' : ''}`}>Encrypt</span>
+                  <span className={`toggle-label ${mode === 'decrypt' ? 'active' : ''}`}>Decrypt</span>
+                </span>
+              </label>
             </div>
 
             <button
@@ -157,22 +173,86 @@ const VigenereCipher = () => {
               {mode === 'encrypt' ? 'Encrypt' : 'Decrypt'} Text
             </button>
 
-            {output && (
-              <div className="input-group" style={{ marginTop: '2rem' }}>
-                <div className="flex justify-between items-center mb-2">
-                  <label>Result</label>
-                  <button
-                    onClick={copyToClipboard}
-                    className="text-sm"
-                    style={{ color: 'var(--primary-color)', background: 'none', padding: '4px 8px' }}
-                  >
-                    {copied ? 'Copied!' : 'Copy'}
-                  </button>
+            {steps.length > 0 && (
+              <>
+                <div className="visualization-steps">
+                  <div className="step">
+                    <div className="step-title">Step 1: Input Text and Key</div>
+                    <div className="step-content">
+                      {steps.map((step, i) => (
+                        <div key={i} style={{ textAlign: 'center' }}>
+                          <div className="char-box" data-index={i}>
+                            {step.char}
+                          </div>
+                          {step.keyChar && (
+                            <>
+                              <div className="arrow-down">+</div>
+                              <div className="char-box">
+                                {step.keyChar}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="step">
+                    <div className="step-title">
+                      Step 2: Apply Vigenère {mode === 'encrypt' ? 'Encryption' : 'Decryption'}
+                    </div>
+                    <div className="step-content">
+                      {steps.map((step, i) => (
+                        <div key={i} style={{ textAlign: 'center' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <div className="char-box">
+                              {step.char}
+                            </div>
+                            {step.keyChar && (
+                              <>
+                                <div className="arrow-down">↓</div>
+                                <div className="char-box">
+                                  {step.shifted}
+                                </div>
+                                <div style={{ fontSize: '0.8rem', marginTop: '0.5rem', color: 'var(--text-color)', maxWidth: '150px', wordBreak: 'break-word' }}>
+                                  {step.process}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="step">
+                    <div className="step-title">Final Result</div>
+                    <div className="step-content">
+                      {steps.map((step, i) => (
+                        <div key={i} className="char-box" data-index={i}>
+                          {step.shifted}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="result-box">
-                  {output}
+
+                <div className="input-group" style={{ marginTop: '2rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <label>Result</label>
+                    <button
+                      onClick={copyToClipboard}
+                      className="text-sm"
+                      style={{ color: 'var(--primary-color)', background: 'none', padding: '4px 8px' }}
+                    >
+                      {copied ? 'Copied!' : 'Copy'}
+                    </button>
+                  </div>
+                  <div className="result-box">
+                    {output}
+                  </div>
                 </div>
-              </div>
+              </>
             )}
           </>
         ) : (

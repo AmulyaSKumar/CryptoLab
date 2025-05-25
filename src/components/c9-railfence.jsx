@@ -6,6 +6,7 @@ const RailFenceCipher = () => {
   const [rails, setRails] = useState(3);
   const [mode, setMode] = useState('encrypt');
   const [output, setOutput] = useState('');
+  const [steps, setSteps] = useState([]);
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState('tool');
   const [isReading, setIsReading] = useState(false);
@@ -13,29 +14,54 @@ const RailFenceCipher = () => {
   const utteranceRef = useRef(null);
 
   const railFence = (str, rails, decrypt = false) => {
-    if (!str || rails < 2) return '';
+    if (!str || rails < 2) return { fence: [], result: '', steps: [] };
     
     const fence = Array(rails).fill().map(() => Array(str.length).fill(''));
     let rail = 0;
     let dir = 1;
+    const steps = [];
 
     if (!decrypt) {
       // Encryption
+      const pattern = [];
       for (let i = 0; i < str.length; i++) {
         fence[rail][i] = str[i];
+        pattern.push({ rail, pos: i, char: str[i] });
         rail += dir;
         if (rail === rails - 1 || rail === 0) dir *= -1;
       }
       
-      return fence.map(row => row.join('')).join('').replace(/\s+/g, '');
+      const result = fence.map(row => row.filter(char => char !== '').join('')).join('');
+      steps.push({
+        type: 'pattern',
+        fence: JSON.parse(JSON.stringify(fence)),
+        description: 'Writing text in zigzag pattern'
+      });
+      
+      steps.push({
+        type: 'reading',
+        fence: JSON.parse(JSON.stringify(fence)),
+        result,
+        description: 'Reading text row by row'
+      });
+
+      return { fence, result, steps, pattern };
     } else {
       // Decryption
       // First, mark the pattern
+      const pattern = [];
       for (let i = 0; i < str.length; i++) {
         fence[rail][i] = '*';
+        pattern.push({ rail, pos: i });
         rail += dir;
         if (rail === rails - 1 || rail === 0) dir *= -1;
       }
+      
+      steps.push({
+        type: 'pattern',
+        fence: JSON.parse(JSON.stringify(fence)),
+        description: 'Marking zigzag pattern'
+      });
       
       // Fill in the letters
       let index = 0;
@@ -47,6 +73,12 @@ const RailFenceCipher = () => {
         }
       }
       
+      steps.push({
+        type: 'filling',
+        fence: JSON.parse(JSON.stringify(fence)),
+        description: 'Filling in the letters'
+      });
+      
       // Read off the decrypted message
       rail = 0;
       dir = 1;
@@ -57,29 +89,21 @@ const RailFenceCipher = () => {
         if (rail === rails - 1 || rail === 0) dir *= -1;
       }
       
-      return result;
+      steps.push({
+        type: 'reading',
+        fence: JSON.parse(JSON.stringify(fence)),
+        result,
+        description: 'Reading text in zigzag pattern'
+      });
+      
+      return { fence, result, steps, pattern };
     }
-  };
-
-  // Function to show rail fence pattern
-  const showPattern = (text) => {
-    if (!text) return [];
-    const fence = Array(rails).fill().map(() => Array(text.length).fill(' '));
-    let rail = 0;
-    let dir = 1;
-
-    for (let i = 0; i < text.length; i++) {
-      fence[rail][i] = text[i];
-      rail += dir;
-      if (rail === rails - 1 || rail === 0) dir *= -1;
-    }
-
-    return fence;
   };
 
   const handleCompute = () => {
     if (!input.trim()) return;
-    const result = railFence(input, rails, mode === 'decrypt');
+    const { result, steps } = railFence(input, rails, mode === 'decrypt');
+    setSteps(steps);
     setOutput(result);
   };
 
@@ -90,9 +114,6 @@ const RailFenceCipher = () => {
       setTimeout(() => setCopied(false), 2000);
     });
   };
-
-  // Show live pattern for a sample text
-  const pattern = showPattern(input.slice(0, 12) || 'HELLO WORLD');
 
   const readContent = (text) => {
     if (isReading) {
@@ -166,23 +187,21 @@ const RailFenceCipher = () => {
                 onChange={(e) => setRails(Number(e.target.value))}
                 style={{ accentColor: 'var(--primary-color)' }}
               />
-              <div className="result-box" style={{ marginTop: '0.5rem', padding: '0.5rem', fontFamily: 'monospace' }}>
-                Live Pattern:<br/>
-                {pattern.map((row, i) => (
-                  <div key={i}>{row.join('')}</div>
-                ))}
-              </div>
             </div>
 
-            <div className="input-group">
-              <label>Mode</label>
-              <select
-                value={mode}
-                onChange={(e) => setMode(e.target.value)}
-              >
-                <option value="encrypt">Encrypt</option>
-                <option value="decrypt">Decrypt</option>
-              </select>
+            {/* Replace dropdown with toggle switch */}
+            <div className="input-group" style={{ display: 'flex', justifyContent: 'center' }}>
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={mode === 'decrypt'}
+                  onChange={(e) => setMode(e.target.checked ? 'decrypt' : 'encrypt')}
+                />
+                <span className="toggle-slider">
+                  <span className={`toggle-label ${mode === 'encrypt' ? 'active' : ''}`}>Encrypt</span>
+                  <span className={`toggle-label ${mode === 'decrypt' ? 'active' : ''}`}>Decrypt</span>
+                </span>
+              </label>
             </div>
 
             <button
@@ -193,22 +212,57 @@ const RailFenceCipher = () => {
               {mode === 'encrypt' ? 'Encrypt' : 'Decrypt'} Text
             </button>
 
-            {output && (
-              <div className="input-group" style={{ marginTop: '2rem' }}>
-                <div className="flex justify-between items-center mb-2">
-                  <label>Result</label>
-                  <button
-                    onClick={copyToClipboard}
-                    className="text-sm"
-                    style={{ color: 'var(--primary-color)', background: 'none', padding: '4px 8px' }}
-                  >
-                    {copied ? 'Copied!' : 'Copy'}
-                  </button>
+            {steps.length > 0 && (
+              <>
+                <div className="visualization-steps">
+                  {steps.map((step, index) => (
+                    <div key={index} className="step">
+                      <div className="step-title">Step {index + 1}: {step.description}</div>
+                      <div className="step-content" style={{ fontFamily: 'monospace' }}>
+                        <div style={{ display: 'grid', gap: '0.5rem' }}>
+                          {step.fence.map((row, i) => (
+                            <div key={i} style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                              {row.map((char, j) => (
+                                <div
+                                  key={j}
+                                  className="char-box"
+                                  style={{
+                                    opacity: char === '' ? 0.3 : 1,
+                                    border: char === '*' ? '2px dashed var(--primary-color)' : undefined
+                                  }}
+                                >
+                                  {char === '*' ? '' : char}
+                                </div>
+                              ))}
+                            </div>
+                          ))}
+                        </div>
+                        {step.result && (
+                          <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+                            Result: <strong>{step.result}</strong>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="result-box">
-                  {output}
+
+                <div className="input-group" style={{ marginTop: '2rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <label>Result</label>
+                    <button
+                      onClick={copyToClipboard}
+                      className="text-sm"
+                      style={{ color: 'var(--primary-color)', background: 'none', padding: '4px 8px' }}
+                    >
+                      {copied ? 'Copied!' : 'Copy'}
+                    </button>
+                  </div>
+                  <div className="result-box">
+                    {output}
+                  </div>
                 </div>
-              </div>
+              </>
             )}
           </>
         ) : (

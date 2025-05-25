@@ -6,6 +6,7 @@ const CaesarCipherTool = () => {
   const [key, setKey] = useState(3);
   const [mode, setMode] = useState('encrypt');
   const [output, setOutput] = useState('');
+  const [steps, setSteps] = useState([]);
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState('tool');
   const [isReading, setIsReading] = useState(false);
@@ -17,17 +18,33 @@ const CaesarCipherTool = () => {
     shift = parseInt(shift);
     if (decrypt) shift = 26 - shift;
 
-    return str.toUpperCase().split('').map(char => {
+    const steps = [];
+    const chars = str.toUpperCase().split('');
+    const result = chars.map((char, index) => {
       const idx = alphabet.indexOf(char);
-      if (idx === -1) return char;
-      return alphabet[(idx + shift) % 26];
-    }).join('');
+      if (idx === -1) return { char, shifted: char, process: 'Not a letter' };
+      
+      const newIdx = (idx + shift) % 26;
+      const shiftedChar = alphabet[newIdx];
+      
+      return {
+        char,
+        alphabetIndex: idx,
+        shift,
+        newIndex: newIdx,
+        shifted: shiftedChar,
+        process: `${char} (${idx}) ${decrypt ? '-' : '+'} ${shift} = ${newIdx} → ${shiftedChar}`
+      };
+    });
+
+    return result;
   };
 
   const handleCompute = () => {
     if (!input.trim()) return;
     const result = caesar(input, key, mode === 'decrypt');
-    setOutput(result);
+    setSteps(result);
+    setOutput(result.map(r => r.shifted).join(''));
   };
 
   const copyToClipboard = () => {
@@ -110,20 +127,21 @@ const CaesarCipherTool = () => {
                 onChange={(e) => setKey(Number(e.target.value))}
                 style={{ accentColor: 'var(--primary-color)' }}
               />
-              <div className="result-box" style={{ marginTop: '0.5rem', padding: '0.5rem' }}>
-                A → {caesar('A', key)} | B → {caesar('B', key)} | C → {caesar('C', key)}
-              </div>
+              
             </div>
 
-            <div className="input-group">
-              <label>Mode</label>
-              <select
-                value={mode}
-                onChange={(e) => setMode(e.target.value)}
-              >
-                <option value="encrypt">Encrypt</option>
-                <option value="decrypt">Decrypt</option>
-              </select>
+            <div className="input-group" style={{ display: 'flex', justifyContent: 'center' }}>
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={mode === 'decrypt'}
+                  onChange={(e) => setMode(e.target.checked ? 'decrypt' : 'encrypt')}
+                />
+                <span className="toggle-slider">
+                  <span className={`toggle-label ${mode === 'encrypt' ? 'active' : ''}`}>Encrypt</span>
+                  <span className={`toggle-label ${mode === 'decrypt' ? 'active' : ''}`}>Decrypt</span>
+                </span>
+              </label>
             </div>
 
             <button
@@ -134,22 +152,70 @@ const CaesarCipherTool = () => {
               {mode === 'encrypt' ? 'Encrypt' : 'Decrypt'} Text
             </button>
 
-            {output && (
-              <div className="input-group" style={{ marginTop: '2rem' }}>
-                <div className="flex justify-between items-center mb-2">
-                  <label>Result</label>
-                  <button
-                    onClick={copyToClipboard}
-                    className="text-sm"
-                    style={{ color: 'var(--primary-color)', background: 'none', padding: '4px 8px' }}
-                  >
-                    {copied ? 'Copied!' : 'Copy'}
-                  </button>
+            {steps.length > 0 && (
+              <>
+                <div className="visualization-steps">
+                  <div className="step">
+                    <div className="step-title">Step 1: Input Text</div>
+                    <div className="step-content">
+                      {steps.map((step, i) => (
+                        <div key={i} className="char-box" data-index={i}>
+                          {step.char}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="step">
+                    <div className="step-title">
+                      Step 2: {mode === 'encrypt' ? 'Shift Forward' : 'Shift Backward'} by {key}
+                    </div>
+                    <div className="step-content">
+                      {steps.map((step, i) => (
+                        <div key={i} style={{ textAlign: 'center' }}>
+                          <div className="char-box" data-index={i}>
+                            {step.char}
+                          </div>
+                          <div className="arrow-down">↓</div>
+                          <div className="char-box">
+                            {step.shifted}
+                          </div>
+                          <div style={{ fontSize: '0.8rem', marginTop: '0.5rem', color: 'var(--text-color)' }}>
+                            {step.process}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="step">
+                    <div className="step-title">Final Result</div>
+                    <div className="step-content">
+                      {steps.map((step, i) => (
+                        <div key={i} className="char-box" data-index={i}>
+                          {step.shifted}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="result-box">
-                  {output}
+
+                <div className="input-group" style={{ marginTop: '2rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <label>Result</label>
+                    <button
+                      onClick={copyToClipboard}
+                      className="text-sm"
+                      style={{ color: 'var(--primary-color)', background: 'none', padding: '4px 8px' }}
+                    >
+                      {copied ? 'Copied!' : 'Copy'}
+                    </button>
+                  </div>
+                  <div className="result-box">
+                    {output}
+                  </div>
                 </div>
-              </div>
+              </>
             )}
           </>
         ) : (

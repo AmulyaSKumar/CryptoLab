@@ -36,7 +36,7 @@ const Introduction = () => {
       </Link>
 
       <div className="tool-container">
-        <h1 className="tool-title">Welcome to CryptoLab! 🔐</h1>
+        <h1 className="tool-title">Welcome to CryptoLab!</h1>
 
         <div className="about-content">
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
@@ -55,10 +55,10 @@ const Introduction = () => {
                 </svg>
               )}
             </button>
-          </div>
+      </div>
 
           <section className="mb-8">
-            <h2 className="section-title">Hey there! 👋</h2>
+            <h2 className="section-title">Hey there!</h2>
             <p style={{ fontSize: '1.1rem', lineHeight: '1.6' }}>
               How are you? I'm excited to be your guide into the fascinating world of cryptography! 
               Ever wondered how your messages stay secret when you send them online? Or how your passwords 
@@ -67,7 +67,7 @@ const Introduction = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="section-title">What's This All About? 🤔</h2>
+            <h2 className="section-title">What's This All About? </h2>
             <p style={{ marginBottom: '1rem' }}>
               Imagine you want to send a secret message to your friend, but you're worried someone else might read it. 
               What do you do? You could:
@@ -79,15 +79,15 @@ const Introduction = () => {
             </ul>
             <p>
               That's exactly what cryptography does! It's like having a secret language between you and your friends 
-              that nobody else can understand. Cool, right? 😎
+              that nobody else can understand. Cool, right? 
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="section-title">Let's Break It Down 📝</h2>
+            <h2 className="section-title">Let's Break It Down </h2>
             <div className="result-box" style={{ marginBottom: '1rem', padding: '1.5rem' }}>
               <p style={{ marginBottom: '0.5rem' }}><strong>Original Message:</strong> "HELLO FRIEND"</p>
-              <p style={{ marginBottom: '0.5rem' }}><strong>Secret Code Applied:</strong> *some magic happens* ✨</p>
+              <p style={{ marginBottom: '0.5rem' }}><strong>Secret Code Applied:</strong> *some magic happens*</p>
               <p><strong>Scrambled Message:</strong> "KHOOR IULHQG"</p>
             </div>
             <p>
@@ -102,53 +102,53 @@ const Introduction = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="section-title">What's in Our Lab? 🧪</h2>
+            <h2 className="section-title">What's in Our Lab? </h2>
             <p style={{ marginBottom: '1rem' }}>
               We've got some really cool ciphers for you to play with! Each one has its own special way of keeping messages secret:
             </p>
             
             <div className="mb-4">
-              <h3 className="font-semibold mb-2">1. Caesar Cipher 👑</h3>
+              <h3 className="font-semibold mb-2">1. Caesar Cipher </h3>
               <p>
                 Used by Julius Caesar himself! It's like shifting each letter in your message by a certain number. 
                 Think of it as moving each letter a few steps forward in the alphabet.
-              </p>
-            </div>
+          </p>
+        </div>
 
             <div className="mb-4">
-              <h3 className="font-semibold mb-2">2. Vigenère Cipher 🎭</h3>
+              <h3 className="font-semibold mb-2">2. Vigenère Cipher </h3>
               <p>
                 Like Caesar's cipher but on steroids! Instead of shifting all letters by the same amount, 
                 each letter gets its own special shift. Tricky, huh?
               </p>
-            </div>
+      </div>
 
             <div className="mb-4">
-              <h3 className="font-semibold mb-2">3. Rail Fence Cipher 🚂</h3>
+              <h3 className="font-semibold mb-2">3. Rail Fence Cipher </h3>
               <p>
                 This one's fun! It writes your message in a zigzag pattern and then reads it off row by row. 
                 It's like making your message ride a roller coaster!
-              </p>
-            </div>
+          </p>
+        </div>
 
             <div>
-              <h3 className="font-semibold mb-2">4. One Time Pad 📝</h3>
+              <h3 className="font-semibold mb-2">4. One Time Pad </h3>
               <p>
                 The unbreakable one! If used correctly, it's mathematically impossible to crack. 
                 It's like having a different secret code for every single letter!
               </p>
-            </div>
+      </div>
           </section>
 
           <section>
-            <h2 className="section-title">Ready to Start? 🚀</h2>
+            <h2 className="section-title">Ready to Start? </h2>
             <p style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
               Head back to the home page and pick any cipher to try out! Each one has its own story and special way of 
               working. Don't worry if it seems tricky at first - we'll explain everything step by step!
             </p>
             <p style={{ fontSize: '1.1rem', fontStyle: 'italic' }}>
               Remember: The best way to learn is by trying things out yourself. So go ahead, encrypt some messages, 
-              and have fun being a cryptographer! 🎉
+              and have fun being a cryptographer! 
             </p>
           </section>
         </div>

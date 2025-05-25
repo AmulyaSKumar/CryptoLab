@@ -18,7 +18,7 @@ const NavBar = ({ currentPage }) => {
           to="/" 
           className="text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-2"
         >
-          <span className="text-sm">← Back to Home</span>
+          <span className="text-sm">← Back</span>
         </Link>
 
         <div className="hidden md:flex items-center space-x-1">
