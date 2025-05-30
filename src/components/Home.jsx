@@ -6,9 +6,12 @@ import { Link } from 'react-router-dom';
 const tools = [
   { name: "INTRODUCTION", path: "/c0-crypto" },
   { name: "CAESAR CIPHER", path: "/c1-caesar" },
-  { name: "ONE TIME PAD", path: "/c5-otp" },
-  { name: "VIGENERE CIPHER", path: "/c6-vigenere" },
-  { name: "RAIL FENCE CIPHER", path: "/c9-railfence" },
+  { name: "PLAYFAIR CIPHER", path: "/c2-playfair" },
+  { name: "HILL CIPHER", path: "/c3-hill" },
+  { name: "ONE TIME PAD", path: "/c4-otp" },
+  { name: "VIGENERE CIPHER", path: "/c5-vigenere" },
+  { name: "VERNAM CIPHER", path: "/c6-vernam" },
+  { name: "RAIL FENCE CIPHER", path: "/c7-railfence" },
 ];
 
 const Home = () => {
@@ -17,8 +20,8 @@ const Home = () => {
       <div className="title-container">
         <h1 className="main-title">CryptoLab</h1>
         <p className="subtitle">
-          Read the posts. Interact with tools.<br />
-          Discover the techniques. and Enjoy.
+        From beginner to breaker — learn by doing.<br />
+        Learn. Encrypt. Decrypt. Repeat.
         </p>
       </div>
 

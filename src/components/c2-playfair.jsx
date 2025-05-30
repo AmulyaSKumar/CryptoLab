@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react'; 
 import { Link } from 'react-router-dom';
 
-const CaesarCipherTool = () => {
+const PlayfairCipherTool = () => {
   const [input, setInput] = useState('');
-  const [key, setKey] = useState(3);
+  const [key, setKey] = useState('');
   const [mode, setMode] = useState('encrypt');
   const [output, setOutput] = useState('');
   const [steps, setSteps] = useState([]);
@@ -13,39 +13,143 @@ const CaesarCipherTool = () => {
   const speechSynthesis = window.speechSynthesis;
   const utteranceRef = useRef(null);
 
-  const caesar = (str, shift, decrypt = false) => {
-    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    shift = parseInt(shift);
-    if (decrypt) shift = 26 - shift;
-
-    const steps = [];
-    const chars = str.toUpperCase().split('');
-    const result = chars.map((char, index) => {
-      const idx = alphabet.indexOf(char);
-      if (idx === -1) return { char, shifted: char, process: 'Not a letter' };
-      
-      const newIdx = (idx + shift) % 26;
-      const shiftedChar = alphabet[newIdx];
-      
-      return {
-        char,
-        alphabetIndex: idx,
-        shift,
-        newIndex: newIdx,
-        shifted: shiftedChar,
-        process: `${char} (${idx}) ${decrypt ? '-' : '+'} ${shift} = ${newIdx} → ${shiftedChar}`
-      };
-    });
-
+  // Playfair Cipher helper functions
+  const generateMatrix = (keyStr) => {
+    // Normalize: uppercase, remove J, remove duplicates
+    let keyString = keyStr.toUpperCase().replace(/J/g, 'I').replace(/[^A-Z]/g, '');
+    let matrix = [];
+    let used = new Set();
+    for (const ch of keyString) {
+      if (!used.has(ch)) {
+        matrix.push(ch);
+        used.add(ch);
+      }
+    }
+    for (let i = 0; i < 26; i++) {
+      const ch = String.fromCharCode(65 + i);
+      if (ch === 'J') continue;
+      if (!used.has(ch)) {
+        matrix.push(ch);
+        used.add(ch);
+      }
+    }
+    // Convert to 5x5 matrix
+    let result = [];
+    for (let i = 0; i < 5; i++) {
+      result.push(matrix.slice(i * 5, i * 5 + 5));
+    }
     return result;
   };
 
+  const findPosition = (matrix, char) => {
+    for (let r = 0; r < 5; r++) {
+      for (let c = 0; c < 5; c++) {
+        if (matrix[r][c] === char) return [r, c];
+      }
+    }
+    return null;
+  };
+
+  const preprocessInput = (text) => {
+    // Uppercase, remove non-letters, replace J with I
+    let str = text.toUpperCase().replace(/J/g, 'I').replace(/[^A-Z]/g, '');
+    let pairs = [];
+    for (let i = 0; i < str.length; i += 2) {
+      let first = str[i];
+      let second = str[i + 1] || 'X';
+      if (first === second) {
+        pairs.push([first, 'X']);
+        i--; // recheck second letter on next iteration
+      } else {
+        pairs.push([first, second]);
+      }
+    }
+    return pairs;
+  };
+
+  const playfairEncrypt = (text, keyStr) => {
+    if (!keyStr.trim()) return [];
+    const matrix = generateMatrix(keyStr);
+    const pairs = preprocessInput(text);
+    const steps = [];
+    let result = '';
+
+    pairs.forEach(([a, b], i) => {
+      const [r1, c1] = findPosition(matrix, a);
+      const [r2, c2] = findPosition(matrix, b);
+      let encryptedPair = ['', ''];
+      let processDesc = '';
+
+      if (r1 === r2) {
+        // same row: shift right
+        encryptedPair[0] = matrix[r1][(c1 + (mode === 'encrypt' ? 1 : 4)) % 5];
+        encryptedPair[1] = matrix[r2][(c2 + (mode === 'encrypt' ? 1 : 4)) % 5];
+        processDesc = `Same row: shift ${mode === 'encrypt' ? 'right' : 'left'}`;
+      } else if (c1 === c2) {
+        // same column: shift down
+        encryptedPair[0] = matrix[(r1 + (mode === 'encrypt' ? 1 : 4)) % 5][c1];
+        encryptedPair[1] = matrix[(r2 + (mode === 'encrypt' ? 1 : 4)) % 5][c2];
+        processDesc = `Same column: shift ${mode === 'encrypt' ? 'down' : 'up'}`;
+      } else {
+        // rectangle swap
+        encryptedPair[0] = matrix[r1][c2];
+        encryptedPair[1] = matrix[r2][c1];
+        processDesc = 'Rectangle swap';
+      }
+
+      steps.push({
+        pair: [a, b],
+        positions: [[r1, c1], [r2, c2]],
+        encrypted: encryptedPair,
+        process: processDesc
+      });
+      result += encryptedPair.join('');
+    });
+
+    return { steps, result, matrix };
+  };
+
+  const cleanDecryptedText = (text) => {
+    // Remove 'X' between repeated letters: e.g. "LXL" => "LL"
+    let result = '';
+    for (let i = 0; i < text.length; i++) {
+      if (
+        i > 0 &&
+        i < text.length - 1 &&
+        text[i] === 'X' &&
+        text[i - 1] === text[i + 1]
+      ) {
+        // Skip this 'X'
+        continue;
+      }
+      result += text[i];
+    }
+  
+    // Remove trailing 'X' if it was padding
+    if (result.endsWith('X')) {
+      result = result.slice(0, -1);
+    }
+  
+    return result;
+  };
+  
   const handleCompute = () => {
     if (!input.trim()) return;
-    const result = caesar(input, key, mode === 'decrypt');
-    setSteps(result);
-    setOutput(result.map(r => r.shifted).join(''));
+    if (!key.trim()) {
+      alert('Please enter a key or generate one!');
+      return;
+    }
+    const { steps, result, matrix } = playfairEncrypt(input, key);
+  
+    let finalResult = result;
+    if (mode === 'decrypt') {
+      finalResult = cleanDecryptedText(result);
+    }
+  
+    setSteps(steps);
+    setOutput(finalResult);
   };
+  
 
   const copyToClipboard = () => {
     if (!output) return;
@@ -69,7 +173,10 @@ const CaesarCipherTool = () => {
     speechSynthesis.speak(utteranceRef.current);
   };
 
-  // Cleanup speech synthesis when component unmounts
+  const generateDefaultKey = () => {
+    if (!key.trim()) setKey('MONARCHY');
+  };
+
   React.useEffect(() => {
     return () => {
       if (utteranceRef.current) {
@@ -85,7 +192,7 @@ const CaesarCipherTool = () => {
       </Link>
 
       <div className="tool-container">
-        <h1 className="tool-title">Caesar Cipher</h1>
+        <h1 className="tool-title">Playfair Cipher</h1>
 
         {/* Tab Navigation */}
         <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
@@ -117,17 +224,22 @@ const CaesarCipherTool = () => {
               />
             </div>
 
-            <div className="input-group">
-              <label>Shift Key: {key}</label>
+            <div className="input-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <label style={{ flexShrink: 0 }}>Key</label>
               <input
-                type="range"
-                min="1"
-                max="25"
+                type="text"
                 value={key}
-                onChange={(e) => setKey(Number(e.target.value))}
-                style={{ accentColor: 'var(--primary-color)' }}
+                onChange={(e) => setKey(e.target.value.toUpperCase())}
+                placeholder="Enter key (e.g., MONARCHY)"
+                style={{ flexGrow: 1, textTransform: 'uppercase' }}
               />
-              
+              <button
+                onClick={generateDefaultKey}
+                className="nav-button"
+                style={{ minWidth: '130px', padding: '0.5rem 1rem' }}
+              >
+                Generate Key
+              </button>
             </div>
 
             <div className="input-group" style={{ display: 'flex', justifyContent: 'center' }}>
@@ -156,29 +268,27 @@ const CaesarCipherTool = () => {
               <>
                 <div className="visualization-steps">
                   <div className="step">
-                    <div className="step-title">Step 1: Input Text</div>
-                    <div className="step-content">
+                    <div className="step-title">Step 1: Input Pairs</div>
+                    <div className="step-content" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                       {steps.map((step, i) => (
                         <div key={i} className="char-box" data-index={i}>
-                          {step.char}
+                          {step.pair[0]}{step.pair[1]}
                         </div>
                       ))}
                     </div>
                   </div>
 
                   <div className="step">
-                    <div className="step-title">
-                      Step 2: {mode === 'encrypt' ? 'Shift Forward' : 'Shift Backward'} by {key}
-                    </div>
-                    <div className="step-content">
+                    <div className="step-title">Step 2: Apply Playfair Rules ({mode === 'encrypt' ? 'Encrypt' : 'Decrypt'})</div>
+                    <div className="step-content" style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
                       {steps.map((step, i) => (
-                        <div key={i} style={{ textAlign: 'center' }}>
+                        <div key={i} style={{ textAlign: 'center', minWidth: '70px' }}>
                           <div className="char-box" data-index={i}>
-                            {step.char}
+                            {step.pair[0]}{step.pair[1]}
                           </div>
                           <div className="arrow-down">↓</div>
                           <div className="char-box">
-                            {step.shifted}
+                            {step.encrypted[0]}{step.encrypted[1]}
                           </div>
                           <div style={{ fontSize: '0.8rem', marginTop: '0.5rem', color: 'var(--text-color)' }}>
                             {step.process}
@@ -190,10 +300,10 @@ const CaesarCipherTool = () => {
 
                   <div className="step">
                     <div className="step-title">Final Result</div>
-                    <div className="step-content">
+                    <div className="step-content" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                       {steps.map((step, i) => (
                         <div key={i} className="char-box" data-index={i}>
-                          {step.shifted}
+                          {step.encrypted[0]}{step.encrypted[1]}
                         </div>
                       ))}
                     </div>
@@ -241,67 +351,41 @@ const CaesarCipherTool = () => {
             <section className="mb-8">
               <h2 className="section-title">Hey there! 👋</h2>
               <p>
-                Welcome to the Caesar Cipher - one of the oldest and most famous encryption methods in history! 
-                Ever wondered how Julius Caesar sent secret messages to his generals? Well, you're about to find out! 😎
+                So, you wanna play with the Playfair cipher? Awesome! It's a fun way to hide your messages using a secret key. 
+                Think of it like a cool puzzle where letters team up in pairs to confuse anyone snooping around.
               </p>
             </section>
 
             <section className="mb-8">
               <h2 className="section-title">How Does It Work? 🤔</h2>
-              <p style={{ marginBottom: '1rem' }}>
-                It's super simple! Take each letter in your message and shift it forward in the alphabet by a certain number. 
-                That number is your secret key! Let's see an example:
-              </p>
-              <div className="result-box" style={{ padding: '1rem', marginBottom: '1rem' }}>
-                Message: AMAZON<br/>
-                Key: 2 (shift each letter forward by 2)<br/>
-                A → C (A+2)<br/>
-                M → O (M+2)<br/>
-                A → C (A+2)<br/>
-                Z → B (Z+2, wraps around!)<br/>
-                O → Q (O+2)<br/>
-                N → P (N+2)<br/>
-                Result: COCBQP
-              </div>
               <p>
-                See how each letter "jumps" forward by 2 spots? And when we get to Z, we wrap around to the start! 
-                Pretty clever, right? 🎯
+                Alright, here’s the gist: you take your secret key (like a password), and use it to make a 5x5 letter grid. 
+                Then, you split your message into pairs of letters — if two letters are the same, you sneak in an 'X' to keep things tricky. 
+                Each pair is then encrypted based on where the letters sit in the grid. It’s kinda like a secret handshake for letters!
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">Quick Tips! 💡</h2>
-              <ul style={{ marginLeft: '1.5rem', listStyle: 'disc' }}>
-                <li>The key can be any number from 1 to 25</li>
-                <li>Numbers and special characters stay the same</li>
-                <li>Spaces are preserved</li>
-                <li>It doesn't matter if you use upper or lower case</li>
-              </ul>
+              <h2 className="section-title">Wanna Try It? 🎉</h2>
+              <p>
+                Just type your message, add a key (or hit that Generate Key button for a classic one like "MONARCHY"), and hit encrypt! 
+                To decrypt, just flip the mode — easy peasy.
+              </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">Fun Facts! 🎨</h2>
-              <ul style={{ marginLeft: '1.5rem', listStyle: 'disc' }}>
-                <li>Julius Caesar used a shift of 3 for his messages</li>
-                <li>It was used for military communication</li>
-                <li>ROT13 is a special version that uses a shift of 13</li>
-                <li>It's still used today in puzzles and games!</li>
-              </ul>
+              <h2 className="section-title">Why Use Playfair? 🔐</h2>
+              <p>
+                Back in the day, it was a huge step up from simple letter shifting ciphers because it hides pairs of letters instead of singles — 
+                making it harder for code-breakers. It was even used by armies and spies!
+              </p>
             </section>
 
             <section>
-              <h2 className="section-title">Is It Secure? 🔒</h2>
-              <p style={{ marginBottom: '1rem' }}>
-                Well... not really! 😅 Here's why:
-              </p>
-              <ul style={{ marginLeft: '1.5rem', listStyle: 'disc', marginBottom: '1rem' }}>
-                <li>There are only 25 possible keys</li>
-                <li>Someone could try all keys quickly (brute force)</li>
-                <li>Letter patterns stay the same</li>
-              </ul>
+              <h2 className="section-title">Heads up! ⚠️</h2>
               <p>
-                But don't worry! This is just the beginning of our crypto journey. More secure methods are coming up! 
-                For now, have fun playing with this historical cipher! 🚀
+                While it’s cooler than Caesar cipher, it’s not unbreakable. Smart folks can still crack it, but hey, it’s a great intro to crypto fun! 
+                So, enjoy playing around and learning some neat tricks!
               </p>
             </section>
           </div>
@@ -311,4 +395,4 @@ const CaesarCipherTool = () => {
   );
 };
 
-export default CaesarCipherTool;
+export default PlayfairCipherTool;

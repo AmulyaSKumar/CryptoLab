@@ -6,9 +6,12 @@ const NavBar = ({ currentPage }) => {
     { name: "Home", path: "/" },
     { name: "Introduction", path: "/c0-crypto" },
     { name: "Caesar Cipher", path: "/c1-caesar" },
-    { name: "One Time Pad", path: "/c5-otp" },
-    { name: "Vigenère Cipher", path: "/c6-vigenere" },
-    { name: "Rail Fence", path: "/c9-railfence" },
+    {name: "Playfair Cipher", path: "/c2-playfair"},
+    { name: "Hill Cipher", path: "/c3-hill" },
+    { name: "One Time Pad", path: "/c4-otp" },
+    { name: "Vigenère Cipher", path: "/c5-vigenere" },
+    { name: "Vernam Cipher", path: "/c6-vernam" },
+    { name: "Rail Fence", path: "/c7-railfence" },
   ];
 
   return (
