@@ -12,6 +12,9 @@ const tools = [
   { name: "VIGENERE CIPHER", path: "/c5-vigenere" },
   { name: "VERNAM CIPHER", path: "/c6-vernam" },
   { name: "RAIL FENCE CIPHER", path: "/c7-railfence" },
+  {name: "DES", path: "/c8-des"},
+  {name:"AES",path:'/c9-aes'},
+  {name:"RSA", path:"/c10-rsa"},
 ];
 
 const Home = () => {

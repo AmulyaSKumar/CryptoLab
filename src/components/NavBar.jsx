@@ -12,6 +12,9 @@ const NavBar = ({ currentPage }) => {
     { name: "Vigenère Cipher", path: "/c5-vigenere" },
     { name: "Vernam Cipher", path: "/c6-vernam" },
     { name: "Rail Fence", path: "/c7-railfence" },
+    {name: "DES", path: "/c8-des"},
+    {name:"AES" ,path:'/c9-aes'},
+    {name:"RSA", path:"/c10-rsa"},
   ];
 
   return (
