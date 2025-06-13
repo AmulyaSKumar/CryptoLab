@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link ,useNavigate} from 'react-router-dom';
 import CryptoJS from 'crypto-js';
 
 // DES Constants and Tables
@@ -294,6 +294,7 @@ const DESDemo = () => {
   const [outputAscii, setOutputAscii] = useState('');
   const [showSteps, setShowSteps] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
+  const navigate=useNavigate();
   // Maximum character limits
   const MAX_INPUT_TEXT_LENGTH = 8; // 64 bits (8 characters)
   const MAX_INPUT_HEX_LENGTH = 16; // 64 bits (16 hex characters)
@@ -565,6 +566,13 @@ const DESDemo = () => {
           >
             About
           </button>
+    <button
+      className="nav-button"
+      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
+      onClick={() => navigate('/q-des')}
+    >
+      Take Test
+    </button>
         </div>
 
         {activeTab === 'tool' ? (

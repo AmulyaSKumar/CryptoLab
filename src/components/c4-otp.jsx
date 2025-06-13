@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link ,useNavigate } from 'react-router-dom';
 
 const OneTimePad = () => {
   const [input, setInput] = useState('');
@@ -12,7 +12,7 @@ const OneTimePad = () => {
   const [isReading, setIsReading] = useState(false);
   const speechSynthesis = window.speechSynthesis;
   const utteranceRef = useRef(null);
-
+  const navigate = useNavigate();
   const generateRandomKey = (length) => {
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     return Array(length).fill()
@@ -71,8 +71,15 @@ const OneTimePad = () => {
   };
 
   const handleGenerateKey = () => {
-    const cleanInput = input.replace(/[^A-Za-z]/g, '');
+    // Clean the input first to get only alphabetic characters
+    const cleanInput = input.toUpperCase().replace(/[^A-Z]/g, '');
+    console.log("Input:", input, "CleanInput:", cleanInput);
+    if (cleanInput.length === 0) {
+      alert('Please enter some text first!');
+      return;
+    }
     const newKey = generateRandomKey(cleanInput.length);
+    console.log("Generated Key:", newKey);
     setKey(newKey);
   };
 
@@ -112,7 +119,7 @@ const OneTimePad = () => {
         speechSynthesis.cancel();
       }
     };
-  }, []);
+  }, [speechSynthesis]);
 
   return (
     <div className="main-container">
@@ -139,6 +146,20 @@ const OneTimePad = () => {
           >
             About
           </button>
+          <button
+      className="nav-button"
+      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
+      onClick={() => navigate('/c-otp')}
+    >
+      Try Challenge
+    </button>
+    <button
+      className="nav-button"
+      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
+      onClick={() => navigate('/q-otp')}
+    >
+      Take Test
+    </button>
         </div>
 
         {activeTab === 'tool' ? (

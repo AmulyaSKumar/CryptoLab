@@ -1,6 +1,6 @@
 // AESDemo.jsx
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link ,useNavigate} from 'react-router-dom';
 import CryptoJS from 'crypto-js';
 
 // AES Constants
@@ -268,7 +268,7 @@ const AESDemo = () => {
   const [convertedHex, setConvertedHex] = useState('');
   const [showConverter, setShowConverter] = useState(false);
   const [cryptoJSResult, setCryptoJSResult] = useState('');
-
+  const navigate=useNavigate();
   // Maximum character limits
   const MAX_INPUT_TEXT_LENGTH = 16; // 128 bits (16 characters)
   const MAX_INPUT_HEX_LENGTH = 32; // 128 bits (32 hex characters)
@@ -704,6 +704,13 @@ const AESDemo = () => {
           >
             About
           </button>
+          <button
+      className="nav-button"
+      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
+      onClick={() => navigate('/q-aes')}
+    >
+      Take Test
+    </button>
         </div>
 
         {activeTab === 'tool' ? (

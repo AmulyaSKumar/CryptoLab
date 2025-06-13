@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const VigenereCipher = () => {
   const [input, setInput] = useState('');
@@ -12,6 +12,7 @@ const VigenereCipher = () => {
   const [isReading, setIsReading] = useState(false);
   const speechSynthesis = window.speechSynthesis;
   const utteranceRef = useRef(null);
+  const navigate =useNavigate();
 
   const vigenere = (text, key, decrypt = false) => {
     if (!text || !key) return [];
@@ -92,6 +93,25 @@ const VigenereCipher = () => {
     speechSynthesis.speak(utteranceRef.current);
   };
 
+  const generateRandomKey = (length) => {
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    return Array(length).fill()
+      .map(() => alphabet[Math.floor(Math.random() * alphabet.length)])
+      .join('');
+  };
+
+  const handleGenerateKey = () => {
+    const cleanInput = input.toUpperCase().replace(/[^A-Z]/g, '');
+    console.log("Vigenere Input:", input, "CleanInput:", cleanInput);
+    if (cleanInput.length === 0) {
+      alert('Please enter some text first!');
+      return;
+    }
+    const newKey = generateRandomKey(cleanInput.length);
+    console.log("Vigenere Generated Key:", newKey);
+    setKey(newKey);
+  };
+
   // Cleanup speech synthesis when component unmounts
   React.useEffect(() => {
     return () => {
@@ -99,7 +119,7 @@ const VigenereCipher = () => {
         speechSynthesis.cancel();
       }
     };
-  }, []);
+  }, [speechSynthesis]);
 
   return (
     <div className="main-container">
@@ -126,6 +146,19 @@ const VigenereCipher = () => {
           >
             About
           </button>
+          <button
+      className="nav-button"
+      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
+      onClick={() => navigate('/c-vigenere')}
+    >
+      Try Challenge
+    </button><button
+      className="nav-button"
+      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
+      onClick={() => navigate('/q-vigenere')}
+    >
+      Take Test
+    </button>
         </div>
 
         {activeTab === 'tool' ? (
@@ -141,7 +174,16 @@ const VigenereCipher = () => {
             </div>
 
             <div className="input-group">
-              <label>Keyword</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <label>Keyword</label>
+                <button
+                  onClick={handleGenerateKey}
+                  className="nav-button secondary"
+                  style={{ padding: '4px 8px', minWidth: 'auto', marginTop: '0' }}
+                >
+                  Generate Random Key
+                </button>
+              </div>
               <input
                 type="text"
                 value={key}

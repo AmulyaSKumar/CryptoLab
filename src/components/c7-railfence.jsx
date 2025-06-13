@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 
 const RailFenceCipher = () => {
   const [input, setInput] = useState('');
@@ -12,7 +12,7 @@ const RailFenceCipher = () => {
   const [isReading, setIsReading] = useState(false);
   const speechSynthesis = window.speechSynthesis;
   const utteranceRef = useRef(null);
-
+  const navigate = useNavigate();
   const railFence = (str, rails, decrypt = false) => {
     if (!str || rails < 2) return { fence: [], result: '', steps: [] };
     
@@ -163,6 +163,19 @@ const RailFenceCipher = () => {
           >
             About
           </button>
+          <button
+      className="nav-button"
+      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
+      onClick={() => navigate('/c-railfence')}
+    >
+      Try Challenge
+    </button><button
+      className="nav-button"
+      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
+      onClick={() => navigate('/q-railfence')}
+    >
+      Take Test
+    </button>
         </div>
 
         {activeTab === 'tool' ? (

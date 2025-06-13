@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link , useNavigate } from 'react-router-dom';
 
 const VernamCipherTool = () => {
   const [input, setInput] = useState('');
@@ -12,19 +12,15 @@ const VernamCipherTool = () => {
   const [isReading, setIsReading] = useState(false);
   const speechSynthesis = window.speechSynthesis;
   const utteranceRef = useRef(null);
-
-  // Utility: A-Z only, uppercase, no spaces
+  const navigate = useNavigate();
   const cleanText = (text) =>
     text.toUpperCase().replace(/[^A-Z]/g, '');
-
   // Generate random key same length as input
   const generateKey = (length) => {
-    let key = '';
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    for (let i = 0; i < length; i++) {
-      key += alphabet[Math.floor(Math.random() * 26)];
-    }
-    return key;
+    return Array(length).fill()
+      .map(() => alphabet[Math.floor(Math.random() * alphabet.length)])
+      .join('');
   };
 
   // Convert letter to 0-25 number
@@ -64,9 +60,14 @@ const VernamCipherTool = () => {
   };
 
   const handleGenerateKey = () => {
-    if (!input.trim()) return;
+    if (!input.trim()) {
+      alert('Please enter some text first!');
+      return;
+    }
     const cleaned = cleanText(input);
+    console.log("Vernam Input:", input, "Cleaned:", cleaned);
     const genKey = generateKey(cleaned.length);
+    console.log("Vernam Generated Key:", genKey);
     setKey(genKey);
   };
 
@@ -105,14 +106,13 @@ const VernamCipherTool = () => {
     setIsReading(true);
     speechSynthesis.speak(utteranceRef.current);
   };
-
   React.useEffect(() => {
     return () => {
       if (utteranceRef.current) {
         speechSynthesis.cancel();
       }
     };
-  }, []);
+  }, [speechSynthesis]);
 
   return (
     <div className="main-container">
@@ -139,6 +139,20 @@ const VernamCipherTool = () => {
           >
             About
           </button>
+          <button
+      className="nav-button"
+      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
+      onClick={() => navigate('/c-vernam')}
+    >
+      Try Challenge
+    </button>
+    <button
+      className="nav-button"
+      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
+      onClick={() => navigate('/q-vernam')}
+    >
+      Take Test
+    </button>
         </div>
 
         {activeTab === 'tool' ? (

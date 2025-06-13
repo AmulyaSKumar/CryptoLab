@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const primeList = [
   61, 53, 47, 43, 41, 37, 31, 29, 23, 19, 17, 13, 11, 7, 5, 3, 2
@@ -18,7 +18,7 @@ const RSAVisualizer = () => {
   const [steps, setSteps] = useState([]);
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState('tool');
-
+  const navigate =useNavigate();
   const speechSynthesis = window.speechSynthesis;
   const utteranceRef = useRef(null);
   const [isReading, setIsReading] = useState(false);
@@ -160,6 +160,13 @@ const RSAVisualizer = () => {
             onClick={() => setActiveTab('about')}
             className={`nav-button ${activeTab === 'about' ? '' : 'secondary'}`}
           >About</button>
+          <button
+      className="nav-button"
+      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
+      onClick={() => navigate('/q-rsa')}
+    >
+      Take Test
+    </button>
         </div>
 
         {activeTab === 'tool' ? (

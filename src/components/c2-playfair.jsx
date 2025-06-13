@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react'; 
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const PlayfairCipherTool = () => {
   const [input, setInput] = useState('');
@@ -12,6 +13,7 @@ const PlayfairCipherTool = () => {
   const [isReading, setIsReading] = useState(false);
   const speechSynthesis = window.speechSynthesis;
   const utteranceRef = useRef(null);
+  const navigate = useNavigate();
 
   // Playfair Cipher helper functions
   const generateMatrix = (keyStr) => {
@@ -210,6 +212,20 @@ const PlayfairCipherTool = () => {
           >
             About
           </button>
+          <button
+      className="nav-button"
+      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
+      onClick={() => navigate('/c-playfair')}
+    >
+      Try Challenge
+    </button>
+    <button
+      className="nav-button"
+      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
+      onClick={() => navigate('/q-playfair')}
+    >
+      Take Test
+    </button>
         </div>
 
         {activeTab === 'tool' ? (

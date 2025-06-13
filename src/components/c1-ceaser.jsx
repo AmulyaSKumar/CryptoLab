@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom';
 const CaesarCipherTool = () => {
   const [input, setInput] = useState('');
   const [key, setKey] = useState(3);
@@ -12,15 +12,16 @@ const CaesarCipherTool = () => {
   const [isReading, setIsReading] = useState(false);
   const speechSynthesis = window.speechSynthesis;
   const utteranceRef = useRef(null);
+    const navigate = useNavigate();
+
 
   const caesar = (str, shift, decrypt = false) => {
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     shift = parseInt(shift);
     if (decrypt) shift = 26 - shift;
 
-    const steps = [];
     const chars = str.toUpperCase().split('');
-    const result = chars.map((char, index) => {
+    const result = chars.map((char) => {
       const idx = alphabet.indexOf(char);
       if (idx === -1) return { char, shifted: char, process: 'Not a letter' };
       
@@ -103,6 +104,21 @@ const CaesarCipherTool = () => {
           >
             About
           </button>
+          <button
+      className="nav-button"
+      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
+      onClick={() => navigate('/c-caesar')}
+    >
+      Try Challenge
+    </button>
+<button
+      className="nav-button"
+      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
+      onClick={() => navigate('/q-caesar')}
+    >
+      Take Test
+    </button>
+
         </div>
 
         {activeTab === 'tool' ? (
@@ -239,7 +255,7 @@ const CaesarCipherTool = () => {
             </div>
 
             <section className="mb-8">
-              <h2 className="section-title">Hey there! 👋</h2>
+              <h2 className="section-title">Hey there! </h2>
               <p>
                 Welcome to the Caesar Cipher - one of the oldest and most famous encryption methods in history! 
                 Ever wondered how Julius Caesar sent secret messages to his generals? Well, you're about to find out! 😎
@@ -247,7 +263,7 @@ const CaesarCipherTool = () => {
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">How Does It Work? 🤔</h2>
+              <h2 className="section-title">How Does It Work? </h2>
               <p style={{ marginBottom: '1rem' }}>
                 It's super simple! Take each letter in your message and shift it forward in the alphabet by a certain number. 
                 That number is your secret key! Let's see an example:
@@ -265,12 +281,12 @@ const CaesarCipherTool = () => {
               </div>
               <p>
                 See how each letter "jumps" forward by 2 spots? And when we get to Z, we wrap around to the start! 
-                Pretty clever, right? 🎯
+                Pretty clever, right? 
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">Quick Tips! 💡</h2>
+              <h2 className="section-title">Quick Tips! </h2>
               <ul style={{ marginLeft: '1.5rem', listStyle: 'disc' }}>
                 <li>The key can be any number from 1 to 25</li>
                 <li>Numbers and special characters stay the same</li>
@@ -280,7 +296,7 @@ const CaesarCipherTool = () => {
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">Fun Facts! 🎨</h2>
+              <h2 className="section-title">Fun Facts! </h2>
               <ul style={{ marginLeft: '1.5rem', listStyle: 'disc' }}>
                 <li>Julius Caesar used a shift of 3 for his messages</li>
                 <li>It was used for military communication</li>
@@ -290,9 +306,9 @@ const CaesarCipherTool = () => {
             </section>
 
             <section>
-              <h2 className="section-title">Is It Secure? 🔒</h2>
+              <h2 className="section-title">Is It Secure? </h2>
               <p style={{ marginBottom: '1rem' }}>
-                Well... not really! 😅 Here's why:
+                Well... not really!  Here's why:
               </p>
               <ul style={{ marginLeft: '1.5rem', listStyle: 'disc', marginBottom: '1rem' }}>
                 <li>There are only 25 possible keys</li>

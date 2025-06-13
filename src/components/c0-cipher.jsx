@@ -55,13 +55,13 @@ const Introduction = () => {
                 </svg>
               )}
             </button>
-      </div>
+          </div>
 
           <section className="mb-8">
             <h2 className="section-title">Hey there!</h2>
             <p style={{ fontSize: '1.1rem', lineHeight: '1.6' }}>
-              How are you? I'm excited to be your guide into the fascinating world of cryptography! 
-              Ever wondered how your messages stay secret when you send them online? Or how your passwords 
+              How are you? I'm excited to be your guide into the fascinating world of cryptography!
+              Ever wondered how your messages stay secret when you send them online? Or how your passwords
               are kept safe? That's where cryptography comes in!
             </p>
           </section>
@@ -69,7 +69,7 @@ const Introduction = () => {
           <section className="mb-8">
             <h2 className="section-title">What's This All About? </h2>
             <p style={{ marginBottom: '1rem' }}>
-              Imagine you want to send a secret message to your friend, but you're worried someone else might read it. 
+              Imagine you want to send a secret message to your friend, but you're worried someone else might read it.
               What do you do? You could:
             </p>
             <ul style={{ marginLeft: '1.5rem', listStyle: 'disc', marginBottom: '1rem' }}>
@@ -78,8 +78,8 @@ const Introduction = () => {
               <li>Replace each letter with a different one</li>
             </ul>
             <p>
-              That's exactly what cryptography does! It's like having a secret language between you and your friends 
-              that nobody else can understand. Cool, right? 
+              That's exactly what cryptography does! It's like having a secret language between you and your friends
+              that nobody else can understand. Cool, right?
             </p>
           </section>
 
@@ -102,53 +102,93 @@ const Introduction = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="section-title">What's in Our Lab? </h2>
+            <h2 className="section-title">What's in Our Lab?</h2>
             <p style={{ marginBottom: '1rem' }}>
               We've got some really cool ciphers for you to play with! Each one has its own special way of keeping messages secret:
             </p>
-            
-            <div className="mb-4">
-              <h3 className="font-semibold mb-2">1. Caesar Cipher </h3>
-              <p>
-                Used by Julius Caesar himself! It's like shifting each letter in your message by a certain number. 
-                Think of it as moving each letter a few steps forward in the alphabet.
-          </p>
-        </div>
 
             <div className="mb-4">
-              <h3 className="font-semibold mb-2">2. Vigenère Cipher </h3>
+              <h3 className="font-semibold mb-2">1. Caesar Cipher</h3>
               <p>
-                Like Caesar's cipher but on steroids! Instead of shifting all letters by the same amount, 
+                Used by Julius Caesar himself! It's like shifting each letter in your message by a certain number.
+                Think of it as moving each letter a few steps forward in the alphabet.
+              </p>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="font-semibold mb-2">2. Vigenère Cipher</h3>
+              <p>
+                Like Caesar's cipher but on steroids! Instead of shifting all letters by the same amount,
                 each letter gets its own special shift. Tricky, huh?
               </p>
-      </div>
+            </div>
 
             <div className="mb-4">
-              <h3 className="font-semibold mb-2">3. Rail Fence Cipher </h3>
+              <h3 className="font-semibold mb-2">3. Rail Fence Cipher</h3>
               <p>
-                This one's fun! It writes your message in a zigzag pattern and then reads it off row by row. 
+                This one's fun! It writes your message in a zigzag pattern and then reads it off row by row.
                 It's like making your message ride a roller coaster!
-          </p>
-        </div>
+              </p>
+            </div>
 
-            <div>
-              <h3 className="font-semibold mb-2">4. One Time Pad </h3>
+            <div className="mb-4">
+              <h3 className="font-semibold mb-2">4. One Time Pad</h3>
               <p>
-                The unbreakable one! If used correctly, it's mathematically impossible to crack. 
+                The unbreakable one! If used correctly, it's mathematically impossible to crack.
                 It's like having a different secret code for every single letter!
               </p>
-      </div>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="font-semibold mb-2">5. Hill Cipher</h3>
+              <p>
+                It's all about matrices and multiplication! This cipher turns letters into numbers, groups them,
+                and scrambles them using some math magic.
+              </p>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="font-semibold mb-2">6. Playfair Cipher</h3>
+              <p>
+                Say goodbye to single-letter encryption! Playfair encrypts letters in pairs using a 5x5 matrix.
+                It’s a clever twist that even fooled enemies during wartime.
+              </p>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="font-semibold mb-2">7. DES (Data Encryption Standard)</h3>
+              <p>
+                A classic from the 70s! DES mixes your message through 16 rounds of shifting, substituting, and permuting.
+                It’s like putting your text through a digital blender.
+              </p>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="font-semibold mb-2">8. AES (Advanced Encryption Standard)</h3>
+              <p>
+                Modern, powerful, and fast! AES is the gold standard for secure encryption today.
+                Your message gets transformed with multiple layers of substitution and permutation.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-2">9. RSA (Rivest–Shamir–Adleman)</h3>
+              <p>
+                The king of public-key cryptography! RSA uses big prime numbers to lock your message.
+                It’s like a digital safe with two keys – one to lock, one to unlock.
+              </p>
+            </div>
           </section>
 
           <section>
             <h2 className="section-title">Ready to Start? </h2>
             <p style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
-              Head back to the home page and pick any cipher to try out! Each one has its own story and special way of 
+              Head back to the home page and pick any cipher to try out! Each one has its own story and special way of
               working. Don't worry if it seems tricky at first - we'll explain everything step by step!
             </p>
             <p style={{ fontSize: '1.1rem', fontStyle: 'italic' }}>
-              Remember: The best way to learn is by trying things out yourself. So go ahead, encrypt some messages, 
-              and have fun being a cryptographer! 
+              Remember: The best way to learn is by trying things out yourself. So go ahead, encrypt some messages,
+              and have fun being a cryptographer!
             </p>
           </section>
         </div>
