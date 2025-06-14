@@ -230,11 +230,8 @@ const DESQuiz = () => {
   return (
     <div className="main-container" style={{ maxWidth: 650, margin: '2rem auto', padding: '1rem' }}>
       {/* Navigation */}
-      <nav style={{ display: 'flex', justifyContent: 'space-around', marginBottom: '1.5rem' }}>
-        <Link to="/c8-des" className="nav-button secondary">Tools</Link>  </nav>
-
-      <Link to="/" className="nav-button" style={{ position: 'absolute', top: '20px', left: '20px' }}>
-        ← Home
+          <Link to="/c8-des" className="nav-button" style={{ position: 'absolute', top: '20px', left: '20px' }}>
+        ← Back
       </Link>
 
       <div className="tool-container">

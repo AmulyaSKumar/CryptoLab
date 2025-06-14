@@ -123,43 +123,41 @@ const OneTimePad = () => {
 
   return (
     <div className="main-container">
-      <Link to="/" className="nav-button" style={{ position: 'absolute', top: '20px', left: '20px', minWidth: 'auto' }}>
-        ← Back
-      </Link>
+     <div className="back-nav">
+        <Link to="/" className="nav-button" style={{ minWidth: 'auto' }}>
+          ← Back
+        </Link>
+      </div>
 
       <div className="tool-container">
         <h1 className="tool-title">One Time Pad</h1>
 
         {/* Tab Navigation */}
-        <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+        <div className="cipher-nav-container">
           <button
             onClick={() => setActiveTab('tool')}
             className={`nav-button ${activeTab === 'tool' ? '' : 'secondary'}`}
-            style={{ minWidth: '120px' }}
           >
             Tool
           </button>
           <button
             onClick={() => setActiveTab('about')}
             className={`nav-button ${activeTab === 'about' ? '' : 'secondary'}`}
-            style={{ minWidth: '120px' }}
           >
             About
           </button>
           <button
-      className="nav-button"
-      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
-      onClick={() => navigate('/c-otp')}
-    >
-      Try Challenge
-    </button>
-    <button
-      className="nav-button"
-      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
-      onClick={() => navigate('/q-otp')}
-    >
-      Take Test
-    </button>
+            className="nav-button"
+            onClick={() => navigate('/c-otp')}
+          >
+            Try Challenge
+          </button>
+          <button
+            className="nav-button"
+            onClick={() => navigate('/q-otp')}
+          >
+            Take Test
+          </button>
         </div>
 
         {activeTab === 'tool' ? (
@@ -177,13 +175,7 @@ const OneTimePad = () => {
             <div className="input-group">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                 <label>Key</label>
-                <button
-                  onClick={handleGenerateKey}
-                  className="nav-button secondary"
-                  style={{ padding: '4px 8px', minWidth: 'auto', marginTop: '0' }}
-                >
-                  Generate Random Key
-                </button>
+               
               </div>
               <input
                 type="text"

@@ -145,28 +145,35 @@ const RSAVisualizer = () => {
 
   return (
     <div className="main-container">
-      <Link to="/" className="nav-button" style={{ position: 'absolute', top: '20px', left: '20px' }}>← Back</Link>
+      <div className="back-nav">
+        <Link to="/" className="nav-button" style={{ minWidth: 'auto' }}>
+          ← Back
+        </Link>
+      </div>
 
       <div className="tool-container">
         <h1 className="tool-title">RSA Encryption & Decryption</h1>
 
         {/* Tabs */}
-        <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+        <div className="cipher-nav-container">
           <button
             onClick={() => setActiveTab('tool')}
             className={`nav-button ${activeTab === 'tool' ? '' : 'secondary'}`}
-          >Tool</button>
+          >
+            Tool
+          </button>
           <button
             onClick={() => setActiveTab('about')}
             className={`nav-button ${activeTab === 'about' ? '' : 'secondary'}`}
-          >About</button>
+          >
+            About
+          </button>
           <button
-      className="nav-button"
-      style={{ marginTop: '1rem', display: 'inline-block' ,minWidth: '120px'}}
-      onClick={() => navigate('/q-rsa')}
-    >
-      Take Test
-    </button>
+            className="nav-button"
+            onClick={() => navigate('/q-rsa')}
+          >
+            Take Test
+          </button>
         </div>
 
         {activeTab === 'tool' ? (

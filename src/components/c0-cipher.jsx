@@ -31,9 +31,11 @@ const Introduction = () => {
 
   return (
     <div className="main-container">
-      <Link to="/" className="nav-button" style={{ position: 'absolute', top: '20px', left: '20px', minWidth: 'auto' }}>
-        ← Back
-      </Link>
+      <div className="back-nav">
+        <Link to="/" className="nav-button" style={{ minWidth: 'auto' }}>
+          ← Back
+        </Link>
+      </div>
 
       <div className="tool-container">
         <h1 className="tool-title">Welcome to CryptoLab!</h1>

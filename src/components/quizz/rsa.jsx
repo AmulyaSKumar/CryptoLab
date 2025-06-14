@@ -275,24 +275,10 @@ const RSAQuiz = () => {
       className="main-container"
       style={{ maxWidth: 650, margin: "2rem auto", padding: "1rem" }}
     >
-      {/* Navigation */}
-      <nav
-        style={{
-          display: "flex",
-          justifyContent: "space-around",
-          marginBottom: "1.5rem",
-        }}
-      >
-        <Link to="/rsa-tool" className="nav-button secondary">
-          Tools
-        </Link>
-        <Link to="/trychallenge" className="nav-button secondary">
-          Try Challenge
-        </Link>
-      </nav>
+     
 
       <Link
-        to="/"
+        to="/c10-rsa"
         className="nav-button"
         style={{ position: "absolute", top: "20px", left: "20px" }}
       >

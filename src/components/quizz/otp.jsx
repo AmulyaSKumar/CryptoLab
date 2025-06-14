@@ -164,7 +164,7 @@ const OneTimePadQuiz = () => {
 
   return (
     <div className="main-container">
-      <Link to="/" className="nav-button" style={{ position: 'absolute', top: 20, left: 20 }}>← Back</Link>
+      <Link to="/c4-otp" className="nav-button" style={{ position: 'absolute', top: 20, left: 20 }}>← Back</Link>
       <div className="quiz-container">
         <h1 className="quiz-title">One-Time Pad Quiz</h1>
         

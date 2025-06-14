@@ -209,13 +209,8 @@ const VigenereQuiz = () => {
 
   return (
     <div className="main-container" style={{ maxWidth: 600, margin: '2rem auto', padding: '1rem' }}>
-      {/* Navigation */}
-      <nav style={{ display: 'flex', justifyContent: 'space-around', marginBottom: '1.5rem' }}>
-        <Link to="/vigenere-tool" className="nav-button secondary">Tools</Link>
-        <Link to="/trychallenge" className="nav-button secondary">Try Challenge</Link>
-      </nav>
-
-      <Link to="/" className="nav-button" style={{ position: 'absolute', top: '20px', left: '20px' }}>
+     
+      <Link to="/c5-vigenere" className="nav-button" style={{ position: 'absolute', top: '20px', left: '20px' }}>
         ← Back
       </Link>
 

@@ -167,7 +167,7 @@ const CaesarCipherQuiz = () => {
     <div className="main-container" style={{ maxWidth: 600, margin: '2rem auto', padding: '1rem' }}>
      
       <Link to="/c1-caesar" className="nav-button" style={{ position: 'absolute', top: '20px', left: '20px' }}>
-        ← Home
+        ← Back
       </Link>
 
       <div className="tool-container">

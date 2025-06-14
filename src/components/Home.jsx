@@ -1,54 +1,64 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const tools = [
-  { name: "INTRODUCTION", path: "/c0-crypto" },
-  { name: "CAESAR CIPHER", path: "/c1-caesar" },
-  { name: "PLAYFAIR CIPHER", path: "/c2-playfair" },
-  { name: "HILL CIPHER", path: "/c3-hill" },
-  { name: "ONE TIME PAD", path: "/c4-otp" },
-  { name: "VIGENERE CIPHER", path: "/c5-vigenere" },
-  { name: "VERNAM CIPHER", path: "/c6-vernam" },
-  { name: "RAIL FENCE CIPHER", path: "/c7-railfence" },
-  { name: "DES", path: "/c8-des" },
-  { name: "AES", path: "/c9-aes" },
-  { name: "RSA", path: "/c10-rsa" },
-  {name:"BYOC" ,path:"/byoc"},
-];
-
 const Home = () => {
-  const intro = tools[0];
-  const rest = tools.slice(1);
-
   return (
-    <div className="main-container">
-      <div className="title-container">
-        <h1 className="main-title">CryptoLab</h1>
-        <p className="subtitle">
-          From beginner to breaker — learn by doing.<br />
-          Learn. Encrypt. Decrypt. Repeat.
+    <div className="main-container px-4">
+      <div className="title-container text-center mb-8">
+        <h1 className="main-title text-4xl font-bold">CryptoLab</h1>
+        <p className="subtitle text-lg text-gray-600 mt-2">
+          Code it. Break it. Own it.<br />
+          Learn cryptography by doing.
         </p>
       </div>
 
-      <div className="button-container flex flex-col items-center gap-4">
-        {/* INTRODUCTION (single full-width button) */}
-        <Link to={intro.path} className="nav-button w-full max-w-sm">
-          {intro.name}
+      <div className="button-container flex flex-col items-center gap-6">
+        {/* INTRODUCTION */}
+        <Link to="/c0-crypto" className="nav-button w-full max-w-sm text-center">
+          INTRODUCTION
         </Link>
 
-        {/* 2-column grid for remaining tools */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-3xl">
-          {rest.map((tool) => (
-            <Link
-              key={tool.path}
-              to={tool.path}
-              className="nav-button block w-full text-center"
-            >
-              {tool.name}
-            </Link>
-          ))}
+        {/* Ciphers Grid */}
+        <div className="grid grid-cols-2 gap-x-10 gap-y-6 w-full max-w-3xl">
+          <Link to="/c1-caesar" className="nav-button block w-auto text-center">
+            CAESAR CIPHER
+          </Link>
+          <Link to="/c2-playfair" className="nav-button block w-auto text-center">
+            PLAYFAIR CIPHER
+          </Link>
+          <Link to="/c3-hill" className="nav-button block w-auto text-center">
+            HILL CIPHER
+          </Link>
+          <Link to="/c4-otp" className="nav-button block w-auto text-center">
+            ONE TIME PAD
+          </Link>
+          <Link to="/c5-vigenere" className="nav-button block w-auto text-center">
+            VIGENERE CIPHER
+          </Link>
+          <Link to="/c6-vernam" className="nav-button block w-auto text-center">
+            VERNAM CIPHER
+          </Link>
+          <Link to="/c7-railfence" className="nav-button block w-auto text-center">
+            RAIL FENCE CIPHER
+          </Link>
+          <Link to="/c8-des" className="nav-button block w-auto text-center">
+            DES (Data Encryption Standard)
+          </Link>
+          <Link to="/c9-aes" className="nav-button block w-auto text-center">
+            AES (Advanced Encryption Standard)
+          </Link>
+          <Link to="/c10-rsa" className="nav-button block w-auto text-center">
+            RSA (Rivest–Shamir–Adleman)
+          </Link>
         </div>
+
+        {/* BYOC Button */}
+        <Link to="/byoc" className="nav-button w-full max-w-sm text-center">
+          BYOC <br /> Build your own Cipher
+        </Link>
       </div>
+<br/><br/>
+      
     </div>
   );
 };
