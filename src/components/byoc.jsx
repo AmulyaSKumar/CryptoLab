@@ -347,74 +347,7 @@ const CustomCipherBuilder = () => {
       </Link>
       
       <div className="tool-container">        <h1 className="tool-title">Build Your Own Cipher</h1>
-        
-        {/* Tab Navigation */}
-        <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-          <button
-            onClick={() => setActiveTab('tool')}
-            className={`nav-button ${activeTab === 'tool' ? '' : 'secondary'}`}
-            style={{ minWidth: '120px' }}
-          >
-            Tool
-          </button>
-          <button
-            onClick={() => setActiveTab('about')}
-            className={`nav-button ${activeTab === 'about' ? '' : 'secondary'}`}
-            style={{ minWidth: '120px' }}
-          >
-            About
-          </button>
-        </div>
-        
-        {activeTab === 'about' ? (          <div className="about-section">
-            <h2>About Custom Cipher Builder</h2>
-            <p>
-              This tool allows you to create your own custom cipher by chaining together different operations.
-              You can apply shifts, XOR operations, and character swaps to transform your input text.
-              You can also decrypt messages using your custom cipher by selecting the Decrypt mode.
-            </p>
-            
-            <h3>Available Operations:</h3>
-            <ul>
-              <li><strong>Shift:</strong> Shifts each character by a specified amount (like Caesar cipher)</li>
-              <li><strong>XOR:</strong> Applies a bitwise XOR operation with a specified hex value</li>
-              <li><strong>Swap:</strong> Swaps characters at specified positions</li>
-              <li><strong>Reverse:</strong> Reverses the entire input text</li>
-              <li><strong>Case Flip:</strong> Changes uppercase to lowercase and vice versa</li>
-              <li><strong>Remove Vowels:</strong> Removes all vowels from the text (lossy transformation)</li>
-              <li><strong>Substitution:</strong> Replaces characters according to a custom mapping</li>
-            </ul>
-            
-            <h3>Encryption vs Decryption:</h3>
-            <ul>
-              <li>In <strong>Encrypt</strong> mode, operations are applied in sequence from top to bottom</li>
-              <li>In <strong>Decrypt</strong> mode, operations are applied in reverse order, with inverse transformations</li>
-              <li>Some operations like XOR, Case Flip, and Reverse are their own inverses</li>
-              <li>The Remove Vowels operation is lossy and cannot be properly reversed during decryption</li>
-              <li>For Substitution, the mapping is inverted for decryption</li>
-            </ul>
-            
-            <h3>Operation Management:</h3>
-            <ul>
-              <li>Use the up/down arrows to reorder operations</li>
-              <li>Click the × button to remove an operation</li>
-              <li>Each step's result is visualized in the output section</li>
-            </ul>
-            
-            <h3>Input Types:</h3>
-            <ul>
-              <li><strong>Text:</strong> Regular text input</li>
-              <li><strong>Binary:</strong> Binary representation (8 bits per character)</li>
-              <li><strong>Hex:</strong> Hexadecimal representation (2 hex digits per character)</li>
-            </ul>
-            
-            <p>
-              After building your cipher, you can download a PDF definition that describes how your cipher works,
-              including both encryption and decryption algorithms. This is useful for sharing your cipher with
-              others or for educational purposes.
-            </p>
-          </div>
-        ) : (
+       
           <div className="tool-section">            {/* Cipher Name */}
             <div className="input-group">
               <label htmlFor="cipher-name">Cipher Name</label>
@@ -435,7 +368,7 @@ const CustomCipherBuilder = () => {
                     checked={mode === 'encrypt'}
                     onChange={() => setMode('encrypt')}
                   />
-                  <span className="toggle-label">🔒 Encrypt</span>
+                  <span className="toggle-label"> Encrypt</span>
                 </label>
                 <label className="toggle-switch" style={{ display: 'flex', alignItems: 'center' }}>
                   <input
@@ -444,7 +377,7 @@ const CustomCipherBuilder = () => {
                     checked={mode === 'decrypt'}
                     onChange={() => setMode('decrypt')}
                   />
-                  <span className="toggle-label">🔓 Decrypt</span>
+                  <span className="toggle-label"> Decrypt</span>
                 </label>
               </div>
             </div>            {/* Input Type Selection */}
@@ -460,7 +393,7 @@ const CustomCipherBuilder = () => {
                       onChange={() => setInputType(type)}
                     />
                     <span className="toggle-label">
-                      {type === 'text' ? '📄 ' : type === 'binary' ? '01 ' : '0x '}
+                      {type === 'text' ? 'c' : type === 'binary' ? '01 ' : '0x '}
                       {type.charAt(0).toUpperCase() + type.slice(1)}
                     </span>
                   </label>
@@ -862,7 +795,7 @@ const CustomCipherBuilder = () => {
                   minWidth: '200px'
                 }}
               >
-                {mode === 'encrypt' ? '🔒 Encrypt' : '🔓 Decrypt'}
+                {mode === 'encrypt' ? ' Encrypt' : ' Decrypt'}
               </button>
             </div>
               {/* Result */}
@@ -918,7 +851,7 @@ const CustomCipherBuilder = () => {
               </div>
             )}
           </div>
-        )}
+       
       </div>
         {/* Add some CSS for animations and styling */}
       <style jsx>{`

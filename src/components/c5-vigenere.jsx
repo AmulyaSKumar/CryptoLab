@@ -317,24 +317,24 @@ const VigenereCipher = () => {
             </div>
 
             <section className="mb-8">
-              <h2 className="section-title">Hi there! ^_^</h2>
+              <h2 className="section-title">Hi there! </h2>
               <p>
                 Ready to learn about the "unbreakable cipher"? Well, that's what they called the Vigenère cipher 
-                for nearly 300 years! Let me tell you why it was so special... :D
+                for nearly 300 years! Let me tell you why it was so special... 
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">What Makes It Special? o.O</h2>
+              <h2 className="section-title">What Makes It Special? </h2>
               <p>
                 Remember the Caesar cipher? It was pretty cool, but it had one big problem - every letter 
                 was shifted by the same amount. The Vigenère cipher fixed that by using a keyword to shift 
-                each letter differently. Sneaky, right? ;)
+                each letter differently. Sneaky, right? 
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">Let's See How It Works! :D</h2>
+              <h2 className="section-title">Let's See How It Works! </h2>
               <p style={{ marginBottom: '1rem' }}>
                 Instead of using just one number to shift letters, we use a whole word! Each letter in 
                 that word tells us how much to shift. Let's try an example:
@@ -351,32 +351,32 @@ const VigenereCipher = () => {
               </div>
               <p>
                 See what happened? Each letter got its own special shift! Much trickier to crack than 
-                Caesar's cipher. B-)
+                Caesar's cipher. 
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">Pro Tips! ;)</h2>
+              <h2 className="section-title">Pro Tips! </h2>
               <ul style={{ marginLeft: '1.5rem', listStyle: 'disc' }}>
                 <li>Pick a keyword that's easy to remember but hard to guess</li>
                 <li>Longer keywords are usually better</li>
                 <li>Avoid using the same keyword twice</li>
-                <li>Keep your keyword secret! That's your key to the castle :P</li>
+                <li>Keep your keyword secret! That's your key to the castle </li>
               </ul>
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">Fun History Time! :O</h2>
+              <h2 className="section-title">Fun History Time! </h2>
               <ul style={{ marginLeft: '1.5rem', listStyle: 'disc' }}>
-                <li>Named after Blaise de Vigenère (though he didn't invent it... oops! ^^')</li>
+                <li>Named after Blaise de Vigenère (though he didn't invent it... oops! )</li>
                 <li>Was actually created by Giovan Battista Bellaso in 1553</li>
                 <li>People called it "le chiffre indéchiffrable" (the unbreakable cipher)</li>
-                <li>Took 300 years before someone figured out how to break it! O_O</li>
+                <li>Took 300 years before someone figured out how to break it! </li>
               </ul>
             </section>
 
             <section>
-              <h2 className="section-title">Is It Really Unbreakable? :/</h2>
+              <h2 className="section-title">Is It Really Unbreakable?</h2>
               <p style={{ marginBottom: '1rem' }}>
                 Well... not anymore. Here's why:
               </p>
@@ -387,7 +387,7 @@ const VigenereCipher = () => {
               </ul>
               <p>
                 But hey, it's still WAY better than the Caesar cipher! And it's super fun to use. 
-                Ready to try it yourself? Head back to the tool and give it a shot! ^_^
+                Ready to try it yourself? Head back to the tool and give it a shot!
               </p>
             </section>
           </div>

@@ -255,7 +255,7 @@ const CaesarCipherTool = () => {
               <h2 className="section-title">Hey there! </h2>
               <p>
                 Welcome to the Caesar Cipher - one of the oldest and most famous encryption methods in history! 
-                Ever wondered how Julius Caesar sent secret messages to his generals? Well, you're about to find out! 😎
+                Ever wondered how Julius Caesar sent secret messages to his generals? Well, you're about to find out! 
               </p>
             </section>
 
@@ -314,7 +314,7 @@ const CaesarCipherTool = () => {
               </ul>
               <p>
                 But don't worry! This is just the beginning of our crypto journey. More secure methods are coming up! 
-                For now, have fun playing with this historical cipher! 🚀
+                For now, have fun playing with this historical cipher! 
               </p>
             </section>
           </div>

@@ -298,16 +298,16 @@ const RailFenceCipher = () => {
             </div>
 
             <section className="mb-8">
-              <h2 className="section-title">Welcome to the Rail Fence! ^_^</h2>
+              <h2 className="section-title">Welcome to the Rail Fence!</h2>
               <p>
                 Ever tried writing a message in a zigzag pattern? That's exactly what we're going to do here! 
                 The Rail Fence cipher is like sending your message on a roller coaster ride. Sounds fun? 
-                Let's dive in! :D
+                Let's dive in!
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">How Does It Work? o.O</h2>
+              <h2 className="section-title">How Does It Work? </h2>
               <p style={{ marginBottom: '1rem' }}>
                 Instead of shifting letters like other ciphers, we're going to write our message in a special zigzag pattern, 
                 like this:
@@ -321,32 +321,32 @@ const RailFenceCipher = () => {
                 Then read row by row: HORELWLDLO
               </div>
               <p>
-                See how the letters go up and down? It's like they're playing on a fence! :P
+                See how the letters go up and down? It's like they're playing on a fence!
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">Cool Things to Know! :D</h2>
+              <h2 className="section-title">Cool Things to Know! </h2>
               <ul style={{ marginLeft: '1.5rem', listStyle: 'disc' }}>
                 <li>More rails = more zigzags = more scrambled message</li>
                 <li>No special keys needed - just remember the number of rails</li>
                 <li>Works with any language (but spaces might disappear)</li>
-                <li>It's super fast to encrypt and decrypt! ^_^</li>
+                <li>It's super fast to encrypt and decrypt! </li>
               </ul>
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">Fun Facts! :O</h2>
+              <h2 className="section-title">Fun Facts!</h2>
               <ul style={{ marginLeft: '1.5rem', listStyle: 'disc' }}>
                 <li>Used during the American Civil War</li>
                 <li>One of the simplest transposition ciphers</li>
                 <li>Named after the zigzag pattern that looks like a rail fence</li>
-                <li>Sometimes called "zigzag cipher" too! ;)</li>
+                <li>Sometimes called "zigzag cipher" too!</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="section-title">But Is It Safe? :/</h2>
+              <h2 className="section-title">But Is It Safe? </h2>
               <p style={{ marginBottom: '1rem' }}>
                 Well... let's be honest here:
               </p>
@@ -354,11 +354,11 @@ const RailFenceCipher = () => {
                 <li>Not many rail options (usually 2-10 rails are practical)</li>
                 <li>Pattern is pretty easy to spot</li>
                 <li>Computer can try all possibilities in seconds</li>
-                <li>Better for fun than serious secrets ^^'</li>
+                <li>Better for fun than serious secrets </li>
               </ul>
               <p>
                 But hey, it's super fun to use and perfect for learning about transposition ciphers! 
-                Want to try it out? Head back to the tool and watch your message zigzag! \o/
+                Want to try it out? Head back to the tool and watch your message zigzag!
               </p>
             </section>
           </div>

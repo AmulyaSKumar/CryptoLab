@@ -291,14 +291,14 @@ const RSAVisualizer = () => {
           </div>
         
           <section className="mb-8">
-            <h2 className="section-title">RSA: Your Friendly Secret Keeper! 🔐</h2>
+            <h2 className="section-title">RSA: Your Friendly Secret Keeper! </h2>
             <p>
               So, you wanna keep messages secret? RSA is like a magic lockbox with two keys — one you share, one you keep secret. It’s how computers securely talk on the internet every day!
             </p>
           </section>
         
           <section className="mb-8">
-            <h2 className="section-title">The Secret Sauce 🍲</h2>
+            <h2 className="section-title">The Secret Sauce </h2>
             <p style={{ marginBottom: '1rem' }}>
               Here’s how RSA cooks up your secret:
             </p>
@@ -315,21 +315,21 @@ const RSAVisualizer = () => {
           </section>
         
           <section className="mb-8">
-            <h2 className="section-title">Locking Up Your Message 🔐</h2>
+            <h2 className="section-title">Locking Up Your Message </h2>
             <p style={{ marginBottom: '1rem' }}>
               To encrypt, turn your message into numbers (like ASCII codes), then for each number, compute <code>cipher = (message^e) mod n</code>. This scrambles your message so only the private key can unlock it.
             </p>
           </section>
         
           <section className="mb-8">
-            <h2 className="section-title">Unlocking the Secret 🔓</h2>
+            <h2 className="section-title">Unlocking the Secret </h2>
             <p style={{ marginBottom: '1rem' }}>
               To decrypt, use your private key: <code>message = (cipher^d) mod n</code>. The original message numbers pop right back out, ready to turn back into letters.
             </p>
           </section>
         
           <section className="mb-8">
-            <h2 className="section-title">Why’s RSA So Secure? 🤔</h2>
+            <h2 className="section-title">Why’s RSA So Secure? </h2>
             <ul style={{ marginLeft: '1.5rem', listStyle: 'disc', marginBottom: '1rem' }}>
               <li>Multiplying two big primes is easy for computers, but factoring them back is insanely hard.</li>
               <li>This “hard problem” keeps your private key safe, like a treasure chest locked tight.</li>
@@ -338,7 +338,7 @@ const RSAVisualizer = () => {
           </section>
         
           <section className="mb-8">
-            <h2 className="section-title">A Little RSA History 📜</h2>
+            <h2 className="section-title">A Little RSA History </h2>
             <ul style={{ marginLeft: '1.5rem', listStyle: 'disc', marginBottom: '1rem' }}>
               <li>Invented in 1977 by Rivest, Shamir, and Adleman — that’s where “RSA” comes from!</li>
               <li>RSA secures things like your bank website, emails, and more.</li>
@@ -347,7 +347,7 @@ const RSAVisualizer = () => {
           </section>
         
           <section className="mb-8">
-            <h2 className="section-title">Try It Yourself! 🚀</h2>
+            <h2 className="section-title">Try It Yourself! </h2>
             <p>
               Type a message, see it get scrambled by RSA encryption, then watch it come back with decryption — it’s like your own mini spy game!
             </p>

@@ -1024,7 +1024,7 @@ const DESDemo = () => {
           </div>
         
           <section className="mb-8">
-            <h2 className="section-title">What Even *Is* DES? 🤔</h2>
+            <h2 className="section-title">What Even Is DES? </h2>
             <p>
               Okay, imagine you have a message — like "HELLO" — and you want to send it to a friend without anyone else snooping. That’s where encryption steps in. DES (Data Encryption Standard) is like a secret recipe for scrambling your message so only someone with the right key can unscramble it.
             </p>
@@ -1034,7 +1034,7 @@ const DESDemo = () => {
           </section>
         
           <section className="mb-8">
-            <h2 className="section-title">So How Does It Actually Work? 🛠️</h2>
+            <h2 className="section-title">So How Does It Actually Work? </h2>
             <p>
               Think of DES like a super intense blender. You throw your data (called a "block") and your key (like a password) into it, and it runs through 16 intense rounds of scrambling magic. Here’s the vibe:
             </p>
@@ -1050,7 +1050,7 @@ const DESDemo = () => {
           </section>
         
           <section className="mb-8">
-            <h2 className="section-title">Let’s Visualize It 🧠</h2>
+            <h2 className="section-title">Let’s Visualize It </h2>
             <div className="flex justify-center my-6">
               <img src="/images/des-diagram.png" alt="DES Diagram" className="rounded shadow-md w-full max-w-xl" />
             </div>
@@ -1058,7 +1058,7 @@ const DESDemo = () => {
           </section>
         
           <section className="mb-8">
-            <h2 className="section-title">Why DES Matters 💡</h2>
+            <h2 className="section-title">Why DES Matters </h2>
             <ul className="list-disc ml-6 mb-4">
               <li>It was the first encryption method widely adopted by the U.S. government.</li>
               <li>Even though it’s old, its structure inspired modern encryption like AES.</li>
@@ -1070,21 +1070,21 @@ const DESDemo = () => {
           </section>
         
           <section className="mb-8">
-            <h2 className="section-title">What About Triple DES? 🔁</h2>
+            <h2 className="section-title">What About Triple DES? </h2>
             <p>
               When people realized DES’s 56-bit key wasn’t strong enough anymore (thanks to faster computers), they didn’t ditch it right away. Instead, they ran DES <strong>three times</strong> with different keys — that’s called <strong>Triple DES</strong>. More secure, but way slower.
             </p>
           </section>
         
           <section className="mb-8">
-            <h2 className="section-title">Wait... Is It Still Used? 🧯</h2>
+            <h2 className="section-title">Wait... Is It Still Used? </h2>
             <p>
               Not really! It’s mostly retired now. But it’s still taught and used for demos (like this one) because it's compact, clear, and shows how encryption works under the hood.
             </p>
           </section>
         
           <section>
-            <h2 className="section-title">Your Turn to Try 🔄</h2>
+            <h2 className="section-title">Your Turn to Try </h2>
             <p>
               Enter a message and a key above and watch how DES transforms it step by step. We’ve broken down each round for you, so you can peek behind the curtain and really get what’s going on.
             </p>

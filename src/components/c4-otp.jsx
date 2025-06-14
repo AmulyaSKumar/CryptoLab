@@ -311,30 +311,30 @@ const OneTimePad = () => {
             </div>
 
             <section className="mb-8">
-              <h2 className="section-title">The Ultimate Secret Keeper! ^_^</h2>
+              <h2 className="section-title">The Ultimate Secret Keeper! </h2>
               <p>
                 Welcome to the One Time Pad - the only cipher that's mathematically proven to be unbreakable! 
-                Yes, you heard that right! When used correctly, it's impossible to crack. How cool is that? :D
+                Yes, you heard that right! When used correctly, it's impossible to crack. How cool is that?
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">The Perfect Secret Recipe o.O</h2>
+              <h2 className="section-title">The Perfect Secret Recipe </h2>
               <p style={{ marginBottom: '1rem' }}>
                 Think of it like making a secret recipe. You need:
               </p>
               <ul style={{ marginLeft: '1.5rem', listStyle: 'disc', marginBottom: '1rem' }}>
                 <li>A message you want to keep secret</li>
                 <li>A random key that's as long as your message</li>
-                <li>A promise to never, ever reuse that key ;)</li>
+                <li>A promise to never, ever reuse that key </li>
               </ul>
               <p>
-                Mix these ingredients together, and voila! You've got an unbreakable secret! :D
+                Mix these ingredients together, and voila! You've got an unbreakable secret!
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">Let's See How It Works! :)</h2>
+              <h2 className="section-title">Let's See How It Works! </h2>
               <p style={{ marginBottom: '1rem' }}>
                 Here's a simple example:
               </p>
@@ -350,35 +350,35 @@ const OneTimePad = () => {
                 Result: EQNVZ
               </div>
               <p>
-                Each letter gets its own unique shift! No patterns to find here! B-)
+                Each letter gets its own unique shift! No patterns to find here! 
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">Fun History Time! :O</h2>
+              <h2 className="section-title">Fun History Time! </h2>
               <ul style={{ marginLeft: '1.5rem', listStyle: 'disc' }}>
                 <li>Invented in 1917 by Gilbert Vernam and Joseph Mauborgne</li>
                 <li>Used for super-secret spy messages during World War II</li>
                 <li>Still used today for the most sensitive communications</li>
-                <li>The only cipher that's proven to be mathematically unbreakable! \o/</li>
+                <li>The only cipher that's proven to be mathematically unbreakable! </li>
               </ul>
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">The Rules of Perfect Secrecy :|</h2>
+              <h2 className="section-title">The Rules of Perfect Secrecy </h2>
               <p>
                 But wait! There's a catch. For the One Time Pad to be truly unbreakable, you MUST follow these rules:
               </p>
               <ul style={{ marginLeft: '1.5rem', listStyle: 'disc' }}>
-                <li>The key must be truly random (no using your birthday! :P)</li>
+                <li>The key must be truly random (no using your birthday! )</li>
                 <li>The key must be at least as long as the message</li>
-                <li>Never, ever, EVER reuse a key (that's why it's called "one time"!)</li>
-                <li>Keep your key super secret (don't share it on social media ^^')</li>
+                <li>Never, ever, EVER reuse a key (that's why it's called "one time")</li>
+                <li>Keep your key super secret (don't share it on social media )</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="section-title">Why Don't We Use It Everywhere? :?</h2>
+              <h2 className="section-title">Why Don't We Use It Everywhere? </h2>
               <p style={{ marginBottom: '1rem' }}>
                 If it's unbreakable, why isn't everyone using it? Well...
               </p>
@@ -390,7 +390,7 @@ const OneTimePad = () => {
               </ul>
               <p>
                 But for those special times when you need absolute security, nothing beats the One Time Pad! 
-                Ready to try it yourself? Head back to the tool and create some unbreakable secrets! ^_^
+                Ready to try it yourself? Head back to the tool and create some unbreakable secrets! 
               </p>
             </section>
           </div>

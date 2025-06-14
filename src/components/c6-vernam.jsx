@@ -306,7 +306,7 @@ const VernamCipherTool = () => {
             </div>
 
             <section className="mb-8">
-              <h2 className="section-title">Hey! Let's talk Vernam Cipher 😊</h2>
+              <h2 className="section-title">Hey! Let's talk Vernam Cipher </h2>
               <p>
                 So you want to send a secret message with a magic key, huh? Vernam cipher is a super cool way to do just that! Think of it like a secret handshake between you and your friend, where only you two know the moves.
               </p>

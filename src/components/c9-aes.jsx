@@ -1101,16 +1101,8 @@ const AESDemo = () => {
                         {outputAscii || 'Non-printable characters'}
                       </div>
                     </div>
-                  )}
-                  
-                  {cryptoJSResult && (
-                    <div style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
-                      <div><strong>CryptoJS Result:</strong> {cryptoJSResult}</div>
-                      <div style={{ color: output === cryptoJSResult ? 'green' : 'red' }}>
-                        {output === cryptoJSResult ? '✓ Results match' : '✗ Results do not match'}
-                      </div>
-                    </div>
-                  )}
+                  )}   
+              
                 </div>
               </div>
             )}
@@ -1136,7 +1128,7 @@ const AESDemo = () => {
             </div>
           
             <section className="mb-8">
-              <h2 className="section-title">What Is AES? 🔐</h2>
+              <h2 className="section-title">What Is AES? </h2>
               <p>
                 AES stands for <strong>Advanced Encryption Standard</strong>, and it's the encryption method that powers everything from your messaging apps to your online banking. Think of it like a digital lockbox for your data — super secure and built for speed.
               </p>
@@ -1146,7 +1138,7 @@ const AESDemo = () => {
             </section>
           
             <section className="mb-8">
-              <h2 className="section-title">How Does AES Work? 🛠️</h2>
+              <h2 className="section-title">How Does AES Work? </h2>
               <p>
                 AES works on blocks of data (just like DES), but it’s built for today’s tech. It scrambles 128 bits of data using a powerful mix of substitutions, permutations, and key mixing.
               </p>
@@ -1160,17 +1152,10 @@ const AESDemo = () => {
                 <li><strong>AddRoundKey:</strong> Your key gets mixed into the data — the real encryption muscle.</li>
               </ul>
             </section>
+        
           
             <section className="mb-8">
-              <h2 className="section-title">AES In Action 🔄</h2>
-              <div className="flex justify-center my-6">
-                <img src="/images/aes-diagram.png" alt="AES Diagram" className="rounded shadow-md w-full max-w-xl" />
-              </div>
-              <p className="text-center italic">Above: AES encryption in motion — a series of careful, reversible transformations.</p>
-            </section>
-          
-            <section className="mb-8">
-              <h2 className="section-title">Why Is AES Important? 🌍</h2>
+              <h2 className="section-title">Why Is AES Important? </h2>
               <ul className="list-disc ml-6 mb-4">
                 <li>It’s the global standard for symmetric encryption — endorsed by the U.S. government and used worldwide.</li>
                 <li>Fast and secure enough for everything from IoT devices to military comms.</li>
@@ -1182,14 +1167,14 @@ const AESDemo = () => {
             </section>
           
             <section className="mb-8">
-              <h2 className="section-title">Is It Still Secure? 🧠</h2>
+              <h2 className="section-title">Is It Still Secure? </h2>
               <p>
                 Absolutely. AES remains secure against all practical attacks. With a 256-bit key, you’d need a mind-boggling amount of computing power (like, universe-breaking levels) to even think about cracking it.
               </p>
             </section>
           
             <section className="mb-8">
-              <h2 className="section-title">How Is It Different From DES? 🆚</h2>
+              <h2 className="section-title">How Is It Different From DES? </h2>
               <ul className="list-disc ml-6 mb-4">
                 <li><strong>Key Size:</strong> AES allows for longer keys — DES was stuck at 56 bits.</li>
                 <li><strong>Security:</strong> AES is way harder to break, even with modern computers.</li>
@@ -1198,7 +1183,7 @@ const AESDemo = () => {
             </section>
           
             <section>
-              <h2 className="section-title">Try AES Yourself! 🧪</h2>
+              <h2 className="section-title">Try AES Yourself! </h2>
               <p>
                 Plug in a message and a key, and we’ll show you each round of AES as it encrypts your data. It’s a dance of bytes, rows, columns, and keys — and you’ll see it all step by step.
               </p>

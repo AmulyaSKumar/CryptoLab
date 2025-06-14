@@ -363,7 +363,7 @@ const PlayfairCipherTool = () => {
             </div>
 
             <section className="mb-8">
-              <h2 className="section-title">Hey there! 👋</h2>
+              <h2 className="section-title">Hey there! </h2>
               <p>
                 So, you wanna play with the Playfair cipher? Awesome! It's a fun way to hide your messages using a secret key. 
                 Think of it like a cool puzzle where letters team up in pairs to confuse anyone snooping around.
@@ -371,7 +371,7 @@ const PlayfairCipherTool = () => {
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">How Does It Work? 🤔</h2>
+              <h2 className="section-title">How Does It Work? </h2>
               <p>
                 Alright, here’s the gist: you take your secret key (like a password), and use it to make a 5x5 letter grid. 
                 Then, you split your message into pairs of letters — if two letters are the same, you sneak in an 'X' to keep things tricky. 
@@ -380,7 +380,7 @@ const PlayfairCipherTool = () => {
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">Wanna Try It? 🎉</h2>
+              <h2 className="section-title">Wanna Try It? </h2>
               <p>
                 Just type your message, add a key (or hit that Generate Key button for a classic one like "MONARCHY"), and hit encrypt! 
                 To decrypt, just flip the mode — easy peasy.
@@ -388,7 +388,7 @@ const PlayfairCipherTool = () => {
             </section>
 
             <section className="mb-8">
-              <h2 className="section-title">Why Use Playfair? 🔐</h2>
+              <h2 className="section-title">Why Use Playfair? </h2>
               <p>
                 Back in the day, it was a huge step up from simple letter shifting ciphers because it hides pairs of letters instead of singles — 
                 making it harder for code-breakers. It was even used by armies and spies!
@@ -396,7 +396,7 @@ const PlayfairCipherTool = () => {
             </section>
 
             <section>
-              <h2 className="section-title">Heads up! ⚠️</h2>
+              <h2 className="section-title">Heads up! </h2>
               <p>
                 While it’s cooler than Caesar cipher, it’s not unbreakable. Smart folks can still crack it, but hey, it’s a great intro to crypto fun! 
                 So, enjoy playing around and learning some neat tricks!
