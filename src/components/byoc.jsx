@@ -7,10 +7,8 @@ const CustomCipherBuilder = () => {
   const [input, setInput] = useState('');
   const [inputType, setInputType] = useState('text'); // text, binary, hex
   const [operations, setOperations] = useState([]);
-  const [cipherName, setCipherName] = useState('My Custom Cipher');
-  const [result, setResult] = useState('');
+  const [cipherName, setCipherName] = useState('My Custom Cipher');  const [result, setResult] = useState('');
   const [steps, setSteps] = useState([]);
-  const [activeTab, setActiveTab] = useState('tool');
   const [mode, setMode] = useState('encrypt'); // encrypt or decrypt
   
   // Refs for animation
@@ -50,6 +48,15 @@ const CustomCipherBuilder = () => {
   };
     // Add a new operation to the pipeline
   const addOperation = (type) => {
+    // Check if operation of this type already exists
+    const operationExists = operations.some(op => op.type === type);
+    
+    // If operation already exists, show an alert and return
+    if (operationExists) {
+      alert(`Operation '${type}' already exists in your cipher. Each operation type can only be used once.`);
+      return;
+    }
+    
     let newOp = { type, id: Date.now() };
     
     if (type === 'shift') {
@@ -90,6 +97,27 @@ const CustomCipherBuilder = () => {
     setOperations(operations.map(op => 
       op.id === id ? { ...op, ...updates } : op
     ));
+  };
+  
+  // Move an operation up or down in the list
+  const moveOperation = (id, direction) => {
+    const index = operations.findIndex(op => op.id === id);
+    if (index === -1) return;
+    
+    // Can't move up if already at the top
+    if (direction === 'up' && index === 0) return;
+    
+    // Can't move down if already at the bottom
+    if (direction === 'down' && index === operations.length - 1) return;
+    
+    const newOperations = [...operations];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    
+    // Swap the operations
+    [newOperations[index], newOperations[targetIndex]] = 
+    [newOperations[targetIndex], newOperations[index]];
+    
+    setOperations(newOperations);
   };
   // Apply operations to input and compute result
   const computeResult = () => {
@@ -340,190 +368,215 @@ const CustomCipherBuilder = () => {
     
     // Save the PDF
     doc.save(`${cipherName.replace(/\s+/g, '_')}.pdf`);
-  };
-    return (    <div className="main-container">
-      <Link to="/" className="nav-button" style={{ position: 'absolute', top: '20px', left: '20px', minWidth: 'auto' }}>
-        ← Back
-      </Link>
+  };    return (
+    <div className="main-container">
+      <div className="back-nav">
+        <Link to="/" className="nav-button" style={{ minWidth: 'auto' }}>
+          ← Back
+        </Link>
+      </div>
       
-      <div className="tool-container">        <h1 className="tool-title">Build Your Own Cipher</h1>
-       
-          <div className="tool-section">            {/* Cipher Name */}
-            <div className="input-group">
-              <label htmlFor="cipher-name">Cipher Name</label>
-              <input
-                id="cipher-name"
-                type="text"
-                value={cipherName}
-                onChange={(e) => setCipherName(e.target.value)}
-              />
-            </div>{/* Mode Selection (Encrypt/Decrypt) */}
-            <div className="input-group">
-              <label>Mode</label>
-              <div className="toggle-container" style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '0.5rem' }}>
-                <label className="toggle-switch" style={{ display: 'flex', alignItems: 'center' }}>
-                  <input
-                    type="radio"
-                    name="mode"
-                    checked={mode === 'encrypt'}
-                    onChange={() => setMode('encrypt')}
-                  />
-                  <span className="toggle-label"> Encrypt</span>
-                </label>
-                <label className="toggle-switch" style={{ display: 'flex', alignItems: 'center' }}>
-                  <input
-                    type="radio"
-                    name="mode"
-                    checked={mode === 'decrypt'}
-                    onChange={() => setMode('decrypt')}
-                  />
-                  <span className="toggle-label"> Decrypt</span>
-                </label>
-              </div>
-            </div>            {/* Input Type Selection */}
-            <div className="input-group">
-              <label>Input Type</label>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '0.5rem' }}>
-                {['text', 'binary', 'hex'].map(type => (
-                  <label className="toggle-switch" key={type} style={{ display: 'flex', alignItems: 'center' }}>
-                    <input
-                      type="radio"
-                      name="inputType"
-                      checked={inputType === type}
-                      onChange={() => setInputType(type)}
-                    />
-                    <span className="toggle-label">
-                      {type === 'text' ? 'c' : type === 'binary' ? '01 ' : '0x '}
-                      {type.charAt(0).toUpperCase() + type.slice(1)}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>              {/* Input */}
-            <div className="input-group">
-              <label htmlFor="input">
-                {mode === 'encrypt' ? 'Plaintext' : 'Ciphertext'} 
+      <div className="tool-container">
+        <h1 className="tool-title">Build Your Own Cipher</h1>        
+        {/* Configuration Section - All selection controls at the top */}
+        <div className="config-section" style={{ 
+          marginBottom: '2rem',
+          padding: '1.5rem',
+          backgroundColor: '#f8fafc',
+          borderRadius: '8px',
+          border: '1px solid #e2e8f0'
+        }}>
+          <h3 style={{ 
+            marginBottom: '1.5rem', 
+            color: 'var(--primary-color)',
+            fontSize: '1.2rem',
+            fontWeight: '600'
+          }}>
+            Cipher Configuration
+          </h3>
+          
+          {/* Cipher Name */}
+          <div className="input-group">
+            <label htmlFor="cipher-name">Cipher Name</label>
+            <input
+              id="cipher-name"
+              type="text"
+              value={cipherName}
+              onChange={(e) => setCipherName(e.target.value)}
+            />
+          </div>
+
+    <div
+      className="hints-section"
+      style={{
+        marginBottom: '2rem',
+        padding: '1.5rem',
+        backgroundColor: '#f8fafc',
+        borderRadius: '8px',
+        border: '1px solid #e2e8f0',
+      }}
+    >
+      <h3
+        style={{
+          marginBottom: '1rem',
+          color: 'var(--primary-color)',
+          fontSize: '1.2rem',
+          fontWeight: '600',
+        }}
+      >
+        Cipher Hints
+      </h3>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {/* Encryption Section */}
+        <div>
+          <h4 style={{ marginBottom: '0.5rem' }}>Encryption Process:</h4>
+          <ul
+  style={{
+    paddingLeft: '1.5rem',
+    marginBottom: '0.5rem',
+    listStyleType: 'none',  
+  }}
+>
+            <li>Add operations in the order you want them applied</li>
+            <li>Operations are applied from top to bottom</li>
+            <li>Test your cipher with sample text before finalizing</li>
+            <li>More complex combinations provide stronger encryption</li>
+          </ul>
+        </div>
+
+        {/* Decryption Section */}
+        <div>
+          <h4 style={{ marginBottom: '0.5rem' }}>Decryption Process:</h4>
+          <ul
+  style={{
+    paddingLeft: '1.5rem',
+    marginBottom: '0.5rem',
+    listStyleType: 'none',         
+  }}
+>
+            <li>Decryption applies operations in reverse order</li>
+            <li>Shift operations use negative values during decryption</li>
+            <li>XOR operations are their own inverse with the same key</li>
+            <li>Substitution requires the inverse mapping for decryption</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  
+
+     {/* Operations Section */}
+     <div className="operations-section" style={{ 
+          marginBottom: '2rem',
+          padding: '1.5rem',
+          backgroundColor: '#f8fafc',
+          borderRadius: '8px',
+          border: '1px solid #e2e8f0'
+        }}>
+          <h3 style={{ 
+            marginBottom: '1rem', 
+            color: 'var(--primary-color)',
+            fontSize: '1.2rem',
+            fontWeight: '600'
+          }}>
+            Cipher Operations
+          </h3>
+          
+          <div className="input-group">
+            <label style={{ marginBottom: '1rem' }}>
+              Current Operations 
+              {operations.length > 0 && (
                 <span style={{ fontSize: '0.8rem', color: '#777', marginLeft: '0.5rem' }}>
-                  ({input.length} chars)
+                  ({operations.length} operation{operations.length !== 1 ? 's' : ''})
                 </span>
-              </label>
-              <textarea
-                id="input"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                rows="4"
+              )}
+            </label>
+            <div className="operations-container" style={{ border: '2px solid #e2e8f0', borderRadius: '4px', padding: '1rem', marginBottom: '1rem' }}>
+              <div 
+                ref={operationsRef}
+                className="operations-list" 
                 style={{ 
-                  fontFamily: inputType !== 'text' ? 'monospace' : 'inherit'
+                  maxHeight: '300px', 
+                  overflowY: 'auto',
+                  padding: '0.5rem',
+                  backgroundColor: '#ffffff',
+                  borderRadius: '4px',
+                  marginBottom: '1rem'
                 }}
-                placeholder={
-                  inputType === 'binary' ? '01001000 01100101 01101100 01101100 01101111' :
-                  inputType === 'hex' ? '48 65 6c 6c 6f' :
-                  mode === 'encrypt' ? 'Enter text to encrypt...' : 'Enter ciphertext to decrypt...'
-                }
-              />
-            </div>
-              {/* Operations */}
-            <div className="input-group">
-              <label>Operations</label>
-              <div className="operations-container" style={{ border: '2px solid #e2e8f0', borderRadius: '4px', padding: '1rem', marginBottom: '1rem' }}>
-                <div 
-                  ref={operationsRef}
-                  className="operations-list" 
-                  style={{ 
-                    maxHeight: '300px', 
-                    overflowY: 'auto',
-                    padding: '0.5rem',
-                    backgroundColor: '#f8fafc',
-                    borderRadius: '4px',
-                    marginBottom: '1rem'
-                  }}
-                >                  {operations.length === 0 ? (
-                    <div style={{ padding: '1rem', textAlign: 'center', color: '#888' }}>
-                      No operations added yet. Use the buttons below to add operations.
-                    </div>
-                  ) : (
-                    operations.map((op, index) => (
-                      <div 
-                        key={op.id} 
-                        className="operation-item"
-                        style={{
-                          padding: '0.75rem',
-                          backgroundColor: 'white',
-                          border: '1px solid #e2e8f0',
-                          borderLeft: '4px solid var(--primary-color)',
-                          borderRadius: '4px',
-                          marginBottom: '0.75rem',
-                          boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                          position: 'relative',
-                          animation: 'fadeIn 0.3s ease-out'
-                        }}
-                      >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                          <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <div className="order-controls" style={{ marginRight: '10px' }}>
-                              <button 
-                                onClick={() => {
-                                  const newOps = [...operations];
-                                  if (index > 0) {
-                                    [newOps[index], newOps[index-1]] = [newOps[index-1], newOps[index]];
-                                    setOperations(newOps);
-                                  }
-                                }}
-                                disabled={index === 0}
-                                style={{
-                                  background: index === 0 ? '#f5f5f5' : '#f0f8ff',
-                                  border: '1px solid #e2e8f0',
-                                  borderRadius: '4px 4px 0 0',
-                                  padding: '2px 6px',
-                                  cursor: index === 0 ? 'default' : 'pointer',
-                                  opacity: index === 0 ? 0.5 : 1,
-                                  display: 'block'
-                                }}
-                              >
-                                ▲
-                              </button>
-                              <button 
-                                onClick={() => {
-                                  const newOps = [...operations];
-                                  if (index < operations.length - 1) {
-                                    [newOps[index], newOps[index+1]] = [newOps[index+1], newOps[index]];
-                                    setOperations(newOps);
-                                  }
-                                }}
-                                disabled={index === operations.length - 1}
-                                style={{
-                                  background: index === operations.length - 1 ? '#f5f5f5' : '#f0f8ff',
-                                  border: '1px solid #e2e8f0',
-                                  borderRadius: '0 0 4px 4px',
-                                  padding: '2px 6px',
-                                  cursor: index === operations.length - 1 ? 'default' : 'pointer',
-                                  opacity: index === operations.length - 1 ? 0.5 : 1,
-                                  display: 'block'
-                                }}
-                              >
-                                ▼
-                              </button>
-                            </div>
-                            <strong>Operation {index + 1}: {op.type.charAt(0).toUpperCase() + op.type.slice(1)}</strong>
+              >
+                {operations.length === 0 ? (
+                  <div style={{ padding: '1rem', textAlign: 'center', color: '#888' }}>
+                    No operations added yet. Use the buttons below to add operations.
+                  </div>
+                ) : (
+                  operations.map((op, index) => (
+                    <div 
+                      key={op.id} 
+                      className="operation-item"
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <div className="order-controls" style={{ marginRight: '10px' }}>
+                            <button 
+                              onClick={() => moveOperation(op.id, 'up')}
+                              disabled={index === 0}
+                              style={{
+                                background: index === 0 ? '#f5f5f5' : '#f0f8ff',
+                                border: '1px solid #e2e8f0',
+                                borderRadius: '4px 4px 0 0',
+                                padding: '4px 8px',
+                                cursor: index === 0 ? 'default' : 'pointer',
+                                opacity: index === 0 ? 0.5 : 1,
+                                display: 'block',
+                                transition: 'all 0.2s ease',
+                                color: 'var(--primary-color)',
+                                fontWeight: 'bold'
+                              }}
+                              title="Move operation up"
+                            >
+                              ▲
+                            </button>
+                            <button 
+                              onClick={() => moveOperation(op.id, 'down')}
+                              disabled={index === operations.length - 1}
+                              title="Move operation down"
+                              style={{
+                                background: index === operations.length - 1 ? '#f5f5f5' : '#f0f8ff',
+                                border: '1px solid #e2e8f0',
+                                borderRadius: '0 0 4px 4px',
+                                padding: '4px 8px',
+                                cursor: index === operations.length - 1 ? 'default' : 'pointer',
+                                opacity: index === operations.length - 1 ? 0.5 : 1,
+                                display: 'block',
+                                transition: 'all 0.2s ease',
+                                color: 'var(--primary-color)',
+                                fontWeight: 'bold'
+                              }}
+                            >
+                              ▼
+                            </button>
                           </div>
-                          <button 
-                            onClick={() => removeOperation(op.id)}
-                            style={{
-                              background: 'none',
-                              border: 'none',
-                              color: '#ff5555',
-                              cursor: 'pointer',
-                              fontSize: '1.2rem',
-                              padding: '0 0.5rem'
-                            }}
-                          >
-                            ×
-                          </button>
+                          <strong>Operation {index + 1}: {op.type.charAt(0).toUpperCase() + op.type.slice(1)}</strong>
                         </div>
-                        
-                        {op.type === 'shift' && (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <label>Shift value:</label>
+                        <button 
+                          onClick={() => removeOperation(op.id)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#ff5555',
+                            cursor: 'pointer',
+                            fontSize: '1.2rem',
+                            padding: '0 0.5rem'
+                          }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                      
+                      {op.type === 'shift' && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexDirection: 'column' }}>
+                          <label>Shift value:</label>
+                          <div style={{ display: 'flex', alignItems: 'center', width: '100%', position: 'relative' }}>
                             <input
                               type="range"
                               min="-26"
@@ -533,385 +586,857 @@ const CustomCipherBuilder = () => {
                               className="input-range"
                               style={{ flex: 1 }}
                             />
-                            <span style={{ minWidth: '30px', textAlign: 'center' }}>{op.value}</span>
-                          </div>
-                        )}
-                        
-                        {op.type === 'xor' && (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <label>XOR value (hex):</label>
-                            <input
-                              type="text"
-                              value={op.value}
-                              onChange={(e) => {
-                                const hexValue = e.target.value.replace(/[^0-9A-Fa-f]/g, '');
-                                updateOperation(op.id, { value: hexValue });
-                              }}
-                              style={{ 
-                                padding: '0.25rem 0.5rem', 
-                                width: '60px',
-                                borderRadius: '4px',
-                                border: '1px solid #ccc',
-                                fontFamily: 'monospace'
-                              }}
-                              maxLength={2}
-                            />
-                          </div>
-                        )}
-                        
-                        {op.type === 'swap' && (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <label>Swap positions:</label>
-                            <input
-                              type="number"
-                              min="0"
-                              value={op.positions[0]}
-                              onChange={(e) => {
-                                const pos = parseInt(e.target.value) || 0;
-                                updateOperation(op.id, { 
-                                  positions: [pos, op.positions[1]] 
-                                });
-                              }}
-                              style={{ 
-                                padding: '0.25rem 0.5rem', 
-                                width: '60px',
-                                borderRadius: '4px',
-                                border: '1px solid #ccc'
-                              }}
-                            />
-                            <span>and</span>
-                            <input
-                              type="number"
-                              min="0"
-                              value={op.positions[1]}
-                              onChange={(e) => {
-                                const pos = parseInt(e.target.value) || 0;
-                                updateOperation(op.id, { 
-                                  positions: [op.positions[0], pos] 
-                                });
-                              }}
-                              style={{ 
-                                padding: '0.25rem 0.5rem', 
-                                width: '60px',
-                                borderRadius: '4px',
-                                border: '1px solid #ccc'
-                              }}
-                            />
-                          </div>
-                        )}
-                        
-                        {op.type === 'reverse' && (
-                          <div className="operation-info">
-                            <p>Reverses the entire text (e.g., "HELLO" → "OLLEH")</p>
-                          </div>
-                        )}
-
-                        {op.type === 'caseFlip' && (
-                          <div className="operation-info">
-                            <p>Flips the case of all letters (e.g., "Hello" → "hELLO")</p>
-                          </div>
-                        )}
-
-                        {op.type === 'removeVowels' && (
-                          <div className="operation-info">
-                            <p>Removes all vowels (a, e, i, o, u) from the text</p>
-                            <p><strong>Note:</strong> This is a lossy transformation and cannot be reversed!</p>
-                          </div>
-                        )}
-                        
-                        {op.type === 'substitution' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            <p>Substitute characters according to the mapping:</p>
-                            <div style={{ 
-                              maxHeight: '120px', 
-                              overflowY: 'auto', 
-                              padding: '8px',
-                              backgroundColor: '#f9f9f9', 
+                            <span style={{ 
+                              minWidth: '40px', 
+                              textAlign: 'center', 
+                              fontWeight: 'bold',
+                              fontSize: '1.1rem',
+                              color: 'var(--primary-color)',
+                              backgroundColor: '#f0f8ff',
+                              padding: '4px 8px',
                               borderRadius: '4px',
-                              border: '1px solid #ddd' 
-                            }}>
-                              {Object.entries(op.map).map(([from, to], i) => (
-                                <div key={i} style={{ 
-                                  display: 'flex', 
-                                  alignItems: 'center',
-                                  marginBottom: '4px',
-                                  gap: '4px'
-                                }}>
-                                  <input
-                                    type="text"
-                                    value={from}
-                                    maxLength={1}
-                                    onChange={(e) => {
-                                      const newKey = e.target.value.charAt(0);
-                                      const newMap = {...op.map};
-                                      const oldValue = newMap[from];
-                                      delete newMap[from];
-                                      if (newKey) {
-                                        newMap[newKey] = oldValue;
-                                      }
-                                      updateOperation(op.id, { map: newMap });
-                                    }}
-                                    style={{ 
-                                      width: '30px', 
-                                      textAlign: 'center',
-                                      padding: '2px',
-                                      borderRadius: '2px',
-                                      border: '1px solid #ccc'
-                                    }}
-                                  />
-                                  <span>→</span>
-                                  <input
-                                    type="text"
-                                    value={to}
-                                    maxLength={1}
-                                    onChange={(e) => {
-                                      const newValue = e.target.value.charAt(0);
-                                      const newMap = {...op.map};
-                                      if (newValue) {
-                                        newMap[from] = newValue;
-                                      } else {
-                                        delete newMap[from];
-                                      }
-                                      updateOperation(op.id, { map: newMap });
-                                    }}
-                                    style={{ 
-                                      width: '30px', 
-                                      textAlign: 'center',
-                                      padding: '2px',
-                                      borderRadius: '2px',
-                                      border: '1px solid #ccc'
-                                    }}
-                                  />
-                                  <button
-                                    onClick={() => {
-                                      const newMap = {...op.map};
-                                      delete newMap[from];
-                                      updateOperation(op.id, { map: newMap });
-                                    }}
-                                    style={{
-                                      background: 'none',
-                                      border: 'none',
-                                      color: '#ff5555',
-                                      cursor: 'pointer',
-                                      padding: '0 4px'
-                                    }}
-                                  >
-                                    ×
-                                  </button>
-                                </div>
-                              ))}
-                              <button
-                                onClick={() => {
-                                  const newMap = {...op.map};
-                                  let newKey = 'A';
-                                  // Find an unused key
-                                  while (newMap[newKey]) {
-                                    // Try next character
-                                    newKey = String.fromCharCode(newKey.charCodeAt(0) + 1);
-                                    if (newKey > 'Z') newKey = 'a';
-                                    if (newKey > 'z') newKey = '0';
-                                    if (newKey > '9') break;
-                                  }
-                                  newMap[newKey] = '?';
-                                  updateOperation(op.id, { map: newMap });
-                                }}
-                                style={{
-                                  backgroundColor: '#e7f3ff',
-                                  border: '1px solid #bedcf3',
-                                  borderRadius: '4px',
-                                  padding: '4px 8px',
-                                  fontSize: '0.8rem',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                Add Mapping
-                              </button>
-                            </div>
+                              border: '1px solid #bedcf3'
+                            }}>{op.value}</span>
                           </div>
-                        )}
-                      </div>
-                    ))
-                  )}
-                </div>                <div className="add-operations" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center' }}>
-                  <button 
-                    className="nav-button secondary"
-                    onClick={() => addOperation('shift')}
-                    style={{ minWidth: '130px', padding: '0.5rem' }}
-                  >
-                    Add Shift
-                  </button>
-                  <button 
-                    className="nav-button secondary"
-                    onClick={() => addOperation('xor')}
-                    style={{ minWidth: '130px', padding: '0.5rem' }}
-                  >
-                    Add XOR
-                  </button>
-                  <button 
-                    className="nav-button secondary"
-                    onClick={() => addOperation('swap')}
-                    style={{ minWidth: '130px', padding: '0.5rem' }}
-                  >
-                    Add Swap
-                  </button>
-                  <button 
-                    className="nav-button secondary"
-                    onClick={() => addOperation('reverse')}
-                    style={{ minWidth: '130px', padding: '0.5rem' }}
-                  >
-                    Add Reverse
-                  </button>
-                  <button 
-                    className="nav-button secondary"
-                    onClick={() => addOperation('caseFlip')}
-                    style={{ minWidth: '130px', padding: '0.5rem' }}
-                  >
-                    Add Case Flip
-                  </button>
-                  <button 
-                    className="nav-button secondary"
-                    onClick={() => addOperation('removeVowels')}
-                    style={{ minWidth: '130px', padding: '0.5rem' }}
-                  >
-                    Add Remove Vowels
-                  </button>
-                  <button 
-                    className="nav-button secondary"
-                    onClick={() => addOperation('substitution')}
-                    style={{ minWidth: '130px', padding: '0.5rem' }}
-                  >
-                    Add Substitution
-                  </button>
-                </div>
-              </div>
-            </div>            {/* Compute Button */}
-            <div style={{ textAlign: 'center', marginTop: '1rem', marginBottom: '1rem' }}>
-              <button 
-                className="nav-button"
-                onClick={computeResult}
-                disabled={!validateInput() || operations.length === 0}
-                style={{ 
-                  opacity: (!validateInput() || operations.length === 0) ? 0.6 : 1,
-                  minWidth: '200px'
-                }}
-              >
-                {mode === 'encrypt' ? ' Encrypt' : ' Decrypt'}
-              </button>
-            </div>
-              {/* Result */}
-            {result && (
-              <div className="input-group">
-                <label>Result</label>
-                <div className="result-box">
-                  {result}
-                </div>
-                
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem', gap: '1rem' }}>
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(result);
-                      alert('Result copied to clipboard!');
-                    }}
-                    className="nav-button secondary"
-                    style={{ minWidth: '120px' }}
-                  >
-                    Copy Result
-                  </button>
-                  
-                  {/* Download PDF Button */}
-                  <button 
-                    className="nav-button"
-                    onClick={generatePDF}
-                    style={{ minWidth: '180px' }}
-                  >
-                    Download Definition
-                  </button>
-                </div>
-              </div>
-            )}
-              {/* Visualization */}
-            {steps.length > 0 && (
-              <div className="input-group">
-                <label>Step-by-Step Visualization</label>
-                <div className="steps-container">
-                  {steps.map((step, index) => (
-                    <div key={index} className="step">
-                      <div className="step-header">
-                        <span className="step-number">{index + 1}</span>
-                        <span className="step-description">{step.description}</span>
-                      </div>
-                      <div className="step-content" style={{ 
-                        fontFamily: step.type !== 'text' ? 'monospace' : 'inherit'
-                      }}>
-                        {step.value}
-                      </div>
+                          <div style={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            width: '100%',
+                            fontSize: '0.9rem',
+                            color: 'var(--primary-color)',
+                            marginTop: '8px',
+                            fontWeight: 'bold'
+                          }}>
+                            <span style={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: '4px',
+                              backgroundColor: op.value < 0 ? '#e7f3ff' : 'transparent',
+                              padding: '4px 8px',
+                              borderRadius: '4px',
+                              transition: 'all 0.2s ease'
+                            }}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M15 18l-6-6 6-6"/>
+                              </svg>
+                              Left
+                            </span>
+                            <span style={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: '4px',
+                              backgroundColor: op.value > 0 ? '#e7f3ff' : 'transparent',
+                              padding: '4px 8px',
+                              borderRadius: '4px',
+                              transition: 'all 0.2s ease'
+                            }}>
+                              Right
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M9 18l6-6-6-6"/>
+                              </svg>
+                            </span>
+                          </div>
+                          <div style={{ 
+                            marginTop: '8px', 
+                            padding: '8px', 
+                            backgroundColor: '#f8f9fa', 
+                            borderRadius: '4px',
+                            fontSize: '0.9rem',
+                            border: '1px dashed #ccc'
+                          }}>
+                            <strong>Effect:</strong> {op.value > 0 ? 
+                              `Shifts each character ${op.value} position${op.value !== 1 ? 's' : ''} forward in the alphabet` : 
+                              op.value < 0 ? 
+                              `Shifts each character ${Math.abs(op.value)} position${Math.abs(op.value) !== 1 ? 's' : ''} backward in the alphabet` : 
+                              'No shift (characters remain unchanged)'}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {op.type === 'xor' && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <label>XOR value (hex):</label>
+                          <input
+                            type="text"
+                            value={op.value}
+                            onChange={(e) => {
+                              const hexValue = e.target.value.replace(/[^0-9A-Fa-f]/g, '');
+                              updateOperation(op.id, { value: hexValue });
+                            }}
+                            style={{ 
+                              padding: '0.25rem 0.5rem', 
+                              width: '60px',
+                              borderRadius: '4px',
+                              border: '1px solid #ccc',
+                              fontFamily: 'monospace'
+                            }}
+                            maxLength={2}
+                          />
+                        </div>
+                      )}
+                      
+                      {op.type === 'swap' && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <label>Swap positions:</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={op.positions[0]}
+                            onChange={(e) => {
+                              const pos = parseInt(e.target.value) || 0;
+                              updateOperation(op.id, { 
+                                positions: [pos, op.positions[1]] 
+                              });
+                            }}
+                            style={{ 
+                              padding: '0.25rem 0.5rem', 
+                              width: '60px',
+                              borderRadius: '4px',
+                              border: '1px solid #ccc'
+                            }}
+                          />
+                          <span>and</span>
+                          <input
+                            type="number"
+                            min="0"
+                            value={op.positions[1]}
+                            onChange={(e) => {
+                              const pos = parseInt(e.target.value) || 0;
+                              updateOperation(op.id, { 
+                                positions: [op.positions[0], pos] 
+                              });
+                            }}
+                            style={{ 
+                              padding: '0.25rem 0.5rem', 
+                              width: '60px',
+                              borderRadius: '4px',
+                              border: '1px solid #ccc'
+                            }}
+                          />
+                        </div>
+                      )}
+                      
+                      {op.type === 'reverse' && (
+                        <div className="operation-info">
+                          <p>Reverses the entire text (e.g., "HELLO" → "OLLEH")</p>
+                        </div>
+                      )}
+
+                      {op.type === 'caseFlip' && (
+                        <div className="operation-info">
+                          <p>Flips the case of all letters (e.g., "Hello" → "hELLO")</p>
+                        </div>
+                      )}
+
+                      {op.type === 'removeVowels' && (
+                        <div className="operation-info">
+                          <p>Removes all vowels (a, e, i, o, u) from the text</p>
+                          <p><strong>Note:</strong> This is a lossy transformation and cannot be reversed!</p>
+                        </div>
+                      )}
+                      
+                      {op.type === 'substitution' && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                          <p>Substitute characters according to the mapping:</p>
+                          <div style={{ 
+                            maxHeight: '120px', 
+                            overflowY: 'auto', 
+                            padding: '8px',
+                            backgroundColor: '#f9f9f9', 
+                            borderRadius: '4px',
+                            border: '1px solid #ddd' 
+                          }}>
+                            {Object.entries(op.map).map(([from, to], i) => (
+                              <div key={i} style={{ 
+                                display: 'flex', 
+                                alignItems: 'center',
+                                marginBottom: '4px',
+                                gap: '4px'
+                              }}>
+                                <input
+                                  type="text"
+                                  value={from}
+                                  maxLength={1}
+                                  onChange={(e) => {
+                                    const newKey = e.target.value.charAt(0);
+                                    const newMap = {...op.map};
+                                    const oldValue = newMap[from];
+                                    delete newMap[from];
+                                    if (newKey) {
+                                      newMap[newKey] = oldValue;
+                                    }
+                                    updateOperation(op.id, { map: newMap });
+                                  }}
+                                  style={{ 
+                                    width: '30px', 
+                                    textAlign: 'center',
+                                    padding: '2px',
+                                    borderRadius: '2px',
+                                    border: '1px solid #ccc'
+                                  }}
+                                />
+                                <span>→</span>
+                                <input
+                                  type="text"
+                                  value={to}
+                                  maxLength={1}
+                                  onChange={(e) => {
+                                    const newValue = e.target.value.charAt(0);
+                                    const newMap = {...op.map};
+                                    if (newValue) {
+                                      newMap[from] = newValue;
+                                    } else {
+                                      delete newMap[from];
+                                    }
+                                    updateOperation(op.id, { map: newMap });
+                                  }}
+                                  style={{ 
+                                    width: '30px', 
+                                    textAlign: 'center',
+                                    padding: '2px',
+                                    borderRadius: '2px',
+                                    border: '1px solid #ccc'
+                                  }}
+                                />
+                                <button
+                                  onClick={() => {
+                                    const newMap = {...op.map};
+                                    delete newMap[from];
+                                    updateOperation(op.id, { map: newMap });
+                                  }}
+                                  style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: '#ff5555',
+                                    cursor: 'pointer',
+                                    padding: '0 4px'
+                                  }}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                            <button
+                              onClick={() => {
+                                const newMap = {...op.map};
+                                let newKey = 'A';
+                                // Find an unused key
+                                while (newMap[newKey]) {
+                                  // Try next character
+                                  newKey = String.fromCharCode(newKey.charCodeAt(0) + 1);
+                                  if (newKey > 'Z') newKey = 'a';
+                                  if (newKey > 'z') newKey = '0';
+                                  if (newKey > '9') break;
+                                }
+                                newMap[newKey] = '?';
+                                updateOperation(op.id, { map: newMap });
+                              }}
+                              style={{
+                                backgroundColor: '#e7f3ff',
+                                border: '1px solid #bedcf3',
+                                borderRadius: '4px',
+                                padding: '4px 8px',
+                                fontSize: '0.8rem',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              Add Mapping
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  ))}
-                </div>
+                  ))
+                )}
               </div>
-            )}
+              
+              <div className="add-operations" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center' }}>
+                <button 
+                  className="nav-button secondary"
+                  onClick={() => addOperation('shift')}
+                  style={{ minWidth: '130px', padding: '0.5rem', margin: '0.25rem' }}
+                >
+                  Add Shift
+                </button>
+                <button 
+                  className="nav-button secondary"
+                  onClick={() => addOperation('xor')}
+                  style={{ minWidth: '130px', padding: '0.5rem', margin: '0.25rem' }}
+                >
+                  Add XOR
+                </button>
+                <button 
+                  className="nav-button secondary"
+                  onClick={() => addOperation('swap')}
+                  style={{ minWidth: '130px', padding: '0.5rem', margin: '0.25rem' }}
+                >
+                  Add Swap
+                </button>
+                <button 
+                  className="nav-button secondary"
+                  onClick={() => addOperation('reverse')}
+                  style={{ minWidth: '130px', padding: '0.5rem', margin: '0.25rem' }}
+                >
+                  Add Reverse
+                </button>
+                <button 
+                  className="nav-button secondary"
+                  onClick={() => addOperation('caseFlip')}
+                  style={{ minWidth: '130px', padding: '0.5rem', margin: '0.25rem' }}
+                >
+                  Add Case Flip
+                </button>
+                <button 
+                  className="nav-button secondary"
+                  onClick={() => addOperation('removeVowels')}
+                  style={{ minWidth: '130px', padding: '0.5rem', margin: '0.25rem' }}
+                >
+                  Add Remove Vowels
+                </button>
+                <button 
+                  className="nav-button secondary"
+                  onClick={() => addOperation('substitution')}
+                  style={{ minWidth: '130px', padding: '0.5rem', margin: '0.25rem' }}
+                >
+                  Add Substitution
+                </button>
+              </div>
+            </div>
           </div>
-       
+        </div>
+
+          {/* Mode Selection */}
+          <div className="input-group">
+            <label>Operation Mode</label>
+            <div className="toggle-container" style={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              gap: '0.5rem', 
+              marginTop: '0.5rem',
+              background: '#e2e8f0',
+              padding: '0.25rem',
+              borderRadius: '8px',
+              maxWidth: '300px',
+              margin: '0.5rem auto'
+            }}>
+              <label className="toggle-switch" style={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0.5rem 1rem',
+                backgroundColor: mode === 'encrypt' ? 'var(--primary-color)' : 'transparent',
+                color: mode === 'encrypt' ? 'white' : 'var(--text-color)',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                flex: '1',
+                fontWeight: mode === 'encrypt' ? 'bold' : 'normal',
+                boxShadow: mode === 'encrypt' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
+              }}>
+                <input
+                  type="radio"
+                  name="mode"
+                  checked={mode === 'encrypt'}
+                  onChange={() => setMode('encrypt')}
+                  style={{ display: 'none' }}
+                />
+                <span className="toggle-label">Encrypt</span>
+              </label>
+              <label className="toggle-switch" style={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0.5rem 1rem',
+                backgroundColor: mode === 'decrypt' ? 'var(--primary-color)' : 'transparent',
+                color: mode === 'decrypt' ? 'white' : 'var(--text-color)',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                flex: '1',
+                fontWeight: mode === 'decrypt' ? 'bold' : 'normal',
+                boxShadow: mode === 'decrypt' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
+              }}>
+                <input
+                  type="radio"
+                  name="mode"
+                  checked={mode === 'decrypt'}
+                  onChange={() => setMode('decrypt')}
+                  style={{ display: 'none' }}
+                />
+                <span className="toggle-label">Decrypt</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Input Type Selection */}
+          <div className="input-group">
+            <label>Input Format</label>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              gap: '0.5rem', 
+              marginTop: '0.5rem', 
+              flexWrap: 'wrap',
+              background: '#e2e8f0',
+              padding: '0.25rem',
+              borderRadius: '8px',
+              maxWidth: '400px',
+              margin: '0.5rem auto'
+            }}>
+              {['text', 'binary', 'hex'].map(type => (
+                <label className="toggle-switch" key={type} style={{ 
+                  display: 'flex', 
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0.5rem 1rem',
+                  backgroundColor: inputType === type ? 'var(--accent-color)' : 'transparent',
+                  color: inputType === type ? 'white' : 'var(--text-color)',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  flex: '1',
+                  minWidth: '100px',
+                  fontWeight: inputType === type ? 'bold' : 'normal',
+                  boxShadow: inputType === type ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
+                }}>
+                  <input
+                    type="radio"
+                    name="inputType"
+                    checked={inputType === type}
+                    onChange={() => setInputType(type)}
+                    style={{ display: 'none' }}
+                  />
+                  <span className="toggle-label">
+                    {type === 'text' ? 'Text' : type === 'binary' ? 'Binary' : 'Hexadecimal'}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+
+   
+        
+
+        {/* Execution Button Section */}
+        <div className="execution-section" style={{ 
+          marginBottom: '2rem',
+          textAlign: 'center'
+        }}>
+          <button 
+            className="nav-button"
+            onClick={computeResult}
+            disabled={!validateInput() || operations.length === 0}
+            style={{ 
+              opacity: (!validateInput() || operations.length === 0) ? 0.6 : 1,
+              minWidth: '200px',
+              fontSize: '1.1rem',
+              padding: '0.75rem 1.5rem'
+            }}
+          >
+            {mode === 'encrypt' ? 'Encrypt Text' : 'Decrypt Text'}
+          </button>
+          {(!validateInput() || operations.length === 0) && (
+            <p style={{ 
+              marginTop: '0.5rem', 
+              fontSize: '0.8rem', 
+              color: '#ff6b6b',
+              fontStyle: 'italic'
+            }}>
+              {!validateInput() ? 'Please enter some text' : 'Please add at least one operation'}
+            </p>
+          )}
+        </div>
+
+        {/* Input Section */}
+        <div className="input-section" style={{ 
+          marginBottom: '2rem',
+          padding: '1.5rem',
+          backgroundColor: '#f8fafc',
+          borderRadius: '8px',
+          border: '1px solid #e2e8f0'
+        }}>
+          <h3 style={{ 
+            marginBottom: '1rem', 
+            color: 'var(--primary-color)',
+            fontSize: '1.2rem',
+            fontWeight: '600'
+          }}>
+            {mode === 'encrypt' ? 'Input Text to Encrypt' : 'Input Ciphertext to Decrypt'}
+          </h3>
+          
+          <div className="input-group">
+            <label htmlFor="input">
+              {mode === 'encrypt' ? 'Plaintext' : 'Ciphertext'} 
+              <span style={{ fontSize: '0.8rem', color: '#777', marginLeft: '0.5rem' }}>
+                ({input.length} characters)
+              </span>
+            </label>
+            <textarea
+              id="input"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              rows="4"
+              style={{ 
+                fontFamily: inputType !== 'text' ? 'monospace' : 'inherit'
+              }}
+              placeholder={
+                inputType === 'binary' ? 'Example: 01001000 01100101 01101100 01101100 01101111' :
+                inputType === 'hex' ? 'Example: 48 65 6c 6c 6f' :
+                mode === 'encrypt' ? 'Enter text to encrypt...' : 'Enter ciphertext to decrypt...'
+              }
+            />
+          </div>
+        </div>
+
+        {/* Results Section */}
+        {result && (
+          <div className="results-section" style={{ 
+            marginBottom: '2rem',
+            padding: '1.5rem',
+            backgroundColor: '#f0f8ff',
+            borderRadius: '8px',
+            border: '2px solid var(--accent-color)'
+          }}>
+            <h3 style={{ 
+              marginBottom: '1rem', 
+              color: 'var(--primary-color)',
+              fontSize: '1.2rem',
+              fontWeight: '600'
+            }}>
+              {mode === 'encrypt' ? 'Encryption Result' : 'Decryption Result'}
+            </h3>
+            
+            <div className="input-group">
+              <label>{mode === 'encrypt' ? 'Ciphertext' : 'Plaintext'}</label>
+              <div className="result-box">
+                {result}
+              </div>
+              
+              {/* <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem', gap: '1rem', flexWrap: 'wrap' }}>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(result);
+                    alert('Result copied to clipboard!');
+                  }}
+                  className="nav-button secondary"
+                  style={{ minWidth: '140px' }}
+                >
+                  Copy Result
+                </button>
+                <button
+                  onClick={() => {
+                    const doc = new jsPDF();
+                    
+                    // Add title
+                    doc.setFontSize(20);
+                    doc.text(`${cipherName} - ${mode === 'encrypt' ? 'Encryption' : 'Decryption'} Result`, 105, 15, { align: 'center' });
+                    doc.setFontSize(12);
+                    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 25, { align: 'center' });
+                    
+                    // Add input and result
+                    doc.setFontSize(14);
+                    doc.text(`${mode === 'encrypt' ? 'Input (Plaintext)' : 'Input (Ciphertext)'}:`, 20, 40);
+                    
+                    // Split input text to fit within page width
+                    const splitInput = doc.splitTextToSize(input, 170);
+                    doc.setFontSize(12);
+                    doc.text(splitInput, 20, 50);
+                    
+                    // Add result
+                    let yPos = 50 + (splitInput.length * 7) + 10;
+                    doc.setFontSize(14);
+                    doc.text(`${mode === 'encrypt' ? 'Output (Ciphertext)' : 'Output (Plaintext)'}:`, 20, yPos);
+                    
+                    // Split result text to fit within page width
+                    const splitResult = doc.splitTextToSize(result, 170);
+                    doc.setFontSize(12);
+                    doc.text(splitResult, 20, yPos + 10);
+                    
+                    // Add operations used
+                    yPos = yPos + (splitResult.length * 7) + 20;
+                    doc.setFontSize(14);
+                    doc.text('Operations Applied:', 20, yPos);
+                    yPos += 10;
+                    
+                    // Get operations in the correct order based on mode
+                    const opsApplied = mode === 'encrypt' 
+                      ? operations 
+                      : [...operations].reverse();
+                    
+                    // List operations
+                    doc.setFontSize(12);
+                    opsApplied.forEach((op, index) => {
+                      let description = '';
+                      
+                      if (op.type === 'shift') {
+                        const shiftValue = mode === 'encrypt' ? op.value : -op.value;
+                        description = `${index + 1}. Shift by ${shiftValue}`;
+                      } else if (op.type === 'xor') {
+                        description = `${index + 1}. XOR with ${op.value} (hex)`;
+                      } else if (op.type === 'swap') {
+                        description = `${index + 1}. Swap positions ${op.positions[0]} and ${op.positions[1]}`;
+                      } else if (op.type === 'reverse') {
+                        description = `${index + 1}. Reverse text`;
+                      } else if (op.type === 'caseFlip') {
+                        description = `${index + 1}. Flip character cases`;
+                      } else if (op.type === 'removeVowels') {
+                        description = `${index + 1}. Remove vowels`;
+                      } else if (op.type === 'substitution') {
+                        description = `${index + 1}. Apply character substitution`;
+                      }
+                      
+                      doc.text(description, 20, yPos);
+                      yPos += 7;
+                    });
+                    
+                    // Save the PDF
+                    doc.save(`${cipherName.replace(/\s+/g, '_')}_${mode}_result.pdf`);
+                  }}
+                  className="nav-button secondary"
+                  style={{ minWidth: '140px' }}
+                >
+                  Download Result
+                </button>
+              </div> */}
+            </div>
+          </div>
+        )}
+
+        {/* Step-by-Step Visualization */}
+        {steps.length > 0 && (
+          <div className="visualization-section" style={{ 
+            marginBottom: '2rem',
+            padding: '1.5rem',
+            backgroundColor: '#f8fafc',
+            borderRadius: '8px',
+            border: '1px solid #e2e8f0'
+          }}>
+            <h3 style={{ 
+              marginBottom: '1rem', 
+              color: 'var(--primary-color)',
+              fontSize: '1.2rem',
+              fontWeight: '600'
+            }}>
+              Step-by-Step Process
+            </h3>
+            
+            <div className="input-group">
+              <label style={{ marginBottom: '1rem' }}>
+                {mode === 'encrypt' ? 'Encryption Steps' : 'Decryption Steps'}
+                <span style={{ fontSize: '0.8rem', color: '#777', marginLeft: '0.5rem' }}>
+                  ({steps.length} step{steps.length !== 1 ? 's' : ''})
+                </span>
+              </label>
+              <div className="steps-container">
+                {steps.map((step, index) => (
+                  <div key={index} className="step">
+                    <div className="step-header">
+                      <span className="step-number">{index + 1}</span>
+                      <span className="step-description">{step.description}</span>
+                    </div>
+                    <div className="step-content" style={{ 
+                      fontFamily: step.type !== 'text' ? 'monospace' : 'inherit'
+                    }}>
+                      {step.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Always visible Download Definition Button */}
+        <div className="download-section" style={{ 
+          textAlign: 'center',
+          marginBottom: '2rem'
+        }}>
+          <button 
+            className="nav-button"
+            onClick={generatePDF}
+            style={{ minWidth: '180px' }}          >
+            Download Definition
+          </button>
+        </div>
       </div>
-        {/* Add some CSS for animations and styling */}
+      
+      {/* Add some CSS for animations and styling */}
       <style jsx>{`
         @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-10px); }
+          from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
         }
 
         .steps-container {
+          margin-top: 2rem;
           border: 2px solid var(--accent-color);
-          border-radius: 4px;
-          background-color: #f8fafc;
-          padding: 1rem;
+          border-radius: 8px;
+          overflow: hidden;
         }
 
         .step {
-          margin-bottom: 1rem;
-          padding: 0.75rem;
-          background-color: white;
-          border-radius: 4px;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+          padding: 1rem;
+          border-bottom: 1px solid #e2e8f0;
+          animation: fadeIn 0.5s ease-out;
         }
 
         .step:last-child {
-          margin-bottom: 0;
+          border-bottom: none;
         }
 
         .step-header {
-          margin-bottom: 0.5rem;
-          font-weight: bold;
           display: flex;
           align-items: center;
+          margin-bottom: 0.5rem;
+          cursor: pointer;
         }
 
         .step-number {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 24px;
-          height: 24px;
           background-color: var(--primary-color);
           color: white;
+          width: 24px;
+          height: 24px;
           border-radius: 50%;
-          margin-right: 0.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           font-size: 0.8rem;
+          margin-right: 0.5rem;
         }
 
         .step-content {
-          padding: 0.75rem;
-          background-color: #f0f8ff;
-          border-radius: 4px;
-          word-break: break-all;
+          margin-top: 0.5rem;
+          padding-left: 2rem;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
         }
 
         .toggle-switch {
-          margin-right: 10px;
+          position: relative;
+          display: inline-block;
+          width: 200px;
+          height: 40px;
+          margin: 10px;
         }
 
-        .toggle-switch input[type="radio"] {
-          margin-right: 5px;
+        .toggle-switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+
+        .toggle-slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #f0f0f0;
+          transition: .4s;
+          border-radius: 20px;
+          border: 2px solid #ddd;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 10px;
+        }
+
+        .toggle-slider:before {
+          position: absolute;
+          content: "";
+          height: 32px;
+          width: 95px;
+          left: 4px;
+          bottom: 2px;
+          background-color: white;
+          transition: .4s;
+          border-radius: 16px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+          background-color: #f0f0f0;
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+          transform: translateX(97px);
+        }
+
+        .toggle-label {
+          color: #888;
+          font-size: 14px;
+          z-index: 1;
+          transition: color 0.4s;
+        }
+
+        .toggle-switch input:checked ~ .toggle-label.left,
+        .toggle-switch input:not(:checked) ~ .toggle-label.right {
+          color: #888;
+        }
+
+        .toggle-switch input:not(:checked) ~ .toggle-label.left,
+        .toggle-switch input:checked ~ .toggle-label.right {
+          color: var(--primary-color);
+          font-weight: bold;
+        }
+
+        .operation-item {
+          padding: 0.75rem;
+          background-color: white;
+          border: 1px solid #e2e8f0;
+          border-left: 4px solid var(--primary-color);
+          border-radius: 4px;
+          margin-bottom: 0.75rem;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+          position: relative;
+          animation: fadeIn 0.3s ease-out;
+        }
+
+        @media (max-width: 768px) {
+          .add-operations {
+            flex-direction: column;
+            align-items: center;
+          }
+
+          .toggle-container {
+            flex-direction: column;
+            align-items: center;
+          }
+
+          .operation-item {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+          }
+
+          .operations-list {
+            max-height: 250px;
+          }
+
+          .input-group label {
+            font-size: 0.9rem;
+          }
+
+          .execution-section button {
+            width: 100%;
+            max-width: 250px;
+          }
+
+          .operations-container {
+            padding: 0.5rem !important;
+          }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+          .operation-item {
+            padding: 0.6rem;
+          }
+
+          .operations-container {
+            padding: 0.75rem !important;
+          }
         }
       `}</style>
     </div>

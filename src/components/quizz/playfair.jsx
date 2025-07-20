@@ -1,5 +1,7 @@
 import React, { useState } from 'react'; 
 import { Link } from 'react-router-dom';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 const PlayfairCipherQuiz = () => {
   const questions = [
@@ -191,9 +193,64 @@ const PlayfairCipherQuiz = () => {
   const handleRestart = () => {
     setCurrent(0);
     setSelected(null);
-    setScore(0);
     setShowResult(false);
     setSubmitted(false);
+  };
+
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+    
+    // Add title
+    doc.setFontSize(20);
+    doc.text('Playfair Cipher Quiz Results', 105, 15, { align: 'center' });
+    doc.setFontSize(12);
+    doc.text('Your completed quiz with answers and explanations', 105, 25, { align: 'center' });
+    
+    // Add date
+    const today = new Date();
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${today.toLocaleDateString()}`, 105, 35, { align: 'center' });
+    
+    // Add content for each question
+    let yPos = 45;
+    
+    questions.forEach((q, index) => {
+      // Add question
+      doc.setFontSize(12);
+      doc.setFont(undefined, 'bold');
+      doc.text(`Question ${index + 1}: ${q.question}`, 15, yPos);
+      yPos += 10;
+      
+      // Add options
+      doc.setFont(undefined, 'normal');
+      q.options.forEach((opt, idx) => {
+        const isCorrect = opt === q.answer;
+        doc.setTextColor(isCorrect ? [0, 128, 0] : [0, 0, 0]);
+        doc.text(`${String.fromCharCode(65 + idx)}. ${opt}${isCorrect ? ' ✓' : ''}`, 20, yPos);
+        yPos += 7;
+      });
+      
+      // Add explanation
+      doc.setTextColor(0, 0, 150);
+      doc.setFont(undefined, 'italic');
+      
+      // Split explanation text to fit within page width
+      const splitExplanation = doc.splitTextToSize(q.explanation, 170);
+      doc.text(splitExplanation, 20, yPos);
+      yPos += splitExplanation.length * 7 + 10;
+      
+      // Reset text color
+      doc.setTextColor(0, 0, 0);
+      
+      // Add a new page if needed
+      if (yPos > 270 && index < questions.length - 1) {
+        doc.addPage();
+        yPos = 20;
+      }
+    });
+    
+    // Save the PDF
+    doc.save('playfair_cipher_quiz.pdf');
   };
 
   return (
@@ -255,7 +312,13 @@ const PlayfairCipherQuiz = () => {
                     <button
                       onClick={() => handleOptionClick(opt)}
                       className="nav-button"
-                      style={style}
+                      style={{
+                        ...style,
+                        minHeight: '60px',
+                        whiteSpace: 'normal',
+                        textAlign: 'left',
+                        wordBreak: 'break-word'
+                      }}
                     >
                       {opt}
                     </button>
@@ -270,26 +333,48 @@ const PlayfairCipherQuiz = () => {
               })}
             </div>
 
-            <button
-              onClick={handleNext}
-              disabled={selected === null}
-              className="nav-button"
-              style={{ width: '100%', marginTop: '1rem' }}
-            >
-              {submitted ? (current < questions.length - 1 ? 'Next' : 'Finish') : 'Submit'}
-            </button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
+              <button
+                onClick={handlePrevious}
+                disabled={current === 0}
+                className="nav-button"
+                style={{ width: '48%' }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+              </button>
+              <button
+                onClick={handleNext}
+                disabled={!submitted}
+                className="nav-button"
+                style={{ width: '48%' }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
+              </button>
+            </div>
           </>
         ) : (
           <div className="input-group" style={{ textAlign: 'center' }}>
             <div className="result-box" style={{ padding: '1.5rem', fontSize: '1.2rem', marginBottom: '1rem' }}>
-              You scored {score} out of {questions.length}!
+              You've completed the quiz!
             </div>
-            <button className="nav-button" onClick={handleRestart} style={{ marginBottom: '1rem' }}>
-              Restart Quiz
-            </button>
-            <Link to="/playfair-tool" className="nav-button secondary">
-              Back to Playfair Tool
-            </Link>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <button className="nav-button" onClick={downloadPDF} style={{ marginBottom: '0.5rem' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" style={{ marginRight: '8px' }} viewBox="0 0 16 16">
+                  <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+                </svg>
+                Download Quiz PDF
+              </button>
+              <button className="nav-button" onClick={handleRestart} style={{ marginBottom: '0.5rem' }}>
+                Restart Quiz
+              </button>
+              <Link to="/playfair-tool" className="nav-button secondary">
+                Back to Playfair Tool
+              </Link>
+            </div>
           </div>
         )}
       </div>

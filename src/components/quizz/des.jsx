@@ -241,7 +241,7 @@ const DESQuiz = () => {
           <>
             <div className="input-group">
               <label>Question {current + 1} of {questions.length}</label>
-              <div className="result-box" style={{ padding: '1rem', fontWeight: 'bold' }}>
+              <div className="box" style={{ padding: '1rem', fontWeight: 'bold' }}>
                 {questions[current].question}
               </div>
             </div>

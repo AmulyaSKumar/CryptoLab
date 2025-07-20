@@ -1,5 +1,7 @@
 import React, { useState } from 'react'; 
 import { Link } from 'react-router-dom';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 const VigenereQuiz = () => {
   const questions = [
@@ -179,32 +181,89 @@ const VigenereQuiz = () => {
   const handleOptionClick = (option) => {
     if (!submitted) {
       setSelected(option);
+      setSubmitted(true);
     }
   };
 
+  const handlePrevious = () => {
+    if (current > 0) {
+      setCurrent(current - 1);
+      setSelected(null);
+      setSubmitted(false);
+    }
+  };
+  
   const handleNext = () => {
-    if (!submitted) {
-      if (selected === questions[current].answer) {
-        setScore(score + 1);
-      }
-      setSubmitted(true);
+    if (current < questions.length - 1) {
+      setCurrent(current + 1);
+      setSelected(null);
+      setSubmitted(false);
     } else {
-      if (current < questions.length - 1) {
-        setCurrent(current + 1);
-        setSelected(null);
-        setSubmitted(false);
-      } else {
-        setShowResult(true);
-      }
+      setShowResult(true);
     }
   };
 
   const handleRestart = () => {
     setCurrent(0);
     setSelected(null);
-    setScore(0);
     setShowResult(false);
     setSubmitted(false);
+  };
+
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+    
+    // Add title
+    doc.setFontSize(20);
+    doc.text('Vigenère Cipher Quiz Results', 105, 15, { align: 'center' });
+    doc.setFontSize(12);
+    doc.text('Your completed quiz with answers and explanations', 105, 25, { align: 'center' });
+    
+    // Add date
+    const today = new Date();
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${today.toLocaleDateString()}`, 105, 35, { align: 'center' });
+    
+    // Add content for each question
+    let yPos = 45;
+    
+    questions.forEach((q, index) => {
+      // Add question
+      doc.setFontSize(12);
+      doc.setFont(undefined, 'bold');
+      doc.text(`Question ${index + 1}: ${q.question}`, 15, yPos);
+      yPos += 10;
+      
+      // Add options
+      doc.setFont(undefined, 'normal');
+      q.options.forEach((opt, idx) => {
+        const isCorrect = opt === q.answer;
+        doc.setTextColor(isCorrect ? [0, 128, 0] : [0, 0, 0]);
+        doc.text(`${String.fromCharCode(65 + idx)}. ${opt}${isCorrect ? ' ✓' : ''}`, 20, yPos);
+        yPos += 7;
+      });
+      
+      // Add explanation
+      doc.setTextColor(0, 0, 150);
+      doc.setFont(undefined, 'italic');
+      
+      // Split explanation text to fit within page width
+      const splitExplanation = doc.splitTextToSize(q.explanation, 170);
+      doc.text(splitExplanation, 20, yPos);
+      yPos += splitExplanation.length * 7 + 10;
+      
+      // Reset text color
+      doc.setTextColor(0, 0, 0);
+      
+      // Add a new page if needed
+      if (yPos > 270 && index < questions.length - 1) {
+        doc.addPage();
+        yPos = 20;
+      }
+    });
+    
+    // Save the PDF
+    doc.save('vigenere_cipher_quiz.pdf');
   };
 
   return (
@@ -221,7 +280,7 @@ const VigenereQuiz = () => {
           <>
             <div className="input-group">
               <label>Question {current + 1} of {questions.length}</label>
-              <div className="result-box" style={{ padding: '1rem', fontWeight: 'bold' }}>
+              <div className="box" style={{ padding: '1rem', fontWeight: 'bold' }}>
                 {questions[current].question}
               </div>
             </div>
@@ -280,26 +339,55 @@ const VigenereQuiz = () => {
               })}
             </div>
 
-            <button
-              onClick={handleNext}
-              disabled={selected === null}
-              className="nav-button"
-              style={{ width: '100%', marginTop: '1rem' }}
-            >
-              {submitted ? (current < questions.length - 1 ? 'Next' : 'Finish') : 'Submit'}
-            </button>
+            <div className="arrow-nav">
+              <button
+                onClick={handlePrevious}
+                disabled={current === 0}
+                className="arrow-button"
+                title="Previous Question"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+              </button>
+              <button
+                onClick={handleNext}
+                disabled={!submitted}
+                className="arrow-button"
+                title="Next Question"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
+              </button>
+            </div>
           </>
         ) : (
           <div className="input-group" style={{ textAlign: 'center' }}>
-            <div className="result-box" style={{ padding: '1.5rem', fontSize: '1.2rem', marginBottom: '1rem' }}>
-              You scored {score} out of {questions.length}!
+            <div className="result-box" style={{ padding: '1.5rem', fontSize: '1.2rem', marginBottom: '1rem', backgroundColor: '#d4edda', color: '#155724', borderRadius: '8px' }}>
+              <div style={{ marginBottom: '10px' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                </svg>
+              </div>
+              <div>Congratulations! You've completed the Vigenère Cipher Quiz.</div>
+              <div style={{ fontSize: '0.9rem', marginTop: '10px', fontStyle: 'italic' }}>You've learned about one of the most important historical ciphers!</div>
             </div>
-            <button className="nav-button" onClick={handleRestart} style={{ marginBottom: '1rem' }}>
-              Restart Quiz
-            </button>
-            <Link to="/vigenere-tool" className="nav-button secondary">
-              Back to Vigenère Tool
-            </Link>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <button className="nav-button" onClick={downloadPDF} style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                </svg>
+                Download Quiz PDF
+              </button>
+              <button className="nav-button" onClick={handleRestart} style={{ marginBottom: '0.5rem' }}>
+                Restart Quiz
+              </button>
+              <Link to="/c5-vigenere" className="nav-button secondary">
+                Back to Vigenère Tool
+              </Link>
+            </div>
           </div>
         )}
       </div>

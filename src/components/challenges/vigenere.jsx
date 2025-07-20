@@ -37,9 +37,9 @@ const PUZZLES = {
 };
 
 const DIFFICULTY_SETTINGS = {
-  Easy: { keyLength: 3, puzzleTime: 60 },
+  Easy: { keyLength: 3, puzzleTime: 45 },
   Medium: { keyLength: 4, puzzleTime: 45 },
-  Hard: { keyLength: 5, puzzleTime: 30 }
+  Hard: { keyLength: 5, puzzleTime: 45 }
 };
 
 const MAX_PUZZLES = 5;
@@ -110,7 +110,7 @@ const VigenereChallenge = () => {
       else if (challengeType === 'Encrypt') correctAnswer = cipherText;
       else correctAnswer = keyUsed;
 
-      setFeedback(`⏰ Time's up! Correct answer was: ${correctAnswer}`);
+      setFeedback(`Time's up! Correct answer was: ${correctAnswer}`);
       setTimeout(nextPuzzle, 3000);
       return;
     }
@@ -124,7 +124,7 @@ const VigenereChallenge = () => {
       setPuzzleIndex(puzzleIndex + 1);
     } else {
       setGameStarted(false);
-      setFeedback(`🎉 Challenge complete! Final score: ${score}/${MAX_PUZZLES}`);
+      setFeedback(`Challenge complete! Final score: ${score}/${MAX_PUZZLES}`);
     }
   };
 
@@ -144,7 +144,7 @@ const VigenereChallenge = () => {
     if (isCorrect) {
       playSound('correct');
       setScore(score + 1);
-      setFeedback('✅ Correct!');
+      setFeedback('Correct!');
       clearTimeout(timerRef.current);
       setTimeout(nextPuzzle, 2000);
     } else {
@@ -154,29 +154,37 @@ const VigenereChallenge = () => {
       if (tries >= MAX_ATTEMPTS) {
         const correctAnswer = challengeType === 'Decrypt' ? plaintext
           : challengeType === 'Encrypt' ? cipherText : keyUsed;
-        setFeedback(`❌ No attempts left! Answer was: ${correctAnswer}`);
+        setFeedback(`No attempts left! Answer was: ${correctAnswer}`);
         clearTimeout(timerRef.current);
         setTimeout(nextPuzzle, 2500);
       } else {
-        setFeedback(`❌ Incorrect. Attempts left: ${MAX_ATTEMPTS - tries}`);
+        setFeedback(`Incorrect. Attempts left: ${MAX_ATTEMPTS - tries}`);
       }
     }
   };
 
   const handleHint = () => {
     if (!hintUsed) {
-      setFeedback(`💡 Hint: Key length is ${DIFFICULTY_SETTINGS[difficulty].keyLength}`);
+      let hintMessage = '';
+      if (challengeType === 'Decrypt') {
+        hintMessage = `The key length is ${DIFFICULTY_SETTINGS[difficulty].keyLength}. For each letter, subtract the corresponding key letter value (A=0, B=1, etc.) and wrap around if needed.`;
+      } else if (challengeType === 'Encrypt') {
+        hintMessage = `The key length is ${DIFFICULTY_SETTINGS[difficulty].keyLength}. For each letter, add the corresponding key letter value (A=0, B=1, etc.) and wrap around if needed.`;
+      } else { // Crack Key
+        hintMessage = `The key length is ${DIFFICULTY_SETTINGS[difficulty].keyLength}. Try working backwards from the plaintext to the ciphertext to determine each letter of the key.`;
+      }
+      setFeedback(`Hint: ${hintMessage}`);
       setHintUsed(true);
     }
   };
 
   const renderChallengePrompt = () => {
     if (challengeType === 'Decrypt') {
-      return <p>🔐 Decrypt the message: <strong>{cipherText}</strong> using key <em>{keyUsed}</em></p>;
+      return <p>Decrypt the message: <strong>{cipherText}</strong> using key <em>{keyUsed}</em></p>;
     } else if (challengeType === 'Encrypt') {
-      return <p>🔒 Encrypt the message: <strong>{plaintext}</strong> using key <em>{keyUsed}</em></p>;
+      return <p>Encrypt the message: <strong>{plaintext}</strong> using key <em>{keyUsed}</em></p>;
     } else {
-      return <p>🔑 Find the key used for encryption: <strong>{cipherText}</strong> → <em>{plaintext}</em></p>;
+      return <p>Find the key used for encryption: <strong>{cipherText}</strong> → <em>{plaintext}</em></p>;
     }
   };
 
@@ -218,7 +226,7 @@ const VigenereChallenge = () => {
         <div className="score-display">Score: {score}</div>
         
         <div className="timer-container">
-          ⏳ Time left: {timeLeft}s
+          Time left: {timeLeft}s
           <div style={{ width: '100%', height: '8px', background: '#e9ecef', borderRadius: '4px', margin: '8px 0' }}>
             <div 
               style={{ 

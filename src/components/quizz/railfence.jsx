@@ -220,7 +220,7 @@ const RailfenceQuiz = () => {
           <>
             <div className="input-group">
               <label>Question {current + 1} of {questions.length}</label>
-              <div className="result-box" style={{ padding: '1rem', fontWeight: 'bold' }}>
+              <div className="box" style={{ padding: '1rem', fontWeight: 'bold' }}>
                 {questions[current].question}
               </div>
             </div>
@@ -291,14 +291,22 @@ const RailfenceQuiz = () => {
         ) : (
           <div className="input-group" style={{ textAlign: 'center' }}>
             <div className="result-box" style={{ padding: '1.5rem', fontSize: '1.2rem', marginBottom: '1rem' }}>
-              You scored {score} out of {questions.length}!
+              You've completed the quiz!
             </div>
-            <button className="nav-button" onClick={handleRestart} style={{ marginBottom: '1rem' }}>
-              Restart Quiz
-            </button>
-            <Link to="/railfence-tool" className="nav-button secondary">
-              Back to Railfence Tool
-            </Link>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <button className="nav-button" onClick={downloadPDF} style={{ marginBottom: '0.5rem' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" style={{ marginRight: '8px' }} viewBox="0 0 16 16">
+                  <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+                </svg>
+                Download Quiz PDF
+              </button>
+              <button className="nav-button" onClick={handleRestart} style={{ marginBottom: '0.5rem' }}>
+                Restart Quiz
+              </button>
+              <Link to="/railfence-tool" className="nav-button secondary">
+                Back to Railfence Tool
+              </Link>
+            </div>
           </div>
         )}
       </div>

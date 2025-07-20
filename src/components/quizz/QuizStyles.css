@@ -30,7 +30,7 @@
 
 .quiz-nav {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -39,6 +39,44 @@
 .quiz-nav .nav-button {
   min-width: 120px;
   flex: 1;
+}
+
+.arrow-nav {
+  display: flex;
+  justify-content: space-between;
+  margin: 1.5rem 0;
+  width: 100%;
+}
+
+.arrow-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.arrow-button:hover:not(:disabled) {
+  background-color: var(--accent-color);
+  transform: scale(1.05);
+}
+
+.arrow-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.arrow-button svg {
+  width: 24px;
+  height: 24px;
 }
 
 .question-container {
@@ -72,6 +110,9 @@
   transition: all 0.3s ease;
   font-size: 1rem;
   cursor: pointer;
+  min-height: 60px;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .option-button:hover:not(:disabled) {
@@ -243,7 +284,9 @@
     width: 60px;
   }
 }
-
+.box{
+  border-color: var(--primary-color);
+}
 /* Common styles for quiz and challenge components */
 .quiz-container {
   max-width: 800px;
@@ -276,7 +319,7 @@
 
 .quiz-nav {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -285,6 +328,44 @@
 .quiz-nav .nav-button {
   min-width: 120px;
   flex: 1;
+}
+
+.arrow-nav {
+  display: flex;
+  justify-content: space-between;
+  margin: 1.5rem 0;
+  width: 100%;
+}
+
+.arrow-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.arrow-button:hover:not(:disabled) {
+  background-color: var(--accent-color);
+  transform: scale(1.05);
+}
+
+.arrow-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.arrow-button svg {
+  width: 24px;
+  height: 24px;
 }
 
 .question-container {
@@ -318,6 +399,9 @@
   transition: all 0.3s ease;
   font-size: 1rem;
   cursor: pointer;
+  min-height: 60px;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .option-button:hover:not(:disabled) {

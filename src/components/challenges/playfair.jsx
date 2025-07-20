@@ -107,9 +107,9 @@ const PUZZLES = {
 
 const CHALLENGE_TYPES = ['Encrypt', 'Decrypt', 'Crack Key'];
 const DIFFICULTY_SETTINGS = {
-  Easy: { puzzles: PUZZLES.Easy, time: 60 },
+  Easy: { puzzles: PUZZLES.Easy, time: 45 },
   Medium: { puzzles: PUZZLES.Medium, time: 45 },
-  Hard: { puzzles: PUZZLES.Hard, time: 30 },
+  Hard: { puzzles: PUZZLES.Hard, time: 45 },
 };
 
 const MAX_PUZZLES = 5;
@@ -161,7 +161,7 @@ const PlayfairChallenge = () => {
     if (timeLeft <= 0) {
       play('timeout');
       const correctAns = (type === 'Encrypt' ? cipher : type === 'Decrypt' ? plaintext : keyText);
-      setFb(`⏰ Time's up! Correct answer: ${correctAns}`);
+      setFb(`Time's up! Correct answer: ${correctAns}`);
       clearTimeout(timerRef.current);
       setTimeout(next, 2500);
       return;
@@ -172,7 +172,7 @@ const PlayfairChallenge = () => {
 
   const next = () => {
     if (idx + 1 < MAX_PUZZLES) setIdx(i => i + 1);
-    else { setStart(false); setFb(`🎉 Done! Score: ${score}/${MAX_PUZZLES}`); }
+    else { setStart(false); setFb(`Challenge complete! Score: ${score}/${MAX_PUZZLES}`); }
   };
 
   const onSubmit = (e) => {
@@ -187,7 +187,7 @@ const PlayfairChallenge = () => {
     if (correct) {
       play('correct');
       setScore(s => s + 1);
-      setFb('✅ Correct!');
+      setFb('Correct!');
       clearTimeout(timerRef.current);
       setTimeout(next, 1500);
     } else {
@@ -196,27 +196,32 @@ const PlayfairChallenge = () => {
       setTries(t);
       if (t >= MAX_ATTEMPTS) {
         const correctAns = (type === 'Decrypt' ? plaintext : type === 'Encrypt' ? cipher : keyText);
-        setFb(`❌ No attempts left. Ans: ${correctAns}`);
+        setFb(`No attempts left. Answer: ${correctAns}`);
         clearTimeout(timerRef.current);
         setTimeout(next, 2500);
-      } else setFb(`❌ Wrong, ${MAX_ATTEMPTS - t} tries left.`);
+      } else setFb(`Incorrect, ${MAX_ATTEMPTS - t} tries left.`);
     }
   };
 
   const showHint = () => {
     if (!hint) {
-      const msg = type === 'Crack Key'
-        ? `Key length = ${keyText.length}`
-        : `Key starts "${keyText.charAt(0)}"`;
-      setFb(`💡 Hint: ${msg}`);
+      let msg = '';
+      if (type === 'Crack Key') {
+        msg = `The key has ${keyText.length} characters. Remember that the Playfair cipher uses a 5x5 matrix where each cell contains a letter.`;
+      } else if (type === 'Decrypt') {
+        msg = `The key starts with "${keyText.charAt(0)}". In Playfair decryption, you need to reverse the encryption rules: same row (shift left), same column (shift up), rectangle (swap columns).`;
+      } else { // Encrypt
+        msg = `The key starts with "${keyText.charAt(0)}". In Playfair encryption, pairs in the same row shift right, pairs in the same column shift down, and rectangle pairs swap columns.`;
+      }
+      setFb(`Hint: ${msg}`);
       setHint(true);
     }
   };
 
   const prompt = () => {
-    if (type === 'Decrypt') return <p>🔐 Decrypt <strong>{cipher}</strong></p>;
-    if (type === 'Encrypt') return <p>🔒 Encrypt <strong>{plaintext}</strong> with key</p>;
-    return <p>🔑 Find key for: {plaintext} → {cipher}</p>;
+    if (type === 'Decrypt') return <p>Decrypt <strong>{cipher}</strong></p>;
+    if (type === 'Encrypt') return <p>Encrypt <strong>{plaintext}</strong> with key</p>;
+    return <p>Find key for: {plaintext} → {cipher}</p>;
   };
 
   if (!start) {
@@ -256,7 +261,7 @@ const PlayfairChallenge = () => {
         <div className="score-display">Score: {score}</div>
         
         <div className="timer-container">
-          ⏱ Time left: {timeLeft}s
+          Time left: {timeLeft}s
           <div style={{ width: '100%', height: '8px', background: '#e9ecef', borderRadius: '4px', margin: '8px 0' }}>
             <div 
               style={{ 

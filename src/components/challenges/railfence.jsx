@@ -62,9 +62,9 @@ const PUZZLES = {
 const CHALLENGE_TYPES = ['Decrypt', 'Encrypt', 'Crack Key'];
 
 const DIFFICULTY_SETTINGS = {
-  Easy: { rails: 2, puzzleTime: 60 },
+  Easy: { rails: 2, puzzleTime: 45 },
   Medium: { rails: 3, puzzleTime: 45 },
-  Hard: { rails: 4, puzzleTime: 30 }
+  Hard: { rails: 4, puzzleTime: 45 }
 };
 
 const MAX_PUZZLES = 5;
@@ -130,7 +130,7 @@ const RailFenceChallenge = () => {
       else if (challengeType === 'Encrypt') correctAnswer = cipherText;
       else correctAnswer = railsUsed;
 
-      setFeedback(`⏰ Time's up! Correct answer was: ${correctAnswer}`);
+      setFeedback(`Time's up! Correct answer was: ${correctAnswer}`);
       setTimeout(nextPuzzle, 3000);
       return;
     }
@@ -144,7 +144,7 @@ const RailFenceChallenge = () => {
       setPuzzleIndex(puzzleIndex + 1);
     } else {
       setGameStarted(false);
-      setFeedback(`🎉 Challenge complete! Final score: ${score}/${MAX_PUZZLES}`);
+      setFeedback(`Challenge complete! Final score: ${score}/${MAX_PUZZLES}`);
     }
   };
 
@@ -164,7 +164,7 @@ const RailFenceChallenge = () => {
     if (isCorrect) {
       playSound('correct');
       setScore(score + 1);
-      setFeedback('✅ Correct!');
+      setFeedback('Correct!');
       clearTimeout(timerRef.current);
       setTimeout(nextPuzzle, 2000);
     } else {
@@ -174,29 +174,37 @@ const RailFenceChallenge = () => {
       if (tries >= MAX_ATTEMPTS) {
         const correctAnswer = challengeType === 'Decrypt' ? plaintext
           : challengeType === 'Encrypt' ? cipherText : railsUsed;
-        setFeedback(`❌ No attempts left! Answer was: ${correctAnswer}`);
+        setFeedback(`No attempts left! Answer was: ${correctAnswer}`);
         clearTimeout(timerRef.current);
         setTimeout(nextPuzzle, 2500);
       } else {
-        setFeedback(`❌ Incorrect. Attempts left: ${MAX_ATTEMPTS - tries}`);
+        setFeedback(`Incorrect. Attempts left: ${MAX_ATTEMPTS - tries}`);
       }
     }
   };
 
   const handleHint = () => {
     if (!hintUsed) {
-      setFeedback(`💡 Hint: Rail count is between 2 and ${DIFFICULTY_SETTINGS[difficulty].rails + 2}`);
+      let hintMessage = '';
+      if (challengeType === 'Decrypt') {
+        hintMessage = `The message was encrypted using ${railsUsed} rails. In Rail Fence decryption, you need to reconstruct the rails and read horizontally.`;
+      } else if (challengeType === 'Encrypt') {
+        hintMessage = `To encrypt with ${railsUsed} rails, arrange the letters in a zigzag pattern across ${railsUsed} rows, then read off each row.`;
+      } else { // Crack Key
+        hintMessage = `The rail count is between 2 and ${DIFFICULTY_SETTINGS[difficulty].rails + 2}. Try different rail counts to see which one produces the correct plaintext.`;
+      }
+      setFeedback(`Hint: ${hintMessage}`);
       setHintUsed(true);
     }
   };
 
   const renderChallengePrompt = () => {
     if (challengeType === 'Decrypt') {
-      return <p>🔐 Decrypt the following: <strong>{cipherText}</strong></p>;
+      return <p>Decrypt the following: <strong>{cipherText}</strong></p>;
     } else if (challengeType === 'Encrypt') {
-      return <p>🔒 Encrypt the following: <strong>{plaintext}</strong> using {railsUsed} rails</p>;
+      return <p>Encrypt the following: <strong>{plaintext}</strong> using {railsUsed} rails</p>;
     } else {
-      return <p>🔑 Find the number of rails used to encrypt: <strong>{cipherText}</strong> → <em>{plaintext}</em></p>;
+      return <p>Find the number of rails used to encrypt: <strong>{cipherText}</strong> → <em>{plaintext}</em></p>;
     }
   };
 
@@ -238,7 +246,7 @@ const RailFenceChallenge = () => {
         <div className="score-display">Score: {score}</div>
         
         <div className="timer-container">
-          ⏳ Time left: {timeLeft}s
+          Time left: {timeLeft}s
           <div style={{ width: '100%', height: '8px', background: '#e9ecef', borderRadius: '4px', margin: '8px 0' }}>
             <div 
               style={{ 

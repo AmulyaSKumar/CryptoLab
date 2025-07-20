@@ -201,20 +201,68 @@ const RailFenceCipher = () => {
               />
             </div>
 
-            {/* Replace dropdown with toggle switch */}
-            <div className="input-group" style={{ display: 'flex', justifyContent: 'center' }}>
-              <label className="toggle-switch">
-                <input
-                  type="checkbox"
-                  checked={mode === 'decrypt'}
-                  onChange={(e) => setMode(e.target.checked ? 'decrypt' : 'encrypt')}
-                />
-                <span className="toggle-slider">
-                  <span className={`toggle-label ${mode === 'encrypt' ? 'active' : ''}`}>Encrypt</span>
-                  <span className={`toggle-label ${mode === 'decrypt' ? 'active' : ''}`}>Decrypt</span>
-                </span>
-              </label>
-            </div>
+            {/* Mode Selection - BYOC Style Toggle */}
+<div className="input-group">
+  <label>Operation Mode</label>
+  <div className="toggle-container" style={{ 
+    display: 'flex', 
+    justifyContent: 'center', 
+    gap: '0.5rem', 
+    marginTop: '0.5rem',
+    background: '#e2e8f0',
+    padding: '0.25rem',
+    borderRadius: '8px',
+    maxWidth: '300px',
+    margin: '0.5rem auto'
+  }}>
+    <label className="toggle-switch" style={{ 
+      display: 'flex', 
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '0.5rem 1rem',
+      backgroundColor: mode === 'encrypt' ? 'var(--primary-color)' : 'transparent',
+      color: mode === 'encrypt' ? 'white' : 'var(--text-color)',
+      borderRadius: '6px',
+      cursor: 'pointer',
+      transition: 'all 0.2s ease',
+      flex: '1',
+      fontWeight: mode === 'encrypt' ? 'bold' : 'normal',
+      boxShadow: mode === 'encrypt' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
+    }}>
+      <input
+        type="radio"
+        name="mode"
+        checked={mode === 'encrypt'}
+        onChange={() => setMode('encrypt')}
+        style={{ display: 'none' }}
+      />
+      <span className="toggle-label">Encrypt</span>
+    </label>
+    <label className="toggle-switch" style={{ 
+      display: 'flex', 
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '0.5rem 1rem',
+      backgroundColor: mode === 'decrypt' ? 'var(--primary-color)' : 'transparent',
+      color: mode === 'decrypt' ? 'white' : 'var(--text-color)',
+      borderRadius: '6px',
+      cursor: 'pointer',
+      transition: 'all 0.2s ease',
+      flex: '1',
+      fontWeight: mode === 'decrypt' ? 'bold' : 'normal',
+      boxShadow: mode === 'decrypt' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
+    }}>
+      <input
+        type="radio"
+        name="mode"
+        checked={mode === 'decrypt'}
+        onChange={() => setMode('decrypt')}
+        style={{ display: 'none' }}
+      />
+      <span className="toggle-label">Decrypt</span>
+    </label>
+  </div>
+</div>
 
             <button
               onClick={handleCompute}

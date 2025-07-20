@@ -295,7 +295,7 @@ const RSAQuiz = () => {
                 Question {current + 1} of {questions.length}
               </label>
               <div
-                className="result-box"
+                className="box"
                 style={{ padding: "1rem", fontWeight: "bold" }}
               >
                 {questions[current].question}

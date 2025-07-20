@@ -40,9 +40,9 @@ const PUZZLES = {
 const CHALLENGE_TYPES = ['Decrypt', 'Encrypt', 'Crack Key'];
 
 const DIFFICULTY_SETTINGS = {
-  Easy: { puzzles: PUZZLES.Easy, time: 60 },
+  Easy: { puzzles: PUZZLES.Easy, time: 45 },
   Medium: { puzzles: PUZZLES.Medium, time: 45 },
-  Hard: { puzzles: PUZZLES.Hard, time: 30 },
+  Hard: { puzzles: PUZZLES.Hard, time: 45 },
 };
 
 const MAX_PUZZLES = 5;
@@ -105,7 +105,7 @@ const VernamChallenge = () => {
       else if (type === 'Encrypt') correctAns = ciphertext;
       else correctAns = key;
 
-      setFeedback(`⏰ Time's up! Correct answer: ${correctAns}`);
+      setFeedback(`Time's up! Correct answer: ${correctAns}`);
       clearTimeout(timerRef.current);
       setTimeout(nextPuzzle, 2500);
       return;
@@ -118,7 +118,7 @@ const VernamChallenge = () => {
     if (index + 1 < MAX_PUZZLES) setIndex(i => i + 1);
     else {
       setGameStarted(false);
-      setFeedback(`🎉 Game over! Your score: ${score}/${MAX_PUZZLES}`);
+      setFeedback(`Challenge complete! Your score: ${score}/${MAX_PUZZLES}`);
     }
   };
 
@@ -134,7 +134,7 @@ const VernamChallenge = () => {
     if (correct) {
       play('correct');
       setScore(s => s + 1);
-      setFeedback('✅ Correct!');
+      setFeedback('Correct!');
       clearTimeout(timerRef.current);
       setTimeout(nextPuzzle, 1500);
     } else {
@@ -143,32 +143,37 @@ const VernamChallenge = () => {
       setAttempts(tries);
       if (tries >= MAX_ATTEMPTS) {
         let correctAns = type === 'Decrypt' ? plaintext : type === 'Encrypt' ? ciphertext : key;
-        setFeedback(`❌ No attempts left. Answer was: ${correctAns}`);
+        setFeedback(`No attempts left. Answer was: ${correctAns}`);
         clearTimeout(timerRef.current);
         setTimeout(nextPuzzle, 2500);
       } else {
-        setFeedback(`❌ Incorrect. Attempts left: ${MAX_ATTEMPTS - tries}`);
+        setFeedback(`Incorrect. Attempts left: ${MAX_ATTEMPTS - tries}`);
       }
     }
   };
 
   const showHint = () => {
     if (!hintUsed) {
-      const hint = type === 'Crack Key'
-        ? `Key is ${key.length}-letters long.`
-        : `Key starts with "${key[0]}"`;
-      setFeedback(`💡 Hint: ${hint}`);
+      let hintMessage = '';
+      if (type === 'Crack Key') {
+        hintMessage = `The key is ${key.length} letters long. In Vernam cipher, each letter of the plaintext is XORed with the corresponding letter of the key.`;
+      } else if (type === 'Decrypt') {
+        hintMessage = `The key starts with "${key[0]}". To decrypt, XOR each letter of the ciphertext with the corresponding letter of the key.`;
+      } else { // Encrypt
+        hintMessage = `The key starts with "${key[0]}". To encrypt, XOR each letter of the plaintext with the corresponding letter of the key.`;
+      }
+      setFeedback(`Hint: ${hintMessage}`);
       setHintUsed(true);
     }
   };
 
   const renderPrompt = () => {
     if (type === 'Decrypt') {
-      return <p>🔐 Decrypt: <strong>{ciphertext}</strong> using the key.</p>;
+      return <p>Decrypt: <strong>{ciphertext}</strong> using the key.</p>;
     } else if (type === 'Encrypt') {
-      return <p>🔒 Encrypt: <strong>{plaintext}</strong> using the key.</p>;
+      return <p>Encrypt: <strong>{plaintext}</strong> using the key.</p>;
     } else {
-      return <p>🔑 Crack Key: Given <strong>{plaintext}</strong> → <strong>{ciphertext}</strong>, enter the key.</p>;
+      return <p>Crack Key: Given <strong>{plaintext}</strong> → <strong>{ciphertext}</strong>, enter the key.</p>;
     }
   };
 
@@ -209,7 +214,7 @@ const VernamChallenge = () => {
         <div className="score-display">Score: {score}</div>
         
         <div className="timer-container">
-          ⏱ Time left: {timeLeft}s
+          Time left: {timeLeft}s
           <div style={{ width: '100%', height: '8px', background: '#e9ecef', borderRadius: '4px', margin: '8px 0' }}>
             <div 
               style={{ 
@@ -225,9 +230,9 @@ const VernamChallenge = () => {
         
         <div className="puzzle-display">
           {type === 'Encrypt' ? (
-            <p>🔒 Encrypt: <strong>{plaintext}</strong> with key <strong>{key}</strong></p>
+            <p>Encrypt: <strong>{plaintext}</strong> with key <strong>{key}</strong></p>
           ) : (
-            <p>🔓 Decrypt: <strong>{ciphertext}</strong> with key <strong>{key}</strong></p>
+            <p>Decrypt: <strong>{ciphertext}</strong> with key <strong>{key}</strong></p>
           )}
         </div>
         
