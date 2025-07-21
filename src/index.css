@@ -2609,3 +2609,86 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* Floating Chat Button Styles */
+.floating-chat-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 139, 139, 0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.floating-chat-button:hover {
+  background-color: var(--secondary-color);
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 139, 139, 0.4);
+}
+
+.floating-chat-button:active {
+  transform: scale(0.95);
+}
+
+.floating-chat-button .icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.floating-chat-button .icon-wrapper.rotate-out {
+  animation: rotateOut 0.3s ease forwards;
+}
+
+.floating-chat-button .icon-wrapper.rotate-in {
+  animation: rotateIn 0.3s ease forwards;
+}
+
+@keyframes rotateOut {
+  from {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: rotate(90deg) scale(0.8);
+    opacity: 0.8;
+  }
+}
+
+@keyframes rotateIn {
+  from {
+    transform: rotate(-90deg) scale(0.8);
+    opacity: 0.8;
+  }
+  to {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Mobile adjustments for floating chat button */
+@media (max-width: 768px) {
+  .floating-chat-button {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 50px;
+    height: 50px;
+  }
+  
+  .floating-chat-button .icon-wrapper {
+    font-size: 1.25rem;
+  }
+}
+
