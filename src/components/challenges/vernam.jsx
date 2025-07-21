@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import './ChallengeStyles.css';
 
@@ -66,16 +66,24 @@ const VernamChallenge = () => {
   const [hintUsed, setHintUsed] = useState(false);
   const timerRef = useRef(null);
 
-  const play = (sound) => {
+  const play = useCallback((sound) => {
     const sounds = {
       correct: 'https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg',
       incorrect: 'https://actions.google.com/sounds/v1/cartoon/boing.ogg',
       timeout: 'https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg',
     };
     new Audio(sounds[sound]).play();
-  };
+  }, []);
 
-  const generatePuzzle = () => {
+  const nextPuzzle = useCallback(() => {
+    if (index + 1 < MAX_PUZZLES) setIndex(i => i + 1);
+    else {
+      setGameStarted(false);
+      setFeedback(`Challenge complete! Your score: ${score}/${MAX_PUZZLES}`);
+    }
+  }, [index, score]);
+
+  const generatePuzzle = useCallback(() => {
     const { puzzles, time } = DIFFICULTY_SETTINGS[difficulty];
     const { plaintext, key } = puzzles[index];
     const ciphertext = vernamEncrypt(plaintext, key);
@@ -89,12 +97,12 @@ const VernamChallenge = () => {
     setFeedback('');
     setTimeLeft(time);
     setHintUsed(false);
-  };
+  }, [difficulty, index]);
 
   useEffect(() => {
     if (!gameStarted) return;
     generatePuzzle();
-  }, [index, difficulty, gameStarted]);
+  }, [index, difficulty, gameStarted, generatePuzzle]);
 
   useEffect(() => {
     if (!gameStarted || !plaintext) return; // Wait for puzzle to be generated
@@ -112,15 +120,7 @@ const VernamChallenge = () => {
     }
     timerRef.current = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
     return () => clearTimeout(timerRef.current);
-  }, [timeLeft, gameStarted]);
-
-  const nextPuzzle = () => {
-    if (index + 1 < MAX_PUZZLES) setIndex(i => i + 1);
-    else {
-      setGameStarted(false);
-      setFeedback(`Challenge complete! Your score: ${score}/${MAX_PUZZLES}`);
-    }
-  };
+  }, [timeLeft, gameStarted, plaintext, type, ciphertext, key, play, nextPuzzle]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -167,16 +167,6 @@ const VernamChallenge = () => {
     }
   };
 
-  const renderPrompt = () => {
-    if (type === 'Decrypt') {
-      return <p>Decrypt: <strong>{ciphertext}</strong> using the key.</p>;
-    } else if (type === 'Encrypt') {
-      return <p>Encrypt: <strong>{plaintext}</strong> using the key.</p>;
-    } else {
-      return <p>Crack Key: Given <strong>{plaintext}</strong> → <strong>{ciphertext}</strong>, enter the key.</p>;
-    }
-  };
-
   if (!gameStarted) {
     return (
       <div className="main-container">
@@ -215,14 +205,11 @@ const VernamChallenge = () => {
         
         <div className="timer-container">
           Time left: {timeLeft}s
-          <div style={{ width: '100%', height: '8px', background: '#e9ecef', borderRadius: '4px', margin: '8px 0' }}>
+          <div className="timer-progress-container">
             <div 
+              className="timer-progress-bar"
               style={{ 
-                width: `${(timeLeft / DIFFICULTY_SETTINGS[difficulty].time) * 100}%`, 
-                height: '100%', 
-                background: 'linear-gradient(to right, #4caf50, #8bc34a)', 
-                borderRadius: '4px',
-                transition: 'width 1s linear'
+                width: `${(timeLeft / DIFFICULTY_SETTINGS[difficulty].time) * 100}%`
               }} 
             />
           </div>
@@ -249,6 +236,15 @@ const VernamChallenge = () => {
           <button type="submit" className="challenge-submit">Submit</button>
         </form>
         
+        <button 
+          onClick={showHint} 
+          disabled={hintUsed} 
+          className="nav-button" 
+          style={{ marginTop: '1rem', opacity: hintUsed ? 0.6 : 1 }}
+        >
+          {hintUsed ? 'Hint Used' : 'Show Hint'}
+        </button>
+
         {feedback && <p className={`feedback-message ${feedback.includes('Correct') ? 'feedback-success' : 'feedback-error'}`}>{feedback}</p>}
       </div>
     </div>

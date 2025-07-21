@@ -214,7 +214,9 @@ const HillChallenge = () => {
     
     let correct = false;
     if (challengeType === 'Decrypt') {
-      correct = input === plaintext;
+      // Use hillDecrypt to verify the answer
+      const decryptedText = hillDecrypt(ciphertext, key);
+      correct = input === decryptedText || input === plaintext;
     } else if (challengeType === 'Encrypt') {
       correct = input === ciphertext;
     } else if (challengeType === 'Crack Key') {
@@ -311,14 +313,11 @@ const HillChallenge = () => {
         
         <div className="timer-container">
           ⏳ Time left: {timeLeft}s
-          <div style={{ width: '100%', height: '8px', background: '#e9ecef', borderRadius: '4px', margin: '8px 0' }}>
+          <div className="timer-progress-container">
             <div 
+              className="timer-progress-bar"
               style={{ 
-                width: `${(timeLeft / DIFFICULTY_SETTINGS[difficulty].time) * 100}%`, 
-                height: '100%', 
-                background: 'linear-gradient(to right, #4caf50, #8bc34a)', 
-                borderRadius: '4px',
-                transition: 'width 1s linear'
+                width: `${(timeLeft / DIFFICULTY_SETTINGS[difficulty].time) * 100}%`
               }} 
             />
           </div>

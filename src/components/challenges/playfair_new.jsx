@@ -71,6 +71,15 @@ const playfairEncrypt = (text, key) => {
   return preprocess(text).map(pair => playfairTransform(matrix, pair, true)).join('');
 };
 
+const playfairDecrypt = (cipher, key) => {
+  const matrix = generateMatrix(key);
+  const pairs = [];
+  for (let i = 0; i < cipher.length; i += 2) {
+    pairs.push(cipher.substr(i, 2));
+  }
+  return pairs.map(pair => playfairTransform(matrix, pair, false)).join('');
+};
+
 // =========== React Component ===========
 
 const PUZZLES = {
@@ -178,8 +187,13 @@ const PlayfairChallenge = () => {
     const ans = inputVal.toUpperCase().replace(/[^A-Z]/g, '');
     let correct = false;
 
-    if (type === 'Decrypt') correct = ans === plaintext;
-    else if (type === 'Encrypt') correct = ans === cipher;
+    if (type === 'Decrypt') {
+      // Use playfairDecrypt to verify the answer
+      const decryptedText = playfairDecrypt(cipher, keyText);
+      correct = ans === decryptedText || ans === plaintext;
+    } else if (type === 'Encrypt') {
+      correct = ans === cipher;
+    }
 
     if (correct) {
       play('correct');
@@ -256,14 +270,11 @@ const PlayfairChallenge = () => {
         
         <div className="timer-container">
           ⏱ Time left: {timeLeft}s
-          <div style={{ width: '100%', height: '8px', background: '#e9ecef', borderRadius: '4px', margin: '8px 0' }}>
+          <div className="timer-progress-container">
             <div 
+              className="timer-progress-bar"
               style={{ 
-                width: `${(timeLeft / DIFFICULTY_SETTINGS[diff].time) * 100}%`, 
-                height: '100%', 
-                background: 'linear-gradient(to right, #4caf50, #8bc34a)', 
-                borderRadius: '4px',
-                transition: 'width 1s linear'
+                width: `${(timeLeft / DIFFICULTY_SETTINGS[diff].time) * 100}%`
               }} 
             />
           </div>

@@ -134,11 +134,15 @@ const VigenereChallenge = () => {
     let isCorrect = false;
 
     if (challengeType === 'Decrypt') {
-      isCorrect = answer === plaintext;
+      // Use vigenereDecrypt to verify the answer
+      const decryptedText = vigenereDecrypt(cipherText, keyUsed);
+      isCorrect = answer === decryptedText || answer === plaintext;
     } else if (challengeType === 'Encrypt') {
       isCorrect = answer === cipherText;
     } else if (challengeType === 'Crack Key') {
-      isCorrect = answer === keyUsed;
+      // Verify the key by encrypting plaintext and checking if it matches ciphertext
+      const testCipher = vigenereEncrypt(plaintext, answer);
+      isCorrect = testCipher === cipherText || answer === keyUsed;
     }
 
     if (isCorrect) {
@@ -227,14 +231,11 @@ const VigenereChallenge = () => {
         
         <div className="timer-container">
           Time left: {timeLeft}s
-          <div style={{ width: '100%', height: '8px', background: '#e9ecef', borderRadius: '4px', margin: '8px 0' }}>
+          <div className="timer-progress-container">
             <div 
+              className="timer-progress-bar"
               style={{ 
-                width: `${(timeLeft / DIFFICULTY_SETTINGS[difficulty].puzzleTime) * 100}%`, 
-                height: '100%', 
-                background: 'linear-gradient(to right, #4caf50, #8bc34a)', 
-                borderRadius: '4px',
-                transition: 'width 1s linear'
+                width: `${(timeLeft / DIFFICULTY_SETTINGS[difficulty].puzzleTime) * 100}%`
               }} 
             />
           </div>
