@@ -2617,7 +2617,7 @@ h1, h2, h3, h4, h5, h6 {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background-color: var(--primary-color);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   color: white;
   border: none;
   box-shadow: 0 4px 12px rgba(0, 139, 139, 0.3);
@@ -2628,10 +2628,10 @@ h1, h2, h3, h4, h5, h6 {
   transition: all 0.3s ease;
   z-index: 1000;
   overflow: hidden;
+  backdrop-filter: blur(10px);
 }
 
 .floating-chat-button:hover {
-  background-color: var(--secondary-color);
   transform: scale(1.05);
   box-shadow: 0 6px 20px rgba(0, 139, 139, 0.4);
 }
@@ -2690,5 +2690,77 @@ h1, h2, h3, h4, h5, h6 {
   .floating-chat-button .icon-wrapper {
     font-size: 1.25rem;
   }
+}
+
+@media (max-width: 480px) {
+  .floating-chat-button {
+    bottom: 1rem;
+    right: 1rem;
+    width: 45px;
+    height: 45px;
+  }
+  
+  .floating-chat-button .icon-wrapper {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .floating-chat-button {
+    bottom: 0.75rem;
+    right: 0.75rem;
+    width: 40px;
+    height: 40px;
+  }
+  
+  .floating-chat-button .icon-wrapper {
+    font-size: 1rem;
+  }
+}
+
+/* Standardized Operation Mode Toggle */
+.operation-mode-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  background: #f1f5f9;
+  padding: 0.25rem;
+  border-radius: 8px;
+  max-width: 300px;
+  margin: 0.5rem auto;
+  border: 1px solid #e2e8f0;
+}
+
+.operation-mode-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  font-weight: 500;
+  font-size: 0.9rem;
+  background: transparent;
+  color: var(--text-color);
+  border: none;
+}
+
+.operation-mode-option.active {
+  background-color: var(--primary-color);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 139, 139, 0.2);
+  font-weight: 600;
+}
+
+.operation-mode-option:hover:not(.active) {
+  background-color: rgba(0, 139, 139, 0.1);
+  color: var(--primary-color);
+}
+
+.operation-mode-option input {
+  display: none;
 }
 

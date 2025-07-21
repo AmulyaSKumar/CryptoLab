@@ -68,7 +68,7 @@ const CaesarCipherChallenge = () => {
   const [score, setScore] = useState(0);
   const [tries, setTries] = useState(0);
   const [fb, setFb] = useState('');
-  const [timeLeft, setTimeLeft] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(DIFFICULTY_SETTINGS.Easy.time);
   const [hintUsed, setHintUsed] = useState(false);
   const timerRef = useRef(null);
 
@@ -103,7 +103,7 @@ const CaesarCipherChallenge = () => {
   }, [idx, difficulty, started]);
 
   useEffect(() => {
-    if (!started) return;
+    if (!started || !plaintext) return; // Wait for puzzle to be generated
     if (timeLeft <= 0) {
       play('timeout');
       const correct = type === 'Decrypt' ? plaintext : type === 'Encrypt' ? cipher : shift.toString();

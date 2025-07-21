@@ -18,53 +18,18 @@ const railFenceEncrypt = (text, rails) => {
   return fence.flat().join('');
 };
 
-// Rail Fence decryption function
-const railFenceDecrypt = (ciphertext, rails) => {
-  if (rails === 1) return ciphertext;
-
-  const len = ciphertext.length;
-  const fence = Array.from({ length: rails }, () => Array(len).fill(null));
-  let rail = 0, direction = 1;
-
-  for (let i = 0; i < len; i++) {
-    fence[rail][i] = '*';
-    rail += direction;
-    if (rail === 0 || rail === rails - 1) direction *= -1;
-  }
-
-  let idx = 0;
-  for (let r = 0; r < rails; r++) {
-    for (let c = 0; c < len; c++) {
-      if (fence[r][c] === '*' && idx < len) {
-        fence[r][c] = ciphertext[idx++];
-      }
-    }
-  }
-
-  let result = '';
-  rail = 0;
-  direction = 1;
-  for (let i = 0; i < len; i++) {
-    result += fence[rail][i];
-    rail += direction;
-    if (rail === 0 || rail === rails - 1) direction *= -1;
-  }
-
-  return result;
-};
-
 const PUZZLES = {
   Easy: ['HELLO', 'WORLD', 'RAIL', 'CIPHER', 'CODE'],
   Medium: ['ENCRYPT', 'SECURITY', 'PUZZLE', 'NETWORK', 'CHALLENGE'],
   Hard: ['CRYPTOGRAPHY', 'DECRYPTION', 'TRANSPOSE', 'ALGORITHM', 'ENIGMA']
 };
 
-const CHALLENGE_TYPES = ['Decrypt', 'Encrypt', 'Crack Key'];
+const CHALLENGE_TYPES = ['Encrypt', 'Decrypt', 'Crack Key'];
 
 const DIFFICULTY_SETTINGS = {
-  Easy: { rails: 2, puzzleTime: 45 },
+  Easy: { rails: 2, puzzleTime: 60 },
   Medium: { rails: 3, puzzleTime: 45 },
-  Hard: { rails: 4, puzzleTime: 45 }
+  Hard: { rails: 4, puzzleTime: 30 }
 };
 
 const MAX_PUZZLES = 5;
@@ -121,30 +86,30 @@ const RailFenceChallenge = () => {
   }, [puzzleIndex, difficulty, gameStarted]);
 
   useEffect(() => {
-    if (!gameStarted) return;
+    if (!gameStarted || !plaintext) return; // Wait for puzzle to be generated
 
     if (timeLeft <= 0) {
       playSound('timeout');
       let correctAnswer = '';
       if (challengeType === 'Decrypt') correctAnswer = plaintext;
       else if (challengeType === 'Encrypt') correctAnswer = cipherText;
-      else correctAnswer = railsUsed;
+      else correctAnswer = railsUsed.toString();
 
-      setFeedback(`Time's up! Correct answer was: ${correctAnswer}`);
-      setTimeout(nextPuzzle, 3000);
+      setFeedback(`⏰ Time's up! Correct answer was: ${correctAnswer}`);
+      setTimeout(() => nextPuzzle(), 3000);
       return;
     }
 
     timerRef.current = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
     return () => clearTimeout(timerRef.current);
-  }, [timeLeft, gameStarted]);
+  }, [timeLeft, gameStarted, challengeType, plaintext, cipherText, railsUsed]);
 
   const nextPuzzle = () => {
     if (puzzleIndex + 1 < MAX_PUZZLES) {
       setPuzzleIndex(puzzleIndex + 1);
     } else {
       setGameStarted(false);
-      setFeedback(`Challenge complete! Final score: ${score}/${MAX_PUZZLES}`);
+      setFeedback(`🎉 Challenge complete! Final score: ${score}/${MAX_PUZZLES}`);
     }
   };
 
@@ -164,47 +129,39 @@ const RailFenceChallenge = () => {
     if (isCorrect) {
       playSound('correct');
       setScore(score + 1);
-      setFeedback('Correct!');
+      setFeedback('✅ Correct!');
       clearTimeout(timerRef.current);
-      setTimeout(nextPuzzle, 2000);
+      setTimeout(() => nextPuzzle(), 2000);
     } else {
       playSound('incorrect');
       const tries = attempts + 1;
       setAttempts(tries);
       if (tries >= MAX_ATTEMPTS) {
         const correctAnswer = challengeType === 'Decrypt' ? plaintext
-          : challengeType === 'Encrypt' ? cipherText : railsUsed;
-        setFeedback(`No attempts left! Answer was: ${correctAnswer}`);
+          : challengeType === 'Encrypt' ? cipherText : railsUsed.toString();
+        setFeedback(`❌ No attempts left! Answer was: ${correctAnswer}`);
         clearTimeout(timerRef.current);
-        setTimeout(nextPuzzle, 2500);
+        setTimeout(() => nextPuzzle(), 2500);
       } else {
-        setFeedback(`Incorrect. Attempts left: ${MAX_ATTEMPTS - tries}`);
+        setFeedback(`❌ Incorrect. Attempts left: ${MAX_ATTEMPTS - tries}`);
       }
     }
   };
 
   const handleHint = () => {
     if (!hintUsed) {
-      let hintMessage = '';
-      if (challengeType === 'Decrypt') {
-        hintMessage = `The message was encrypted using ${railsUsed} rails. In Rail Fence decryption, you need to reconstruct the rails and read horizontally.`;
-      } else if (challengeType === 'Encrypt') {
-        hintMessage = `To encrypt with ${railsUsed} rails, arrange the letters in a zigzag pattern across ${railsUsed} rows, then read off each row.`;
-      } else { // Crack Key
-        hintMessage = `The rail count is between 2 and ${DIFFICULTY_SETTINGS[difficulty].rails + 2}. Try different rail counts to see which one produces the correct plaintext.`;
-      }
-      setFeedback(`Hint: ${hintMessage}`);
+      setFeedback(`💡 Hint: Rail count is between 2 and ${DIFFICULTY_SETTINGS[difficulty].rails + 2}`);
       setHintUsed(true);
     }
   };
 
   const renderChallengePrompt = () => {
     if (challengeType === 'Decrypt') {
-      return <p>Decrypt the following: <strong>{cipherText}</strong></p>;
+      return <p>🔐 Decrypt the following: <strong>{cipherText}</strong> (using {railsUsed} rails)</p>;
     } else if (challengeType === 'Encrypt') {
-      return <p>Encrypt the following: <strong>{plaintext}</strong> using {railsUsed} rails</p>;
+      return <p>🔒 Encrypt the following: <strong>{plaintext}</strong> using {railsUsed} rails</p>;
     } else {
-      return <p>Find the number of rails used to encrypt: <strong>{cipherText}</strong> → <em>{plaintext}</em></p>;
+      return <p>🔑 Find the number of rails used to encrypt: <strong>{plaintext}</strong> → <strong>{cipherText}</strong></p>;
     }
   };
 
@@ -246,7 +203,7 @@ const RailFenceChallenge = () => {
         <div className="score-display">Score: {score}</div>
         
         <div className="timer-container">
-          Time left: {timeLeft}s
+          ⏳ Time left: {timeLeft}s
           <div style={{ width: '100%', height: '8px', background: '#e9ecef', borderRadius: '4px', margin: '8px 0' }}>
             <div 
               style={{ 

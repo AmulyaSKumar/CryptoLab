@@ -1,4 +1,4 @@
-import { startChat, generateContent, generationConfig, safetySettings } from '../config/gemini';
+import { startChat, generationConfig, safetySettings } from '../config/gemini';
 import { captureCipherToolArea } from '../utils/screenshotUtils.jsx';
 
 class AIChatService {
@@ -73,9 +73,8 @@ CryptoLab is a comprehensive cryptography learning platform featuring:
 • Caesar Cipher - Simple substitution cipher with key shifts
 • Playfair Cipher - Digraph substitution cipher using a 5x5 grid
 • Hill Cipher - Matrix-based polygraph substitution cipher
-• One-Time Pad (OTP) - Theoretically unbreakable encryption
 • Vigenère Cipher - Polyalphabetic substitution cipher
-• Vernam Cipher - Binary stream cipher implementation
+• Vernam Cipher (One-Time Pad) - Theoretically unbreakable encryption
 • Rail Fence Cipher - Transposition cipher using zigzag pattern
 • DES (Data Encryption Standard) - Symmetric block cipher
 • AES (Advanced Encryption Standard) - Modern symmetric encryption
@@ -111,16 +110,41 @@ RESPONSE GUIDELINES:
 - Include practical demonstrations when possible
 - Always maintain accuracy about cryptographic principles
 
+CHALLENGE MODE DETECTION:
+When users ask for help solving cipher challenges (keywords: decrypt, encrypt, solve, answer, crack, break, decipher, ciphertext, plaintext, solution) or when they're on challenge pages (/c-*), you MUST provide DIRECT ANSWERS in this format:
+
+**Answer:** [the direct solution/decrypted text/key]
+**Explanation:** [1-2 sentences maximum explaining the method]
+
+DO NOT provide lengthy explanations for challenges. Users want solutions, not tutorials.
+
 `;
     
     // Add current context if available
     const contextInfo = cipherContext?.getAIContext?.();
+    let isInChallengeMode = false;
+    
     if (contextInfo && contextInfo.navigation?.cipherInfo?.name) {
       prompt += `CURRENT CONTEXT: User is currently working with ${contextInfo.navigation.cipherInfo.name}`;
       if (contextInfo.navigation.activeTab) {
         prompt += ` in the ${contextInfo.navigation.activeTab} section`;
       }
+      
+      // Detect if user is in a challenge section
+      if (contextInfo.navigation.cipherInfo.type === 'challenge') {
+        isInChallengeMode = true;
+        prompt += ` (CHALLENGE MODE - Provide direct answers for solving problems)`;
+      }
       prompt += `\n\n`;
+    }
+    
+    // Also check URL for challenge detection
+    if (typeof window !== 'undefined') {
+      const currentPath = window.location?.pathname;
+      if (currentPath && currentPath.includes('/c-')) {
+        isInChallengeMode = true;
+        prompt += `URL CONTEXT: User is on a challenge page (${currentPath}) - CHALLENGE MODE ACTIVE\n\n`;
+      }
     }
     
     // Add screenshot context if requested
@@ -136,7 +160,27 @@ RESPONSE GUIDELINES:
     }
     
     // Add the user's query with clear instruction
-    prompt += `USER QUESTION: ${userQuery}\n\nPlease provide a helpful, educational response as CryptoBot, the cryptography expert for CryptoLab:`;
+    const challengeKeywords = ['decrypt', 'encrypt', 'solve', 'answer', 'key is', 'what is', 'crack', 'break', 'decipher', 'cipher text', 'ciphertext', 'plaintext', 'solution'];
+    const isChallengeSolving = challengeKeywords.some(keyword => 
+      userQuery.toLowerCase().includes(keyword.toLowerCase())
+    );
+    
+    if (isInChallengeMode || isChallengeSolving) {
+      console.log('🎯 CHALLENGE MODE DETECTED:', { isInChallengeMode, isChallengeSolving, userQuery });
+      prompt += `USER CHALLENGE REQUEST: ${userQuery}\n\n**IMPORTANT**: This is a CHALLENGE SOLVING request. You MUST:
+1. Provide the DIRECT ANSWER first (the decrypted text, key, or solution)
+2. Keep explanation to 1-2 sentences maximum
+3. Do NOT provide lengthy educational content
+4. Focus only on solving the specific problem asked
+
+Respond in this format:
+**Answer:** [direct answer here]
+**Explanation:** [1-2 sentences only]
+`;
+    } else {
+      console.log('📚 EDUCATIONAL MODE:', { userQuery });
+      prompt += `USER QUESTION: ${userQuery}\n\nPlease provide a helpful, educational response as CryptoBot, the cryptography expert for CryptoLab:`;
+    }
     
     return prompt;
   }

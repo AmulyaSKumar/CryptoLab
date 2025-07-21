@@ -134,7 +134,7 @@ const Introduction = () => {
             </div>
 
             <div className="mb-4">
-              <h3 className="font-semibold mb-2">4. One Time Pad</h3>
+              <h3 className="font-semibold mb-2">4. Vernam Cipher (One-Time Pad)</h3>
               <p>
                 The unbreakable one! If used correctly, it's mathematically impossible to crack.
                 It's like having a different secret code for every single letter!

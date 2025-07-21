@@ -29,9 +29,6 @@ const Home = () => {
           <Link to="/c3-hill" className="nav-button block w-auto text-center">
             HILL CIPHER
           </Link>
-          <Link to="/c4-otp" className="nav-button block w-auto text-center">
-            ONE TIME PAD
-          </Link>
           <Link to="/c5-vigenere" className="nav-button block w-auto text-center">
             VIGENERE CIPHER
           </Link>

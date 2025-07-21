@@ -69,14 +69,6 @@ const bytesToHex = (bytes) => {
   return Array.from(bytes).map(byte => byte.toString(16).padStart(2, '0')).join('').toUpperCase();
 };
 
-const stringToBytes = (str) => {
-  const bytes = [];
-  for (let i = 0; i < str.length; i++) {
-    bytes.push(str.charCodeAt(i));
-  }
-  return bytes;
-};
-
 const bytesToAscii = (bytes) => {
   let ascii = '';
   for (let i = 0; i < bytes.length; i++) {
@@ -108,10 +100,6 @@ const stateToBytes = (state) => {
     }
   }
   return bytes;
-};
-
-const xorBytes = (a, b) => {
-  return a.map((byte, i) => byte ^ b[i]);
 };
 
 const subBytes = (state) => {
@@ -249,11 +237,7 @@ const addRoundKey = (state, roundKey) => {
 };
 
 const AESDemo = () => {
-  const [inputType, setInputType] = useState('text');
-  const [keyType, setKeyType] = useState('text');
-  const [inputText, setInputText] = useState('');
   const [inputHex, setInputHex] = useState('');
-  const [keyText, setKeyText] = useState('');
   const [keyHex, setKeyHex] = useState('');
   const [mode, setMode] = useState('encrypt');
   const [steps, setSteps] = useState([]);
@@ -267,12 +251,9 @@ const AESDemo = () => {
   const [stringToConvert, setStringToConvert] = useState('');
   const [convertedHex, setConvertedHex] = useState('');
   const [showConverter, setShowConverter] = useState(false);
-  const [cryptoJSResult, setCryptoJSResult] = useState('');
   const navigate=useNavigate();
   // Maximum character limits
-  const MAX_INPUT_TEXT_LENGTH = 16; // 128 bits (16 characters)
   const MAX_INPUT_HEX_LENGTH = 32; // 128 bits (32 hex characters)
-  const MAX_KEY_TEXT_LENGTH = 16; // 128 bits (16 characters)
   const MAX_KEY_HEX_LENGTH = 32; // 128 bits (32 hex characters)
 
   const speechSynthesis = window.speechSynthesis;
@@ -284,7 +265,6 @@ const AESDemo = () => {
     for (let i = 0; i < MAX_KEY_HEX_LENGTH; i++) {
       result += hex.charAt(Math.floor(Math.random() * hex.length));
     }
-    setKeyType('hex');
     setKeyHex(result);
   };
 
@@ -306,39 +286,29 @@ const AESDemo = () => {
     if (!convertedHex) return;
     
     if (target === 'input') {
-      setInputType('hex');
       setInputHex(convertedHex);
     } else if (target === 'key') {
-      setKeyType('hex');
       setKeyHex(convertedHex);
     }
   };
 
   const handleCompute = () => {
     // Validate inputs
-    if (inputType === 'text' && !inputText) {
-      alert('Please enter input text');
-      return;
-    }
-    if (inputType === 'hex' && !inputHex) {
+    if (!inputHex) {
       alert('Please enter input hex');
       return;
     }
-    if (keyType === 'text' && !keyText) {
-      alert('Please enter key text');
-      return;
-    }
-    if (keyType === 'hex' && !keyHex) {
+    if (!keyHex) {
       alert('Please enter key hex');
       return;
     }
 
-    // Validate hex input if applicable
-    if (inputType === 'hex' && !/^[0-9A-Fa-f]+$/.test(inputHex)) {
+    // Validate hex input
+    if (!/^[0-9A-Fa-f]+$/.test(inputHex)) {
       alert('Input must be a valid hexadecimal string');
       return;
     }
-    if (keyType === 'hex' && !/^[0-9A-Fa-f]+$/.test(keyHex)) {
+    if (!/^[0-9A-Fa-f]+$/.test(keyHex)) {
       alert('Key must be a valid hexadecimal string');
       return;
     }
@@ -347,23 +317,13 @@ const AESDemo = () => {
     let inputBytes, keyBytes;
     let processedInputHex, processedKeyHex;
 
-    if (inputType === 'text') {
-      inputBytes = stringToBytes(inputText);
-      processedInputHex = bytesToHex(inputBytes);
-    } else {
-      // Pad or truncate hex input
-      processedInputHex = inputHex.padEnd(MAX_INPUT_HEX_LENGTH, '0').substring(0, MAX_INPUT_HEX_LENGTH);
-      inputBytes = hexToBytes(processedInputHex);
-    }
+    // Pad or truncate hex input
+    processedInputHex = inputHex.padEnd(MAX_INPUT_HEX_LENGTH, '0').substring(0, MAX_INPUT_HEX_LENGTH);
+    inputBytes = hexToBytes(processedInputHex);
 
-    if (keyType === 'text') {
-      keyBytes = stringToBytes(keyText);
-      processedKeyHex = bytesToHex(keyBytes);
-    } else {
-      // Pad or truncate hex key
-      processedKeyHex = keyHex.padEnd(MAX_KEY_HEX_LENGTH, '0').substring(0, MAX_KEY_HEX_LENGTH);
-      keyBytes = hexToBytes(processedKeyHex);
-    }
+    // Pad or truncate hex key
+    processedKeyHex = keyHex.padEnd(MAX_KEY_HEX_LENGTH, '0').substring(0, MAX_KEY_HEX_LENGTH);
+    keyBytes = hexToBytes(processedKeyHex);
 
     // Ensure key is 16, 24, or 32 bytes (128, 192, or 256 bits)
     while (keyBytes.length < 16) {
@@ -596,19 +556,10 @@ const AESDemo = () => {
 
     // Compare with CryptoJS implementation
     try {
-      let cryptoInput, cryptoKey, cryptoResult;
+      let cryptoInput, cryptoKey;
 
-      if (inputType === 'text') {
-        cryptoInput = CryptoJS.enc.Utf8.parse(inputText);
-      } else {
-        cryptoInput = CryptoJS.enc.Hex.parse(processedInputHex);
-      }
-
-      if (keyType === 'text') {
-        cryptoKey = CryptoJS.enc.Utf8.parse(keyText);
-      } else {
-        cryptoKey = CryptoJS.enc.Hex.parse(processedKeyHex);
-      }
+      cryptoInput = CryptoJS.enc.Hex.parse(processedInputHex);
+      cryptoKey = CryptoJS.enc.Hex.parse(processedKeyHex);
       
       const config = {
         mode: CryptoJS.mode.ECB,
@@ -616,15 +567,12 @@ const AESDemo = () => {
       };
 
       if (mode === 'encrypt') {
-        cryptoResult = CryptoJS.AES.encrypt(cryptoInput, cryptoKey, config);
-        setCryptoJSResult(cryptoResult.ciphertext.toString(CryptoJS.enc.Hex).toUpperCase());
+        CryptoJS.AES.encrypt(cryptoInput, cryptoKey, config);
       } else {
-        cryptoResult = CryptoJS.AES.decrypt({ ciphertext: cryptoInput }, cryptoKey, config);
-        setCryptoJSResult(cryptoResult.toString(CryptoJS.enc.Hex).toUpperCase());
+        CryptoJS.AES.decrypt({ ciphertext: cryptoInput }, cryptoKey, config);
       }
     } catch (error) {
       console.error('CryptoJS error:', error);
-      setCryptoJSResult('Error computing CryptoJS result');
     }
   };
 
@@ -792,107 +740,32 @@ const AESDemo = () => {
               )}
             </div>
 
-            {/* Input Type Selection */}
-            <div className="input-group" style={{ marginBottom: '1rem' }}>
-              <label>Input Format</label>
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                  <input
-                    type="radio"
-                    checked={inputType === 'text'}
-                    onChange={() => setInputType('text')}
-                    style={{ marginRight: '0.5rem' }}
-                  />
-                  Text (ASCII)
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                  <input
-                    type="radio"
-                    checked={inputType === 'hex'}
-                    onChange={() => setInputType('hex')}
-                    style={{ marginRight: '0.5rem' }}
-                  />
-                  Hexadecimal
-                </label>
-              </div>
-            </div>
-
             {/* Input Field */}
             <div className="input-group">
-              <label>
-                {inputType === 'text' ? 'Enter Plaintext/Ciphertext' : 'Enter Plaintext/Ciphertext (Hex)'}
-              </label>
-              {inputType === 'text' ? (
-                <textarea
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  placeholder="Enter text (max 16 characters)"
-                  rows="4"
-                  maxLength={MAX_INPUT_TEXT_LENGTH}
-                />
-              ) : (
-                <textarea
-                  value={inputHex}
-                  onChange={(e) => setInputHex(e.target.value.toUpperCase())}
-                  placeholder="Enter hexadecimal value (e.g., 00112233445566778899AABBCCDDEEFF)"
-                  rows="4"
-                />
-              )}
+              <label>Enter Plaintext/Ciphertext (Hex)</label>
+              <textarea
+                value={inputHex}
+                onChange={(e) => setInputHex(e.target.value.toUpperCase())}
+                placeholder="Enter hexadecimal value (e.g., 00112233445566778899AABBCCDDEEFF)"
+                rows="4"
+              />
               <div style={{ 
                 display: 'flex', 
                 justifyContent: 'space-between', 
                 fontSize: '0.8rem', 
-                color: (inputType === 'hex' && inputHex.length > MAX_INPUT_HEX_LENGTH) || 
-                       (inputType === 'text' && inputText.length > MAX_INPUT_TEXT_LENGTH) ? 
-                       'var(--error-color)' : 'var(--text-color)' 
+                color: inputHex.length > MAX_INPUT_HEX_LENGTH ? 'var(--error-color)' : 'var(--text-color)' 
               }}>
-                {inputType === 'hex' ? (
-                  <>
-                    <span>Character count: {inputHex.length}/{MAX_INPUT_HEX_LENGTH}</span>
-                    {inputHex.length > MAX_INPUT_HEX_LENGTH && (
-                      <span>Input will be truncated to {MAX_INPUT_HEX_LENGTH} characters</span>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <span>Character count: {inputText.length}/{MAX_INPUT_TEXT_LENGTH}</span>
-                    {inputText.length > MAX_INPUT_TEXT_LENGTH && (
-                      <span>Input will be truncated to {MAX_INPUT_TEXT_LENGTH} characters</span>
-                    )}
-                  </>
+                <span>Character count: {inputHex.length}/{MAX_INPUT_HEX_LENGTH}</span>
+                {inputHex.length > MAX_INPUT_HEX_LENGTH && (
+                  <span>Input will be truncated to {MAX_INPUT_HEX_LENGTH} characters</span>
                 )}
-              </div>
-            </div>
-
-            {/* Key Type Selection */}
-            <div className="input-group" style={{ marginBottom: '1rem', marginTop: '1.5rem' }}>
-              <label>Key Format</label>
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                  <input
-                    type="radio"
-                    checked={keyType === 'text'}
-                    onChange={() => setKeyType('text')}
-                    style={{ marginRight: '0.5rem' }}
-                  />
-                  Text (ASCII)
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                  <input
-                    type="radio"
-                    checked={keyType === 'hex'}
-                    onChange={() => setKeyType('hex')}
-                    style={{ marginRight: '0.5rem' }}
-                  />
-                  Hexadecimal
-                </label>
               </div>
             </div>
 
             {/* Key Field */}
             <div className="input-group">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <label>{keyType === 'text' ? 'Key' : 'Key (Hex)'}</label>
+                <label>Key (Hex)</label>
                 <button
                   onClick={generateRandomKey}
                   className="text-sm"
@@ -901,111 +774,49 @@ const AESDemo = () => {
                   Generate Random Key
                 </button>
               </div>
-              {keyType === 'text' ? (
-                <input
-                  type="text"
-                  value={keyText}
-                  onChange={(e) => setKeyText(e.target.value)}
-                  placeholder="Enter key text (exactly 16 characters)"
-                  maxLength={MAX_KEY_TEXT_LENGTH}
-                />
-              ) : (
-                <input
-                  type="text"
-                  value={keyHex}
-                  onChange={(e) => setKeyHex(e.target.value.toUpperCase())}
-                  placeholder="Enter 128-bit key in hex (e.g., 000102030405060708090A0B0C0D0E0F)"
-                />
-              )}
+              <input
+                type="text"
+                value={keyHex}
+                onChange={(e) => setKeyHex(e.target.value.toUpperCase())}
+                placeholder="Enter 32-character hexadecimal key (e.g., 2B7E151628AED2A6ABF7158809CF4F3C)"
+              />
               <div style={{ 
                 display: 'flex', 
                 justifyContent: 'space-between', 
                 fontSize: '0.8rem', 
-                color: (keyType === 'hex' && keyHex.length > MAX_KEY_HEX_LENGTH) || 
-                       (keyType === 'text' && keyText.length > MAX_KEY_TEXT_LENGTH) ? 
-                       'var(--error-color)' : 'var(--text-color)' 
+                color: keyHex.length > MAX_KEY_HEX_LENGTH ? 'var(--error-color)' : 'var(--text-color)' 
               }}>
-                {keyType === 'hex' ? (
-                  <>
-                    <span>Character count: {keyHex.length}/{MAX_KEY_HEX_LENGTH}</span>
-                    {keyHex.length > MAX_KEY_HEX_LENGTH && (
-                      <span>Key will be truncated to {MAX_KEY_HEX_LENGTH} characters</span>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <span>Character count: {keyText.length}/{MAX_KEY_TEXT_LENGTH}</span>
-                    {keyText.length !== MAX_KEY_TEXT_LENGTH && keyText.length > 0 && (
-                      <span>{keyText.length < MAX_KEY_TEXT_LENGTH ? 'Key will be padded' : 'Key will be truncated'}</span>
-                    )}
-                  </>
+                <span>Character count: {keyHex.length}/{MAX_KEY_HEX_LENGTH}</span>
+                {keyHex.length > MAX_KEY_HEX_LENGTH && (
+                  <span>Key will be truncated to {MAX_KEY_HEX_LENGTH} characters</span>
                 )}
               </div>
             </div>
 
-            {/* Toggle switch for encrypt/decrypt */}
-            {/* Mode Selection - BYOC Style Toggle */}
-<div className="input-group">
-  <label>Operation Mode</label>
-  <div className="toggle-container" style={{ 
-    display: 'flex', 
-    justifyContent: 'center', 
-    gap: '0.5rem', 
-    marginTop: '0.5rem',
-    background: '#e2e8f0',
-    padding: '0.25rem',
-    borderRadius: '8px',
-    maxWidth: '300px',
-    margin: '0.5rem auto'
-  }}>
-    <label className="toggle-switch" style={{ 
-      display: 'flex', 
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '0.5rem 1rem',
-      backgroundColor: mode === 'encrypt' ? 'var(--primary-color)' : 'transparent',
-      color: mode === 'encrypt' ? 'white' : 'var(--text-color)',
-      borderRadius: '6px',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease',
-      flex: '1',
-      fontWeight: mode === 'encrypt' ? 'bold' : 'normal',
-      boxShadow: mode === 'encrypt' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
-    }}>
-      <input
-        type="radio"
-        name="mode"
-        checked={mode === 'encrypt'}
-        onChange={() => setMode('encrypt')}
-        style={{ display: 'none' }}
-      />
-      <span className="toggle-label">Encrypt</span>
-    </label>
-    <label className="toggle-switch" style={{ 
-      display: 'flex', 
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '0.5rem 1rem',
-      backgroundColor: mode === 'decrypt' ? 'var(--primary-color)' : 'transparent',
-      color: mode === 'decrypt' ? 'white' : 'var(--text-color)',
-      borderRadius: '6px',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease',
-      flex: '1',
-      fontWeight: mode === 'decrypt' ? 'bold' : 'normal',
-      boxShadow: mode === 'decrypt' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
-    }}>
-      <input
-        type="radio"
-        name="mode"
-        checked={mode === 'decrypt'}
-        onChange={() => setMode('decrypt')}
-        style={{ display: 'none' }}
-      />
-      <span className="toggle-label">Decrypt</span>
-    </label>
-  </div>
-</div>
+            {/* Mode Selection - Standardized Toggle */}
+            <div className="input-group">
+              <label>Operation Mode</label>
+              <div className="operation-mode-toggle">
+                <label className={`operation-mode-option ${mode === 'encrypt' ? 'active' : ''}`}>
+                  <input
+                    type="radio"
+                    name="mode"
+                    checked={mode === 'encrypt'}
+                    onChange={() => setMode('encrypt')}
+                  />
+                  <span>Encrypt</span>
+                </label>
+                <label className={`operation-mode-option ${mode === 'decrypt' ? 'active' : ''}`}>
+                  <input
+                    type="radio"
+                    name="mode"
+                    checked={mode === 'decrypt'}
+                    onChange={() => setMode('decrypt')}
+                  />
+                  <span>Decrypt</span>
+                </label>
+              </div>
+            </div>
 
             <button
               onClick={handleCompute}

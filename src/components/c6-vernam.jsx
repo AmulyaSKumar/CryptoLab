@@ -123,7 +123,7 @@ const VernamCipherTool = () => {
       </div>
 
       <div className="tool-container">
-        <h1 className="tool-title">Vernam Cipher</h1>
+        <h1 className="tool-title">Vernam Cipher (One-Time Pad)</h1>
 
         {/* Tabs */}
         <div className="cipher-nav-container">
@@ -186,68 +186,30 @@ const VernamCipherTool = () => {
               </button>
             </div>
 
-            {/* Mode Selection - BYOC Style Toggle */}
-<div className="input-group">
-  <label>Operation Mode</label>
-  <div className="toggle-container" style={{ 
-    display: 'flex', 
-    justifyContent: 'center', 
-    gap: '0.5rem', 
-    marginTop: '0.5rem',
-    background: '#e2e8f0',
-    padding: '0.25rem',
-    borderRadius: '8px',
-    maxWidth: '300px',
-    margin: '0.5rem auto'
-  }}>
-    <label className="toggle-switch" style={{ 
-      display: 'flex', 
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '0.5rem 1rem',
-      backgroundColor: mode === 'encrypt' ? 'var(--primary-color)' : 'transparent',
-      color: mode === 'encrypt' ? 'white' : 'var(--text-color)',
-      borderRadius: '6px',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease',
-      flex: '1',
-      fontWeight: mode === 'encrypt' ? 'bold' : 'normal',
-      boxShadow: mode === 'encrypt' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
-    }}>
-      <input
-        type="radio"
-        name="mode"
-        checked={mode === 'encrypt'}
-        onChange={() => setMode('encrypt')}
-        style={{ display: 'none' }}
-      />
-      <span className="toggle-label">Encrypt</span>
-    </label>
-    <label className="toggle-switch" style={{ 
-      display: 'flex', 
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '0.5rem 1rem',
-      backgroundColor: mode === 'decrypt' ? 'var(--primary-color)' : 'transparent',
-      color: mode === 'decrypt' ? 'white' : 'var(--text-color)',
-      borderRadius: '6px',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease',
-      flex: '1',
-      fontWeight: mode === 'decrypt' ? 'bold' : 'normal',
-      boxShadow: mode === 'decrypt' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
-    }}>
-      <input
-        type="radio"
-        name="mode"
-        checked={mode === 'decrypt'}
-        onChange={() => setMode('decrypt')}
-        style={{ display: 'none' }}
-      />
-      <span className="toggle-label">Decrypt</span>
-    </label>
-  </div>
-</div>
+            {/* Mode Selection - Standardized Toggle */}
+            <div className="input-group">
+              <label>Operation Mode</label>
+              <div className="operation-mode-toggle">
+                <label className={`operation-mode-option ${mode === 'encrypt' ? 'active' : ''}`}>
+                  <input
+                    type="radio"
+                    name="mode"
+                    checked={mode === 'encrypt'}
+                    onChange={() => setMode('encrypt')}
+                  />
+                  <span>Encrypt</span>
+                </label>
+                <label className={`operation-mode-option ${mode === 'decrypt' ? 'active' : ''}`}>
+                  <input
+                    type="radio"
+                    name="mode"
+                    checked={mode === 'decrypt'}
+                    onChange={() => setMode('decrypt')}
+                  />
+                  <span>Decrypt</span>
+                </label>
+              </div>
+            </div>
 
             <button
               onClick={handleCompute}
@@ -355,9 +317,12 @@ const VernamCipherTool = () => {
             </div>
 
             <section className="mb-8">
-              <h2 className="section-title">Hey! Let's talk Vernam Cipher </h2>
+              <h2 className="section-title">Hey! Let's talk Vernam Cipher (One-Time Pad) 🔐</h2>
               <p>
-                So you want to send a secret message with a magic key, huh? Vernam cipher is a super cool way to do just that! Think of it like a secret handshake between you and your friend, where only you two know the moves.
+                So you want to send a secret message with a magic key, huh? The Vernam cipher, also known as the One-Time Pad, is a super cool way to do just that! Think of it like a secret handshake between you and your friend, where only you two know the moves.
+              </p>
+              <p style={{ fontSize: '0.9rem', fontStyle: 'italic', color: 'var(--accent-color)' }}>
+                Fun fact: When used correctly with truly random keys, this cipher is mathematically unbreakable!
               </p>
             </section>
 

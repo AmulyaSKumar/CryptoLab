@@ -101,7 +101,7 @@ const VigenereChallenge = () => {
   }, [puzzleIndex, difficulty, gameStarted]);
 
   useEffect(() => {
-    if (!gameStarted) return;
+    if (!gameStarted || !plaintext) return; // Wait for puzzle to be generated
 
     if (timeLeft <= 0) {
       playSound('timeout');

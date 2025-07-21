@@ -294,18 +294,17 @@ const RailfenceQuiz = () => {
               You've completed the quiz!
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <button className="nav-button" onClick={downloadPDF} style={{ marginBottom: '0.5rem' }}>
+              <a href="/railfence-quiz.pdf" className="nav-button" target="_blank" rel="noopener noreferrer" style={{ marginBottom: '0.5rem' }}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" style={{ marginRight: '8px' }} viewBox="0 0 16 16">
-                  <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+                  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
                 </svg>
                 Download Quiz PDF
-              </button>
+              </a>
               <button className="nav-button" onClick={handleRestart} style={{ marginBottom: '0.5rem' }}>
                 Restart Quiz
               </button>
-              <Link to="/railfence-tool" className="nav-button secondary">
-                Back to Railfence Tool
-              </Link>
+              
             </div>
           </div>
         )}

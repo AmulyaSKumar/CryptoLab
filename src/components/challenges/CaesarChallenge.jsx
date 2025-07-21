@@ -19,11 +19,6 @@ const caesarEncrypt = (text, shift) => {
     .join('');
 };
 
-const caesarDecrypt = (text, shift) => caesarEncrypt(text, -shift);
-
-// Try to crack key by brute forcing all shifts and find which plaintext matches best
-// For simplicity here, we won't implement automatic cracking, user must guess the shift number
-
 // =========== Puzzle Data ===========
 
 const PUZZLES = {
@@ -52,9 +47,9 @@ const PUZZLES = {
 
 const CHALLENGE_TYPES = ['Encrypt', 'Decrypt', 'Crack Key'];
 const DIFFICULTY_SETTINGS = {
-  Easy: { puzzles: PUZZLES.Easy, time: 45 },
+  Easy: { puzzles: PUZZLES.Easy, time: 60 },
   Medium: { puzzles: PUZZLES.Medium, time: 45 },
-  Hard: { puzzles: PUZZLES.Hard, time: 45 },
+  Hard: { puzzles: PUZZLES.Hard, time: 30 },
 };
 
 const MAX_PUZZLES = 5;
@@ -73,7 +68,7 @@ const CaesarCipherChallenge = () => {
   const [score, setScore] = useState(0);
   const [tries, setTries] = useState(0);
   const [fb, setFb] = useState('');
-  const [timeLeft, setTimeLeft] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(DIFFICULTY_SETTINGS.Easy.time);
   const [hintUsed, setHintUsed] = useState(false);
   const timerRef = useRef(null);
 
@@ -108,13 +103,13 @@ const CaesarCipherChallenge = () => {
   }, [idx, difficulty, started]);
 
   useEffect(() => {
-    if (!started) return;
+    if (!started || !plaintext) return; // Wait for puzzle to be generated
     if (timeLeft <= 0) {
       play('timeout');
       const correct = type === 'Decrypt' ? plaintext : type === 'Encrypt' ? cipher : shift.toString();
-      setFb(`Time's up! Correct answer: ${correct}`);
+      setFb(`⏰ Time's up! Correct answer: ${correct}`);
       clearTimeout(timerRef.current);
-      setTimeout(next, 2500);
+      setTimeout(() => next(), 2500);
       return;
     }
     timerRef.current = setTimeout(() => setTimeLeft(t => t - 1), 1000);
@@ -125,7 +120,7 @@ const CaesarCipherChallenge = () => {
     if (idx + 1 < MAX_PUZZLES) setIdx(i => i + 1);
     else {
       setStarted(false);
-      setFb(`Challenge complete! Your score: ${score}/${MAX_PUZZLES}`);
+      setFb(`🎉 Challenge complete! Your score: ${score}/${MAX_PUZZLES}`);
     }
   };
 
@@ -139,27 +134,26 @@ const CaesarCipherChallenge = () => {
     } else if (type === 'Encrypt') {
       correct = input.toUpperCase() === cipher.toUpperCase();
     } else if (type === 'Crack Key') {
-      // Crack key = shift as number string (0-25)
-      correct = parseInt(input, 10) === shift;
+      correct = parseInt(input) === shift;
     }
 
     if (correct) {
       play('correct');
       setScore(s => s + 1);
-      setFb('Correct!');
+      setFb('✅ Correct!');
       clearTimeout(timerRef.current);
-      setTimeout(next, 1500);
+      setTimeout(() => next(), 1500);
     } else {
       play('incorrect');
       const t = tries + 1;
       setTries(t);
       if (t >= MAX_ATTEMPTS) {
         const correctAns = type === 'Decrypt' ? plaintext : type === 'Encrypt' ? cipher : shift.toString();
-        setFb(`No tries left. Correct answer: ${correctAns}`);
+        setFb(`❌ No tries left. Correct answer: ${correctAns}`);
         clearTimeout(timerRef.current);
-        setTimeout(next, 2500);
+        setTimeout(() => next(), 2500);
       } else {
-        setFb(`Wrong - ${MAX_ATTEMPTS - t} tries left`);
+        setFb(`❌ Wrong - ${MAX_ATTEMPTS - t} tries left`);
       }
     }
   };
@@ -168,24 +162,22 @@ const CaesarCipherChallenge = () => {
     if (!hintUsed) {
       let msg = '';
       if (type === 'Crack Key') {
-        msg = 'Try decrypting the ciphertext manually with different shift values. Remember that the key is a number between 0 and 25.';
-      } else if (type === 'Decrypt') {
-        msg = `The plaintext starts with "${plaintext[0].toUpperCase()}". Try shifting each letter of the ciphertext backward in the alphabet.`;
-      } else { // Encrypt
-        msg = `Shift each letter of the plaintext forward in the alphabet by the key amount. Remember that "Z" wraps around to "A".`;
+        msg = `The shift is between 1-25`;
+      } else {
+        msg = `Remember: A → B is shift 1`;
       }
-      setFb(`Hint: ${msg}`);
+      setFb(`💡 Hint: ${msg}`);
       setHintUsed(true);
     }
   };
 
   const prompt = () => {
     if (type === 'Decrypt')
-      return <p>Decrypt the ciphertext: <strong>{cipher}</strong></p>;
+      return <p>🔐 Decrypt the ciphertext: <strong>{cipher}</strong></p>;
     if (type === 'Encrypt')
-      return <p>Encrypt the plaintext: <strong>{plaintext}</strong></p>;
+      return <p>🔒 Encrypt the plaintext: <strong>{plaintext}</strong></p>;
     return (
-      <p>Find the key (shift) used to encrypt "<strong>{plaintext}</strong>" → "<strong>{cipher}</strong>". Enter the shift number (0-25).</p>
+      <p>🔑 Find the key (shift) used to encrypt "<strong>{plaintext}</strong>" → "<strong>{cipher}</strong>". Enter the shift number (0-25).</p>
     );
   };
 
@@ -223,7 +215,7 @@ const CaesarCipherChallenge = () => {
         <div className="score-display">Score: {score}</div>
         
         <div className="timer-container">
-          Time left: {timeLeft}s
+          ⏱ Time left: {timeLeft}s
           <div style={{ width: '100%', height: '8px', background: '#e9ecef', borderRadius: '4px', margin: '8px 0' }}>
             <div 
               style={{ 
@@ -265,7 +257,7 @@ const CaesarCipherChallenge = () => {
           {hintUsed ? 'Hint Used' : 'Show Hint'}
         </button>
         
-        {fb && <p className={`feedback-message ${fb.includes('Correct') ? 'feedback-success' : 'feedback-error'}`}>{fb}</p>}
+        {fb && <p className={`feedback-message ${fb.includes('✅') ? 'feedback-success' : 'feedback-error'}`}>{fb}</p>}
       </div>
     </div>
   );

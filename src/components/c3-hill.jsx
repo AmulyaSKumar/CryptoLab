@@ -139,6 +139,29 @@ const HillCipherTool = () => {
 
   return (
     <div className="main-container">
+      <style>
+        {`
+          /* Ensure number input spinners are visible */
+          input[type="number"]::-webkit-outer-spin-button,
+          input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: auto !important;
+            opacity: 1 !important;
+            height: 22px !important;
+            width: 16px !important;
+            background: var(--primary-color) !important;
+            cursor: pointer !important;
+          }
+          
+          /* For Firefox */
+          input[type="number"] {
+            -moz-appearance: number-input !important;
+          }
+          
+          input[type="number"]::-webkit-inner-spin-button:hover {
+            background-color: var(--secondary-color) !important;
+          }
+        `}
+      </style>
       <div className="back-nav">
         <Link to="/" className="nav-button" style={{ minWidth: 'auto' }}>
           ← Back
@@ -190,9 +213,9 @@ const HillCipherTool = () => {
 
             <div className="input-group">
               <label>Key Matrix (2x2)</label>
-              <div style={{ display: 'flex', gap: '1rem' }}>
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
                 {keyMatrix.map((row, rowIndex) => (
-                  <div key={rowIndex}>
+                  <div key={rowIndex} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     {row.map((val, colIndex) => (
                       <input
                         key={colIndex}
@@ -203,74 +226,63 @@ const HillCipherTool = () => {
                           newMatrix[rowIndex][colIndex] = parseInt(e.target.value) || 0;
                           setKeyMatrix(newMatrix);
                         }}
-                        style={{ width: '50px', marginRight: '0.5rem' }}
+                        style={{ 
+                          width: '80px', 
+                          textAlign: 'center',
+                          padding: '0.5rem',
+                          border: '2px solid var(--primary-color)',
+                          borderRadius: '6px',
+                          fontSize: '16px',
+                          fontWeight: 'bold',
+                          background: 'white',
+                          color: 'var(--text-color)'
+                        }}
+                        min="0"
+                        max="25"
                       />
                     ))}
                   </div>
                 ))}
               </div>
+              <div style={{ 
+                fontSize: '0.85rem', 
+                color: 'var(--text-color)', 
+                textAlign: 'center', 
+                marginTop: '0.5rem',
+                opacity: 0.8 
+              }}>
+                Use the ↑↓ arrows in each input field to adjust values
+              </div>
             </div>
 
-           {/* Mode Selection - BYOC Style Toggle */}
+           {/* Mode Selection - Standardized Toggle */}
 <div className="input-group">
   <label>Operation Mode</label>
-  <div className="toggle-container" style={{ 
-    display: 'flex', 
-    justifyContent: 'center', 
-    gap: '0.5rem', 
-    marginTop: '0.5rem',
-    background: '#e2e8f0',
-    padding: '0.25rem',
-    borderRadius: '8px',
-    maxWidth: '300px',
-    margin: '0.5rem auto'
-  }}>
-    <label className="toggle-switch" style={{ 
-      display: 'flex', 
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '0.5rem 1rem',
-      backgroundColor: mode === 'encrypt' ? 'var(--primary-color)' : 'transparent',
-      color: mode === 'encrypt' ? 'white' : 'var(--text-color)',
-      borderRadius: '6px',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease',
-      flex: '1',
-      fontWeight: mode === 'encrypt' ? 'bold' : 'normal',
-      boxShadow: mode === 'encrypt' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
-    }}>
+  <div className="operation-mode-toggle">
+    <button 
+      className={`operation-mode-option ${mode === 'encrypt' ? 'active' : ''}`}
+      onClick={() => setMode('encrypt')}
+    >
       <input
         type="radio"
         name="mode"
         checked={mode === 'encrypt'}
         onChange={() => setMode('encrypt')}
-        style={{ display: 'none' }}
       />
-      <span className="toggle-label">Encrypt</span>
-    </label>
-    <label className="toggle-switch" style={{ 
-      display: 'flex', 
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '0.5rem 1rem',
-      backgroundColor: mode === 'decrypt' ? 'var(--primary-color)' : 'transparent',
-      color: mode === 'decrypt' ? 'white' : 'var(--text-color)',
-      borderRadius: '6px',
-      cursor: 'pointer',
-      transition: 'all 0.2s ease',
-      flex: '1',
-      fontWeight: mode === 'decrypt' ? 'bold' : 'normal',
-      boxShadow: mode === 'decrypt' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'
-    }}>
+      Encrypt
+    </button>
+    <button 
+      className={`operation-mode-option ${mode === 'decrypt' ? 'active' : ''}`}
+      onClick={() => setMode('decrypt')}
+    >
       <input
         type="radio"
         name="mode"
         checked={mode === 'decrypt'}
         onChange={() => setMode('decrypt')}
-        style={{ display: 'none' }}
       />
-      <span className="toggle-label">Decrypt</span>
-    </label>
+      Decrypt
+    </button>
   </div>
 </div>
 

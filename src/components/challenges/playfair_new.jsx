@@ -120,7 +120,7 @@ const PlayfairChallenge = () => {
   const [score, setScore] = useState(0);
   const [tries, setTries] = useState(0);
   const [fb, setFb] = useState('');
-  const [timeLeft, setTimeLeft] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(DIFFICULTY_SETTINGS.Easy.time);
   const [hint, setHint] = useState(false);
   const timerRef = useRef(null);
 
@@ -152,7 +152,7 @@ const PlayfairChallenge = () => {
   }, [idx, diff, start]);
   
   useEffect(() => {
-    if (!start) return;
+    if (!start || !plaintext) return; // Wait for puzzle to be generated
     if (timeLeft <= 0) {
       play('timeout');
       const correctAns = (type === 'Encrypt' ? cipher : plaintext);

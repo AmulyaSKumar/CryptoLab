@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaTimes, FaMinus, FaPaperPlane, FaCamera, FaDownload, FaTrash } from 'react-icons/fa';
 import { useCipherContext } from '../context/CipherContext';
 import aiChatService from '../services/AIChatService';
 import { UserMessage, AIMessage, ErrorMessage, LoadingIndicator, ScreenshotMessage } from './chat';
@@ -121,6 +120,15 @@ const ChatInterface = ({ isOpen, onClose }) => {
     }
   };
 
+  const handleInputChange = (e) => {
+    setInputMessage(e.target.value);
+    
+    // Auto-resize textarea
+    const textarea = e.target;
+    textarea.style.height = 'auto';
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
+  };
+
   const handleMinimize = () => {
     setIsMinimized(!isMinimized);
   };
@@ -173,7 +181,7 @@ const ChatInterface = ({ isOpen, onClose }) => {
                 aria-label="Export chat history"
                 title="Export chat history"
               >
-                <FaDownload />
+                <span style={{ fontSize: '14px', fontWeight: 'bold' }}>↓</span>
               </button>
               <button 
                 className="chat-control-btn clear-btn" 
@@ -181,7 +189,7 @@ const ChatInterface = ({ isOpen, onClose }) => {
                 aria-label="Clear chat history"
                 title="Clear chat history"
               >
-                <FaTrash />
+                <span style={{ fontSize: '14px' }}>🗑</span>
               </button>
             </>
           )}
@@ -190,14 +198,14 @@ const ChatInterface = ({ isOpen, onClose }) => {
             onClick={handleMinimize}
             aria-label="Minimize chat"
           >
-            <FaMinus />
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>−</span>
           </button>
           <button 
             className="chat-control-btn close-btn" 
             onClick={onClose}
             aria-label="Close chat"
           >
-            <FaTimes />
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>×</span>
           </button>
         </div>
       </div>
@@ -285,7 +293,7 @@ const ChatInterface = ({ isOpen, onClose }) => {
                 title="Include screenshot with message"
                 disabled={isLoading}
               >
-                <FaCamera />
+                <span style={{ fontSize: '14px' }}>📷</span>
                 {includeScreenshot && <span className="option-label">Screenshot included</span>}
               </button>
             </div>
@@ -293,7 +301,7 @@ const ChatInterface = ({ isOpen, onClose }) => {
               <textarea
                 ref={inputRef}
                 value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
+                onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
                 placeholder="Type your question..."
                 className="chat-input"
@@ -306,7 +314,7 @@ const ChatInterface = ({ isOpen, onClose }) => {
                 disabled={!inputMessage.trim() || isLoading}
                 aria-label="Send message"
               >
-                <FaPaperPlane />
+                <span style={{ fontSize: '14px', fontWeight: 'bold' }}>▶</span>
               </button>
             </div>
             {error && (

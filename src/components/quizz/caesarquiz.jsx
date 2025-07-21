@@ -1,348 +1,399 @@
-import React, { useState } from 'react'; 
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+// import jsPDF from 'jspdf';
+// import 'jspdf-autotable';
+import './QuizStyles.css';
 
-const CaesarCipherQuiz = () => {
+const CaesarQuiz = () => {
   const questions = [
     {
-      question: "What is the Caesar Cipher primarily used for?",
-      options: ["Data compression", "Encrypting text", "Sorting data", "Decoding barcodes"],
-      answer: "Encrypting text",
-      explanation: "The Caesar Cipher is a type of substitution cipher used mainly for encrypting text by shifting letters."
+      question: "What type of cipher is the Caesar cipher?",
+      options: [
+        "Substitution cipher",
+        "Transposition cipher",
+        "Stream cipher",
+        "Block cipher"
+      ],
+      answer: "Substitution cipher",
+      explanation: "Caesar cipher is a substitution cipher where each letter is replaced by a letter some fixed number of positions down the alphabet."
     },
     {
-      question: "If 'A' becomes 'D', what is the shift key?",
-      options: ["2", "3", "4", "5"],
-      answer: "3",
-      explanation: "Since A shifted to D is a shift of 3 letters forward, the key is 3."
+      question: "What is the key in a Caesar cipher?",
+      options: [
+        "A letter",
+        "A shift value",
+        "A matrix",
+        "A keyword"
+      ],
+      answer: "A shift value",
+      explanation: "The key in Caesar cipher is the number of positions each letter is shifted in the alphabet."
     },
     {
-      question: "What happens if you apply Caesar Cipher twice with key 13?",
-      options: ["You get the original text", "It becomes undecipherable", "It's encrypted stronger", "It loops endlessly"],
-      answer: "You get the original text",
-      explanation: "Applying the cipher twice with a key of 13 returns you to the original text because 13 is half the alphabet length."
+      question: "If the key is 3, what does 'D' encrypt to in Caesar cipher?",
+      options: [
+        "A",
+        "G",
+        "H",
+        "Z"
+      ],
+      answer: "G",
+      explanation: "With a key of 3, each letter shifts 3 positions forward: D → E → F → G"
     },
     {
-      question: "Which of these letters does NOT change with a Caesar Cipher key of 0?",
-      options: ["A", "M", "Z", "All of them"],
-      answer: "All of them",
-      explanation: "A shift key of 0 means no change; all letters remain the same."
+      question: "What is the size of the key space in Caesar cipher?",
+      options: [
+        "26",
+        "25",
+        "10",
+        "256"
+      ],
+      answer: "25",
+      explanation: "There are 25 possible shifts (1-25), as a shift of 0 or 26 would result in the original text."
     },
     {
-  question: "Why is the Caesar Cipher considered a weak encryption method?",
-  options: [
-    "It uses complex mathematical functions",
-    "It can be easily broken by frequency analysis",
-    "It requires a large key",
-    "It encrypts binary data only"
-  ],
-  answer: "It can be easily broken by frequency analysis",
-  explanation: "Caesar Cipher shifts letters uniformly and does not disguise letter frequency, making it vulnerable to simple frequency analysis."
-},
-{
-  question: "What is the size of the key space for a Caesar Cipher applied to the English alphabet?",
-  options: ["26", "25", "128", "256"],
-  answer: "25",
-  explanation: "Because a shift of 0 or 26 results in the original text, there are only 25 meaningful keys."
-},
-{
-  question: "How does the Caesar Cipher handle non-alphabetic characters like numbers or punctuation?",
-  options: [
-    "Encrypts them the same way as letters",
-    "Leaves them unchanged",
-    "Removes them",
-    "Converts them to letters before encrypting"
-  ],
-  answer: "Leaves them unchanged",
-  explanation: "Typically, Caesar Cipher only shifts alphabetic characters and leaves others like numbers and punctuation unchanged."
-},
-{
-  question: "Explain how to decrypt a message encoded with a Caesar Cipher if the key is unknown.",
-  options: [
-    "Try all possible shifts (brute force)",
-    "Use a one-time pad",
-    "Apply the same key twice",
-    "Use a hash function"
-  ],
-  answer: "Try all possible shifts (brute force)",
-  explanation: "Since the key space is small, one can try all 25 possible shifts and check which one produces meaningful text."
-},
-{
-  question: "Is the Caesar Cipher symmetric or asymmetric encryption? Why?",
-  options: [
-    "Symmetric, because the same key is used for encryption and decryption",
-    "Asymmetric, because it uses two different keys",
-    "Symmetric, because it uses public keys",
-    "Asymmetric, because it uses private keys"
-  ],
-  answer: "Symmetric, because the same key is used for encryption and decryption",
-  explanation: "Caesar Cipher uses the same key (the shift value) for both encrypting and decrypting, making it symmetric encryption."
-},
-{
-  question: "Can the Caesar Cipher be used securely for modern communication? Explain.",
-  options: [
-    "Yes, because it's very complex",
-    "No, because it's easily broken",
-    "Yes, if the key is very large",
-    "No, because it only encrypts numbers"
-  ],
-  answer: "No, because it's easily broken",
-  explanation: "The Caesar Cipher is too simple and vulnerable to attacks, so it’s not suitable for secure modern communication."
-},
-{
-  question: "What is the relationship between Caesar Cipher and ROT13?",
-  options: [
-    "ROT13 is a Caesar Cipher with a shift of 13",
-    "ROT13 is a type of hash function",
-    "ROT13 doubles the shift each time",
-    "ROT13 is unrelated to Caesar Cipher"
-  ],
-  answer: "ROT13 is a Caesar Cipher with a shift of 13",
-  explanation: "ROT13 is a special case of Caesar Cipher where the shift key is fixed at 13."
-},
-{
-  question: "If you apply the Caesar Cipher with a shift of 26 to any text, what is the result?",
-  options: [
-    "The original text",
-    "The text is fully scrambled",
-    "Only vowels are shifted",
-    "An error occurs"
-  ],
-  answer: "The original text",
-  explanation: "A shift of 26 equals the alphabet length, so the text remains unchanged."
-},
-{
-  question: "Can the Caesar Cipher be combined with other ciphers for better security? Give an example.",
-  options: [
-    "Yes, for example combining with Vigenère Cipher",
-    "No, it cannot be combined",
-    "Yes, it encrypts images better",
-    "No, it’s a hashing algorithm"
-  ],
-  answer: "Yes, for example combining with Vigenère Cipher",
-  explanation: "Caesar Cipher can be part of a multi-layer encryption system to increase security, such as in polyalphabetic ciphers like Vigenère."
-}
-
+      question: "Which of these is a weakness of the Caesar cipher?",
+      options: [
+        "Small key space",
+        "Complex implementation",
+        "High computational requirements",
+        "Vulnerability to rainbow tables"
+      ],
+      answer: "Small key space",
+      explanation: "With only 25 possible keys, it can be easily broken by trying all possibilities (brute force)."
+    },
+    {
+      question: "Which technique can easily break a Caesar cipher?",
+      options: [
+        "Frequency analysis",
+        "Differential cryptanalysis",
+        "Linear cryptanalysis",
+        "Dictionary attack"
+      ],
+      answer: "Frequency analysis",
+      explanation: "By analyzing letter frequencies in the ciphertext and comparing to known language patterns, the shift can be determined."
+    },
+    {
+      question: "Which historical figure is associated with the Caesar cipher?",
+      options: [
+        "Julius Caesar",
+        "Augustus",
+        "Alexander the Great",
+        "Cleopatra"
+      ],
+      answer: "Julius Caesar",
+      explanation: "The cipher is named after Julius Caesar, who used it to communicate with his generals."
+    },
+    {
+      question: "What happens if you apply a Caesar cipher with key 26?",
+      options: [
+        "The text becomes encrypted",
+        "The text remains the same",
+        "The text becomes reversed",
+        "The text becomes unreadable"
+      ],
+      answer: "The text remains the same",
+      explanation: "Since the English alphabet has 26 letters, shifting by 26 positions brings you back to the original letter."
+    },
+    {
+      question: "What is the mathematical operation used in Caesar cipher?",
+      options: [
+        "Addition modulo 26",
+        "Multiplication modulo 26",
+        "XOR operation",
+        "Matrix multiplication"
+      ],
+      answer: "Addition modulo 26",
+      explanation: "Caesar cipher uses addition modulo 26 for encryption and subtraction modulo 26 for decryption."
+    },
+    {
+      question: "Which of these is NOT a variant of the Caesar cipher?",
+      options: [
+        "ROT13",
+        "Atbash cipher",
+        "Vigenère cipher",
+        "Hill cipher"
+      ],
+      answer: "Hill cipher",
+      explanation: "Hill cipher uses matrix multiplication and is much more complex than the simple substitution of Caesar cipher."
+    },
+    {
+      question: "In a Caesar cipher with key 3, what does 'Z' encrypt to?",
+      options: [
+        "C",
+        "W",
+        "A",
+        "X"
+      ],
+      answer: "C",
+      explanation: "Z shifts 3 positions forward, wrapping around the alphabet: Z → A → B → C"
+    },
+    {
+      question: "What is the decryption key if the encryption key is 7?",
+      options: [
+        "7",
+        "19",
+        "-7",
+        "26-7=19"
+      ],
+      answer: "19",
+      explanation: "To decrypt, you can shift backward by 7 positions, which is equivalent to shifting forward by 26-7=19 positions."
+    },
+    {
+      question: "Which cipher is considered an improvement over the Caesar cipher?",
+      options: [
+        "Vigenère cipher",
+        "Binary cipher",
+        "Morse code",
+        "ASCII encoding"
+      ],
+      answer: "Vigenère cipher",
+      explanation: "Vigenère cipher uses multiple shift values based on a keyword, making it more secure than Caesar's single shift."
+    },
+    {
+      question: "What is the main reason Caesar cipher is not used for serious encryption today?",
+      options: [
+        "It's too slow",
+        "It's too easily broken",
+        "It requires special hardware",
+        "It's patented"
+      ],
+      answer: "It's too easily broken",
+      explanation: "With only 25 possible keys and vulnerability to frequency analysis, it provides virtually no security against modern methods."
+    },
+    {
+      question: "Which of these messages is encrypted with a Caesar cipher?",
+      options: [
+        "KHOOR",
+        "H3LL0",
+        "01001000",
+        "HELLO"
+      ],
+      answer: "KHOOR",
+      explanation: "KHOOR is HELLO shifted by 3 positions (Caesar cipher with key=3)."
+    }
   ];
 
-  const [current, setCurrent] = useState(0);
-  const [selected, setSelected] = useState(null);
-  const [showResult, setShowResult] = useState(false);
-  const [submitted, setSubmitted] = useState(false); // Track if answer submitted
-
-  const handleOptionClick = (option) => {
-    if (!submitted) {
-      setSelected(option);
-      setSubmitted(true);
-    }
-  };
-
-  const handleNext = () => {
-    if (current < questions.length - 1) {
-      setCurrent(current + 1);
-      setSelected(null);
-      setSubmitted(false);
-    } else {
-      setShowResult(true);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (current > 0) {
-      setCurrent(current - 1);
-      setSelected(null);
-      setSubmitted(false);
-    }
-  };
-
-  const handleRestart = () => {
-    setCurrent(0);
-    setSelected(null);
-    setShowResult(false);
-    setSubmitted(false);
-  };
-
-  const downloadPDF = () => {
-    const doc = new jsPDF();
+  const [userAnswers, setUserAnswers] = useState(Array(questions.length).fill(null));
+  const [revealed, setRevealed] = useState(Array(questions.length).fill(false));
+  const [quizCompleted, setQuizCompleted] = useState(false);
+  
+  const handleOptionClick = (questionIndex, option) => {
+    if (revealed[questionIndex]) return;
     
-    // Add title
-    doc.setFontSize(20);
-    doc.text('Caesar Cipher Quiz Results', 105, 15, { align: 'center' });
-    doc.setFontSize(12);
-    doc.text('Your completed quiz with answers and explanations', 105, 25, { align: 'center' });
+    const newUserAnswers = [...userAnswers];
+    newUserAnswers[questionIndex] = option;
+    setUserAnswers(newUserAnswers);
     
-    // Add date
-    const today = new Date();
-    doc.setFontSize(10);
-    doc.text(`Generated on: ${today.toLocaleDateString()}`, 105, 35, { align: 'center' });
-    
-    // Add content for each question
-    let yPos = 45;
-    
-    questions.forEach((q, index) => {
-      // Add question
-      doc.setFontSize(12);
-      doc.setFont(undefined, 'bold');
-      doc.text(`Question ${index + 1}: ${q.question}`, 15, yPos);
-      yPos += 10;
-      
-      // Add options
-      doc.setFont(undefined, 'normal');
-      q.options.forEach((opt, idx) => {
-        const isCorrect = opt === q.answer;
-        doc.setTextColor(isCorrect ? [0, 128, 0] : [0, 0, 0]);
-        doc.text(`${String.fromCharCode(65 + idx)}. ${opt}${isCorrect ? ' ✓' : ''}`, 20, yPos);
-        yPos += 7;
-      });
-      
-      // Add explanation
-      doc.setTextColor(0, 0, 150);
-      doc.setFont(undefined, 'italic');
-      
-      // Split explanation text to fit within page width
-      const splitExplanation = doc.splitTextToSize(q.explanation, 170);
-      doc.text(splitExplanation, 20, yPos);
-      yPos += splitExplanation.length * 7 + 10;
-      
-      // Reset text color
-      doc.setTextColor(0, 0, 0);
-      
-      // Add a new page if needed
-      if (yPos > 270 && index < questions.length - 1) {
-        doc.addPage();
-        yPos = 20;
-      }
-    });
-    
-    // Save the PDF
-    doc.save('caesar_cipher_quiz.pdf');
+    const newRevealed = [...revealed];
+    newRevealed[questionIndex] = true;
+    setRevealed(newRevealed);
   };
-
+  
+  const resetQuiz = () => {
+    setUserAnswers(Array(questions.length).fill(null));
+    setRevealed(Array(questions.length).fill(false));
+    setQuizCompleted(false);
+  };
+  
+  const handleSubmitQuiz = () => {
+    // Mark all remaining questions as revealed
+    const newRevealed = Array(questions.length).fill(true);
+    setRevealed(newRevealed);
+    setQuizCompleted(true);
+  };
+  
+  const calculateScore = () => {
+    return userAnswers.filter((answer, index) => 
+      answer === questions[index].answer
+    ).length;
+  };
+  
+  // const downloadPDF = () => {
+  //   const doc = new jsPDF();
+  //   
+  //   // Add title
+  //   doc.setFontSize(20);
+  //   doc.text('Caesar Cipher Quiz Results', 105, 15, { align: 'center' });
+  //   
+  //   // Add score
+  //   const score = calculateScore();
+  //   doc.setFontSize(16);
+  //   doc.text(`Score: ${score}/${questions.length}`, 105, 25, { align: 'center' });
+  //   
+  //   // Add date
+  //   const date = new Date().toLocaleDateString();
+  //   doc.setFontSize(12);
+  //   doc.text(`Date: ${date}`, 105, 32, { align: 'center' });
+  //   
+  //   // Add questions and answers
+  //   doc.setFontSize(12);
+  //   let yPos = 45;
+  //   
+  //   questions.forEach((q, i) => {
+  //     // Question
+  //     doc.setFont(undefined, 'bold');
+  //     doc.text(`${i + 1}. ${q.question}`, 15, yPos);
+  //     yPos += 7;
+  //     
+  //     // User answer
+  //     doc.setFont(undefined, 'normal');
+  //     const userAnswer = userAnswers[i] || 'Not answered';
+  //     const isCorrect = userAnswer === q.answer;
+  //     
+  //     doc.text(`Your answer: ${userAnswer}`, 20, yPos);
+  //     doc.text(`${isCorrect ? '✓' : '✗'}`, 15, yPos);
+  //     yPos += 7;
+  //     
+  //     // Correct answer if wrong
+  //     if (!isCorrect) {
+  //       doc.text(`Correct answer: ${q.answer}`, 20, yPos);
+  //       yPos += 7;
+  //     }
+  //     
+  //     // Explanation
+  //     doc.setFont(undefined, 'italic');
+  //     
+  //     // Split explanation into multiple lines if needed
+  //     const explanation = q.explanation;
+  //     const maxWidth = 170;
+  //     const splitText = doc.splitTextToSize(explanation, maxWidth);
+  //     
+  //     doc.text(splitText, 20, yPos);
+  //     yPos += splitText.length * 7 + 5;
+  //     
+  //     // Add a new page if needed
+  //     if (yPos > 270 && i < questions.length - 1) {
+  //       doc.addPage();
+  //       yPos = 20;
+  //     }
+  //   });
+  //   
+  //   doc.save('caesar_cipher_quiz_results.pdf');
+  // };
+  
   return (
-    <div className="main-container" style={{ maxWidth: 600, margin: '2rem auto', padding: '1rem' }}>
-     
-      <Link to="/c1-caesar" className="nav-button" style={{ position: 'absolute', top: '20px', left: '20px' }}>
+    <div className="main-container" style={{ maxWidth: 650, margin: '2rem auto', padding: '1rem' }}>
+      <Link to="/c1-ceaser" className="nav-button" style={{ position: 'absolute', top: '20px', left: '20px' }}>
         ← Back
       </Link>
 
       <div className="tool-container">
         <h1 className="tool-title">Caesar Cipher Quiz</h1>
-
-        {!showResult ? (
+        
+        {!quizCompleted ? (
           <>
-            <div className="input-group">
-              <label>Question {current + 1} of {questions.length}</label>
-              <div className="box" style={{ padding: '1rem', fontWeight: 'bold' }}>
-                {questions[current].question}
+            <div className="quiz-progress">
+              <div className="progress-text">
+                Caesar Cipher Quiz - {questions.length} Questions
               </div>
             </div>
-
-            <div className="input-group">
-              {questions[current].options.map((opt, idx) => {
-                // Before submitting: highlight selected with blue bg
-                // After submitting: green border for correct, red border for wrong selected
-                let style = {
-                  width: '100%',
-                  marginBottom: '0.5rem',
-                  cursor: submitted ? 'default' : 'pointer',
-                  pointerEvents: submitted ? 'none' : 'auto',
-                  border: '3px solid transparent',
-                  backgroundColor: 'white',
-                  color: 'black',
-                  textAlign: 'left',
-                  padding: '0.6rem 1rem',
-                  fontSize: '1rem',
-                  borderRadius: '5px',
-                  transition: 'all 0.3s ease',
-                };
-
-                if (selected === opt) {
-                  style.backgroundColor = '#cce5ff'; // light blue
-                  style.borderColor = '#339af0'; // blue border
-                }
-
-                if (submitted) {
-                  if (opt === questions[current].answer) {
-                    style.borderColor = 'green';
-                    style.backgroundColor = '#d4edda'; // light green
-                    style.color = 'green';
-                  } else if (opt === selected && opt !== questions[current].answer) {
-                    style.borderColor = 'red';
-                    style.backgroundColor = '#f8d7da'; // light red
-                    style.color = 'red';
-                  }
-                }
-
-                return (
-                  <div key={idx}>
-                    <button
-                      onClick={() => handleOptionClick(opt)}
-                      className="nav-button"
-                      style={{
-                        ...style,
-                        minHeight: '60px',
-                        whiteSpace: 'normal',
-                        textAlign: 'left',
-                        wordBreak: 'break-word'
-                      }}
-                      disabled={submitted && opt !== selected}
-                    >
-                      {opt}
-                    </button>
-
-                    {/* Explanation below selected after submission */}
-                    {submitted && selected === opt && (
-                      <div style={{ marginTop: '0.3rem', color: style.borderColor, fontStyle: 'italic' }}>
-                        {questions[current].explanation}
-                      </div>
-                    )}
+            
+            {/* Show all questions */}
+            <div className="all-questions-container">
+              {questions.map((question, questionIndex) => (
+                <div key={questionIndex} className="question-container">
+                  <div className="question-number" style={{
+                    fontSize: '1.2rem',
+                    fontWeight: 'bold',
+                    color: 'var(--primary-color)',
+                    marginBottom: '0.5rem'
+                  }}>
+                    Question {questionIndex + 1}
                   </div>
-                );
-              })}
+                  <div className="question-text">
+                    {question.question}
+                  </div>
+                  
+                  <div className="options-container">
+                    {question.options.map((option, idx) => {
+                      const isSelected = userAnswers[questionIndex] === option;
+                      const isRevealed = revealed[questionIndex];
+                      const isCorrect = option === question.answer;
+                      
+                      let optionClass = "option-button";
+                      if (isRevealed) {
+                        if (isSelected && isCorrect) {
+                          optionClass += " correct";
+                        } else if (isSelected && !isCorrect) {
+                          optionClass += " incorrect";
+                        } else if (isCorrect) {
+                          optionClass += " correct-answer";
+                        }
+                      } else if (isSelected) {
+                        optionClass += " selected";
+                      }
+                      
+                      return (
+                        <button
+                          key={idx}
+                          className={optionClass}
+                          onClick={() => handleOptionClick(questionIndex, option)}
+                          disabled={isRevealed}
+                        >
+                          {option}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  
+                  {revealed[questionIndex] && (
+                    <div className="explanation">
+                      {userAnswers[questionIndex] === question.answer ? (
+                        <div className="correct-message">Correct! ✓</div>
+                      ) : (
+                        <div className="incorrect-message">
+                          Incorrect! ✗ <br />
+                          Correct answer: {question.answer}
+                        </div>
+                      )}
+                      <div className="explanation-text">
+                        {question.explanation}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
-              <button
-                onClick={handlePrevious}
-                disabled={current === 0}
-                className="nav-button"
-                style={{ width: '48%' }}
+            
+            <div className="quiz-actions" style={{ textAlign: 'center', marginTop: '2rem' }}>
+              <button 
+                className="nav-button submit-button" 
+                onClick={handleSubmitQuiz}
+                style={{ 
+                  backgroundColor: 'var(--primary-color)',
+                  color: 'white',
+                  padding: '1rem 2rem',
+                  borderRadius: '8px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '1.1rem',
+                  fontWeight: 'bold',
+                  marginRight: '1rem'
+                }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M15 18l-6-6 6-6"/>
-                </svg>
-              </button>
-              <button
-                onClick={handleNext}
-                disabled={!submitted}
-                className="nav-button"
-                style={{ width: '48%' }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 18l6-6-6-6"/>
-                </svg>
+                Submit Quiz & Show All Answers
               </button>
             </div>
           </>
         ) : (
-          <div className="input-group" style={{ textAlign: 'center' }}>
-            <div className="result-box" style={{ padding: '1.5rem', fontSize: '1.2rem', marginBottom: '1rem' }}>
-              You've completed the quiz!
+          <div className="results-container">
+            <h2>Quiz Completed!</h2>
+            <div className="score-display">
+              Your Score: {calculateScore()} out of {questions.length}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <button className="nav-button" onClick={downloadPDF} style={{ marginBottom: '0.5rem' }}>
+            
+            <div className="result-actions">
+              <a href="/ceaser-quiz.pdf" className="nav-button" target="_blank" rel="noopener noreferrer">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" style={{ marginRight: '8px' }} viewBox="0 0 16 16">
-                  <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+                  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
                 </svg>
                 Download Quiz PDF
-              </button>
-              <button className="nav-button" onClick={handleRestart} style={{ marginBottom: '0.5rem' }}>
+                </a>
+              <button className="nav-button secondary" onClick={resetQuiz}>
                 Restart Quiz
               </button>
-              <Link to="/caesarcipher" className="nav-button secondary">
-                Back to Caesar Tool
-              </Link>
+              
             </div>
           </div>
         )}
@@ -351,4 +402,4 @@ const CaesarCipherQuiz = () => {
   );
 };
 
-export default CaesarCipherQuiz;
+export default CaesarQuiz;

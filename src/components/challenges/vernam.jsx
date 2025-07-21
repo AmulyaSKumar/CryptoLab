@@ -62,7 +62,7 @@ const VernamChallenge = () => {
   const [score, setScore] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const [feedback, setFeedback] = useState('');
-  const [timeLeft, setTimeLeft] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(DIFFICULTY_SETTINGS.Easy.time);
   const [hintUsed, setHintUsed] = useState(false);
   const timerRef = useRef(null);
 
@@ -97,7 +97,7 @@ const VernamChallenge = () => {
   }, [index, difficulty, gameStarted]);
 
   useEffect(() => {
-    if (!gameStarted) return;
+    if (!gameStarted || !plaintext) return; // Wait for puzzle to be generated
     if (timeLeft <= 0) {
       play('timeout');
       let correctAns = '';
