@@ -77,7 +77,7 @@ const CaesarCipherTool = () => {
         speechSynthesis.cancel();
       }
     };
-  }, []);
+  }, []); // speechSynthesis is a global API, no need to add as dependency
 
   return (
     <div className="main-container">
@@ -334,6 +334,39 @@ const CaesarCipherTool = () => {
                 For now, have fun playing with this historical cipher! 
               </p>
             </section>
+
+            <section className="mb-8">
+              <h2 className="section-title">Mathematical Foundation </h2>
+              <p style={{ marginBottom: '1rem' }}>
+                The Caesar cipher is a simple substitution cipher based on modular arithmetic:
+              </p>
+              <div className="result-box" style={{ padding: '1rem', marginBottom: '1rem' }}>
+                <strong>Encryption:</strong> E(x) = (x + k) mod 26<br/>
+                <strong>Decryption:</strong> D(x) = (x - k) mod 26<br/>
+                Where x is the letter position (A=0, B=1, ..., Z=25) and k is the key
+              </div>
+              <ul style={{ marginLeft: '1.5rem', listStyle: 'disc' }}>
+                <li>It's a monoalphabetic substitution cipher</li>
+                <li>Each letter is consistently replaced by another letter</li>
+                <li>The transformation is linear and reversible</li>
+              </ul>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="section-title">Breaking Caesar Cipher </h2>
+              <h3 className="text-lg font-semibold mb-3">Methods to Break:</h3>
+              <ul style={{ marginLeft: '1.5rem', listStyle: 'disc', marginBottom: '1rem' }}>
+                <li><strong>Brute Force:</strong> Try all 25 possible keys</li>
+                <li><strong>Frequency Analysis:</strong> Look for common letters like E, T, A</li>
+                <li><strong>Pattern Recognition:</strong> Identify common words like "THE", "AND"</li>
+                <li><strong>Index of Coincidence:</strong> Statistical analysis of letter distribution</li>
+              </ul>
+              <p>
+                A computer can break Caesar cipher in milliseconds, making it unsuitable for real security.
+              </p>
+            </section>
+
+          
           </div>
         )}
       </div>

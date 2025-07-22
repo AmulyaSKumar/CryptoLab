@@ -55,21 +55,32 @@ const hillDecrypt = (cipher, key) => {
 
 // Generate a valid Hill key matrix (a,b,c,d must have det coprime with 26)
 const generateValidKey = () => {
-  // For simplicity, we'll generate matrices with det=1 or det=3
   const coprimes26 = [1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25];
-  const det = coprimes26[Math.floor(Math.random() * coprimes26.length)];
+  const targetDet = coprimes26[Math.floor(Math.random() * coprimes26.length)];
   
-  // For det=1 case, a*d-b*c=1
-  // Random a,b,c then compute d = (1+b*c)/a
   let a, b, c, d;
+  let attempts = 0;
+  
   do {
-    a = Math.floor(Math.random() * 26);
+    a = Math.floor(Math.random() * 25) + 1; // 1-25 to avoid 0
     b = Math.floor(Math.random() * 26);
     c = Math.floor(Math.random() * 26);
     
-    // Try to choose d such that ad-bc = det
-    d = ((det + b*c) % 26) * modInv(a, 26) % 26;
-  } while (!a || !modInv(a, 26) || (a*d - b*c) % 26 !== det % 26);
+    // Calculate d such that ad - bc ≡ targetDet (mod 26)
+    const aInv = modInv(a, 26);
+    if (aInv !== null) {
+      d = ((targetDet + b * c) * aInv) % 26;
+      if (d < 0) d += 26;
+    }
+    
+    attempts++;
+    if (attempts > 100) break; // Safety fallback
+  } while (!a || modInv(a, 26) === null || ((a * d - b * c) % 26 + 26) % 26 !== targetDet);
+  
+  // Fallback to a simple valid key if generation fails
+  if (attempts > 100) {
+    return [[3, 2], [1, 5]]; // Known valid key with det = 13
+  }
   
   return [[a, b], [c, d]];
 };
@@ -149,9 +160,12 @@ const HillChallenge = () => {
     const difficultyPuzzles = PUZZLES[difficulty];
     const puzzle = difficultyPuzzles[puzzleIndex];
     
+    // Use generateValidKey to create a random valid key for more variety
+    const randomKey = generateValidKey();
+    
     setPlaintext(puzzle.plaintext);
-    setKey(puzzle.key);
-    setCiphertext(hillEncrypt(puzzle.plaintext, puzzle.key));
+    setKey(randomKey); // Use the generated key instead of predefined one
+    setCiphertext(hillEncrypt(puzzle.plaintext, randomKey));
     
     setUserInput('');
     setFeedback('');

@@ -175,7 +175,6 @@ const CaesarQuiz = () => {
 
   const [userAnswers, setUserAnswers] = useState(Array(questions.length).fill(null));
   const [revealed, setRevealed] = useState(Array(questions.length).fill(false));
-  const [quizCompleted, setQuizCompleted] = useState(false);
   
   const handleOptionClick = (questionIndex, option) => {
     if (revealed[questionIndex]) return;
@@ -192,211 +191,154 @@ const CaesarQuiz = () => {
   const resetQuiz = () => {
     setUserAnswers(Array(questions.length).fill(null));
     setRevealed(Array(questions.length).fill(false));
-    setQuizCompleted(false);
   };
   
-  const handleSubmitQuiz = () => {
-    // Mark all remaining questions as revealed
-    const newRevealed = Array(questions.length).fill(true);
-    setRevealed(newRevealed);
-    setQuizCompleted(true);
-  };
   
   const calculateScore = () => {
     return userAnswers.filter((answer, index) => 
       answer === questions[index].answer
     ).length;
   };
+
+  const calculatePercentage = () => {
+    const score = calculateScore();
+    return Math.round((score / questions.length) * 100);
+  };
   
-  // const downloadPDF = () => {
-  //   const doc = new jsPDF();
-  //   
-  //   // Add title
-  //   doc.setFontSize(20);
-  //   doc.text('Caesar Cipher Quiz Results', 105, 15, { align: 'center' });
-  //   
-  //   // Add score
-  //   const score = calculateScore();
-  //   doc.setFontSize(16);
-  //   doc.text(`Score: ${score}/${questions.length}`, 105, 25, { align: 'center' });
-  //   
-  //   // Add date
-  //   const date = new Date().toLocaleDateString();
-  //   doc.setFontSize(12);
-  //   doc.text(`Date: ${date}`, 105, 32, { align: 'center' });
-  //   
-  //   // Add questions and answers
-  //   doc.setFontSize(12);
-  //   let yPos = 45;
-  //   
-  //   questions.forEach((q, i) => {
-  //     // Question
-  //     doc.setFont(undefined, 'bold');
-  //     doc.text(`${i + 1}. ${q.question}`, 15, yPos);
-  //     yPos += 7;
-  //     
-  //     // User answer
-  //     doc.setFont(undefined, 'normal');
-  //     const userAnswer = userAnswers[i] || 'Not answered';
-  //     const isCorrect = userAnswer === q.answer;
-  //     
-  //     doc.text(`Your answer: ${userAnswer}`, 20, yPos);
-  //     doc.text(`${isCorrect ? '✓' : '✗'}`, 15, yPos);
-  //     yPos += 7;
-  //     
-  //     // Correct answer if wrong
-  //     if (!isCorrect) {
-  //       doc.text(`Correct answer: ${q.answer}`, 20, yPos);
-  //       yPos += 7;
-  //     }
-  //     
-  //     // Explanation
-  //     doc.setFont(undefined, 'italic');
-  //     
-  //     // Split explanation into multiple lines if needed
-  //     const explanation = q.explanation;
-  //     const maxWidth = 170;
-  //     const splitText = doc.splitTextToSize(explanation, maxWidth);
-  //     
-  //     doc.text(splitText, 20, yPos);
-  //     yPos += splitText.length * 7 + 5;
-  //     
-  //     // Add a new page if needed
-  //     if (yPos > 270 && i < questions.length - 1) {
-  //       doc.addPage();
-  //       yPos = 20;
-  //     }
-  //   });
-  //   
-  //   doc.save('caesar_cipher_quiz_results.pdf');
-  // };
-  
+
   return (
-    <div className="main-container" style={{ maxWidth: 650, margin: '2rem auto', padding: '1rem' }}>
-      <Link to="/c1-ceaser" className="nav-button" style={{ position: 'absolute', top: '20px', left: '20px' }}>
-        ← Back
-      </Link>
+    <div className="main-container">
+      <div className="back-nav">
+        <Link to="/c1-caesar" className="nav-button" style={{ minWidth: 'auto' }}>
+          ← Back 
+        </Link>
+      </div>
 
       <div className="tool-container">
         <h1 className="tool-title">Caesar Cipher Quiz</h1>
         
-        {!quizCompleted ? (
-          <>
-            <div className="quiz-progress">
-              <div className="progress-text">
-                Caesar Cipher Quiz - {questions.length} Questions
-              </div>
-            </div>
-            
-            {/* Show all questions */}
-            <div className="all-questions-container">
-              {questions.map((question, questionIndex) => (
-                <div key={questionIndex} className="question-container">
-                  <div className="question-number" style={{
-                    fontSize: '1.2rem',
-                    fontWeight: 'bold',
-                    color: 'var(--primary-color)',
-                    marginBottom: '0.5rem'
-                  }}>
-                    Question {questionIndex + 1}
-                  </div>
-                  <div className="question-text">
-                    {question.question}
-                  </div>
-                  
-                  <div className="options-container">
-                    {question.options.map((option, idx) => {
-                      const isSelected = userAnswers[questionIndex] === option;
-                      const isRevealed = revealed[questionIndex];
-                      const isCorrect = option === question.answer;
-                      
-                      let optionClass = "option-button";
-                      if (isRevealed) {
-                        if (isSelected && isCorrect) {
-                          optionClass += " correct";
-                        } else if (isSelected && !isCorrect) {
-                          optionClass += " incorrect";
-                        } else if (isCorrect) {
-                          optionClass += " correct-answer";
-                        }
-                      } else if (isSelected) {
-                        optionClass += " selected";
-                      }
-                      
-                      return (
-                        <button
-                          key={idx}
-                          className={optionClass}
-                          onClick={() => handleOptionClick(questionIndex, option)}
-                          disabled={isRevealed}
-                        >
-                          {option}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  
-                  {revealed[questionIndex] && (
-                    <div className="explanation">
-                      {userAnswers[questionIndex] === question.answer ? (
-                        <div className="correct-message">Correct! ✓</div>
-                      ) : (
-                        <div className="incorrect-message">
-                          Incorrect! ✗ <br />
-                          Correct answer: {question.answer}
-                        </div>
-                      )}
-                      <div className="explanation-text">
-                        {question.explanation}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-            
-            <div className="quiz-actions" style={{ textAlign: 'center', marginTop: '2rem' }}>
-              <button 
-                className="nav-button submit-button" 
-                onClick={handleSubmitQuiz}
+        {/* Score and Download Bar */}
+        <div className="quiz-header-bar">
+          <div className="quiz-progress">
+            <span className="progress-text">
+              Progress: {userAnswers.filter(answer => answer !== null && answer !== '').length}/{questions.length} questions
+            </span>
+            <div className="progress-bar">
+              <div 
+                className="progress-fill" 
                 style={{ 
-                  backgroundColor: 'var(--primary-color)',
-                  color: 'white',
-                  padding: '1rem 2rem',
-                  borderRadius: '8px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '1.1rem',
-                  fontWeight: 'bold',
-                  marginRight: '1rem'
+                  width: `${(userAnswers.filter(answer => answer !== null && answer !== '').length / questions.length) * 100}%` 
                 }}
-              >
-                Submit Quiz & Show All Answers
-              </button>
-            </div>
-          </>
-        ) : (
-          <div className="results-container">
-            <h2>Quiz Completed!</h2>
-            <div className="score-display">
-              Your Score: {calculateScore()} out of {questions.length}
-            </div>
-            
-            <div className="result-actions">
-              <a href="/ceaser-quiz.pdf" className="nav-button" target="_blank" rel="noopener noreferrer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" style={{ marginRight: '8px' }} viewBox="0 0 16 16">
-                  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                </svg>
-                Download Quiz PDF
-                </a>
-              <button className="nav-button secondary" onClick={resetQuiz}>
-                Restart Quiz
-              </button>
-              
+              ></div>
             </div>
           </div>
-        )}
+          
+          <div className="quiz-actions-header">
+            <div className="current-score">
+              Score: {calculateScore()}/{questions.length} ({calculatePercentage()}%)
+            </div>
+            <a 
+              href="/ceaser-quiz.pdf" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="download-questions-button"
+              title="Download quiz questions as PDF"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+              Download Questions
+            </a>
+          </div>
+        </div>
+            
+        {/* Show all questions */}
+        <div className="all-questions-container">
+          {questions.map((question, questionIndex) => (
+            <div key={questionIndex} className="question-container">
+              <div className="question-number" style={{
+                fontSize: '1.2rem',
+                fontWeight: 'bold',
+                color: 'var(--primary-color)',
+                marginBottom: '0.5rem'
+              }}>
+                Question {questionIndex + 1}
+              </div>
+              <div className="question-text">
+                {question.question}
+              </div>
+              
+              <div className="options-container">
+                {question.options.map((option, idx) => {
+                  const isSelected = userAnswers[questionIndex] === option;
+                  const isRevealed = revealed[questionIndex];
+                  const isCorrect = option === question.answer;
+                  
+                  let optionClass = "option-button";
+                  if (isRevealed) {
+                    if (isSelected && isCorrect) {
+                      optionClass += " correct";
+                    } else if (isSelected && !isCorrect) {
+                      optionClass += " incorrect";
+                    } else if (isCorrect) {
+                      optionClass += " correct-answer";
+                    }
+                  } else if (isSelected) {
+                    optionClass += " selected";
+                  }
+                  
+                  return (
+                    <button
+                      key={idx}
+                      className={optionClass}
+                      onClick={() => handleOptionClick(questionIndex, option)}
+                      disabled={isRevealed}
+                    >
+                      {option}
+                    </button>
+                  );
+                })}
+              </div>
+              
+              {revealed[questionIndex] && (
+                <div className="explanation">
+                  {userAnswers[questionIndex] === question.answer ? (
+                    <div className="correct-message">Correct! ✓</div>
+                  ) : (
+                    <div className="incorrect-message">
+                      Incorrect! ✗ <br />
+                      Correct answer: {question.answer}
+                    </div>
+                  )}
+                  <div className="explanation-text">
+                    {question.explanation}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        
+        <div className="quiz-actions" style={{ textAlign: 'center', marginTop: '2rem' }}>
+                  
+          <button 
+            className="nav-button secondary" 
+            onClick={resetQuiz}
+            style={{ 
+              backgroundColor: '#6c757d',
+              color: 'white',
+              padding: '1rem 2rem',
+              borderRadius: '8px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '1.1rem',
+              fontWeight: 'bold'
+            }}
+          >
+            Reset Quiz
+          </button>
+        </div>
       </div>
     </div>
   );

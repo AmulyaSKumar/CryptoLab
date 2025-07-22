@@ -1,0 +1,39 @@
+/* Responsive Input Field Fixes - Prevent overflow beyond screen */
+
+/* Global input field constraints */
+.tool-container input,
+.tool-container textarea,
+.tool-container select,
+input[type="text"],
+input[type="number"],
+textarea {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
+}
+
+/* Specific fix for cipher challenge inputs */
+.cipher-input,
+.cipher-textarea {
+  max-width: calc(100vw - 40px) !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Mobile responsive fixes */
+@media (max-width: 768px) {
+  input, textarea, select {
+    max-width: calc(100vw - 20px) !important;
+    font-size: 16px !important; /* Prevent zoom on iOS */
+  }
+}
+
+/* Container wrapper constraints */
+.tool-container,
+.cipher-container,
+.challenge-container {
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}

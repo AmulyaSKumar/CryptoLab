@@ -1,5 +1,6 @@
 import React, { useState } from 'react'; 
 import { Link } from 'react-router-dom';
+import './QuizStyles.css';
 
 const VernamQuiz = () => {
   const questions = [
@@ -170,143 +171,174 @@ const VernamQuiz = () => {
     }
   ];
 
-  const [current, setCurrent] = useState(0);
-  const [selected, setSelected] = useState(null);
-  const [score, setScore] = useState(0);
-  const [showResult, setShowResult] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [userAnswers, setUserAnswers] = useState(Array(questions.length).fill(null));
+  const [revealed, setRevealed] = useState(Array(questions.length).fill(false));
 
-  const handleOptionClick = (option) => {
-    if (!submitted) {
-      setSelected(option);
-    }
+  const handleOptionClick = (questionIndex, option) => {
+    if (revealed[questionIndex]) return;
+    const newAnswers = [...userAnswers];
+    newAnswers[questionIndex] = option;
+    setUserAnswers(newAnswers);
+    
+    // Auto-reveal the answer when clicked
+    const newRevealed = [...revealed];
+    newRevealed[questionIndex] = true;
+    setRevealed(newRevealed);
   };
 
-  const handleNext = () => {
-    if (!submitted) {
-      if (selected === questions[current].answer) {
-        setScore(score + 1);
-      }
-      setSubmitted(true);
-    } else {
-      if (current < questions.length - 1) {
-        setCurrent(current + 1);
-        setSelected(null);
-        setSubmitted(false);
-      } else {
-        setShowResult(true);
-      }
-    }
+
+
+  const resetQuiz = () => {
+    setUserAnswers(Array(questions.length).fill(null));
+    setRevealed(Array(questions.length).fill(false));
   };
 
-  const handleRestart = () => {
-    setCurrent(0);
-    setSelected(null);
-    setScore(0);
-    setShowResult(false);
-    setSubmitted(false);
+  const calculateScore = () => {
+    return userAnswers.filter((answer, index) => 
+      answer === questions[index].answer
+    ).length;
   };
+
+  const calculatePercentage = () => {
+    const score = calculateScore();
+    return Math.round((score / questions.length) * 100);
+  };
+
+
 
   return (
-    <div className="main-container" style={{ maxWidth: 600, margin: '2rem auto', padding: '1rem' }}>
-    
-      <Link to="/c6-vernam" className="nav-button" style={{ position: 'absolute', top: '20px', left: '20px' }}>
-        ← Back
-      </Link>
+    <div className="main-container">
+      <div className="back-nav">
+        <Link to="/c6-vernam" className="nav-button" style={{ minWidth: 'auto' }}>
+          ← Back
+        </Link>
+      </div>
 
       <div className="tool-container">
         <h1 className="tool-title">Vernam Cipher Quiz</h1>
-
-        {!showResult ? (
-          <>
-            <div className="input-group">
-              <label>Question {current + 1} of {questions.length}</label>
-              <div className="box" style={{ padding: '1rem', fontWeight: 'bold' }}>
-                {questions[current].question}
-              </div>
+        
+        {/* Score and Download Bar */}
+        <div className="quiz-header-bar">
+          <div className="quiz-progress">
+            <span className="progress-text">
+              Progress: {userAnswers.filter(answer => answer !== null && answer !== '').length}/{questions.length} questions
+            </span>
+            <div className="progress-bar">
+              <div 
+                className="progress-fill" 
+                style={{ 
+                  width: `${(userAnswers.filter(answer => answer !== null && answer !== '').length / questions.length) * 100}%` 
+                }}
+              ></div>
             </div>
-
-            <div className="input-group">
-              {questions[current].options.map((opt, idx) => {
-                let style = {
-                  width: '100%',
-                  marginBottom: '0.5rem',
-                  cursor: submitted ? 'default' : 'pointer',
-                  pointerEvents: submitted ? 'none' : 'auto',
-                  border: '3px solid transparent',
-                  backgroundColor: 'white',
-                  color: 'black',
-                  textAlign: 'left',
-                  padding: '0.6rem 1rem',
-                  fontSize: '1rem',
-                  borderRadius: '5px',
-                  transition: 'all 0.3s ease',
-                };
-
-                if (!submitted && selected === opt) {
-                  style.backgroundColor = '#cce5ff';
-                  style.borderColor = '#339af0';
-                }
-
-                if (submitted) {
-                  if (opt === questions[current].answer) {
-                    style.borderColor = 'green';
-                    style.backgroundColor = '#d4edda';
-                    style.color = 'green';
-                  } else if (opt === selected) {
-                    style.borderColor = 'red';
-                    style.backgroundColor = '#f8d7da';
-                    style.color = 'red';
-                  }
-                }
-
-                return (
-                  <div key={idx}>
-                    <button
-                      onClick={() => handleOptionClick(opt)}
-                      className="nav-button"
-                      style={style}
-                    >
-                      {opt}
-                    </button>
-
-                    {submitted && selected === opt && (
-                      <div style={{ marginTop: '0.3rem', color: style.borderColor, fontStyle: 'italic' }}>
-                        {questions[current].explanation}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+          </div>
+          
+          <div className="quiz-actions-header">
+            <div className="current-score">
+              Score: {calculateScore()}/{questions.length} ({calculatePercentage()}%)
             </div>
-
-            <button
-              onClick={handleNext}
-              disabled={selected === null}
-              className="nav-button"
-              style={{ width: '100%', marginTop: '1rem' }}
+            <a 
+              href="/vernam-quizq.pdf" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="download-questions-button"
+              title="Download quiz questions as PDF"
             >
-              {submitted ? (current < questions.length - 1 ? 'Next' : 'Finish') : 'Submit'}
-            </button>
-          </>
-        ) : (
-          <div className="input-group" style={{ textAlign: 'center' }}>
-            <div className="result-box" style={{ padding: '1.5rem', fontSize: '1.2rem', marginBottom: '1rem' }}>
-              You scored {score} out of {questions.length}!
-            </div>
-            <a href="/vernam-quiz.pdf" className="nav-button" target="_blank" rel="noopener noreferrer" style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
                 <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
               </svg>
-              Download Quiz PDF
+              Download Questions
             </a>
-            <button className="nav-button" onClick={handleRestart} style={{ marginBottom: '1rem' }}>
-              Restart Quiz
-            </button>
-            
           </div>
-        )}
+        </div>
+            
+        {/* Show all questions */}
+        <div className="all-questions-container">
+          {questions.map((question, questionIndex) => (
+            <div key={questionIndex} className="question-container">
+              <div className="question-number" style={{
+                fontSize: '1.2rem',
+                fontWeight: 'bold',
+                color: 'var(--primary-color)',
+                marginBottom: '0.5rem'
+              }}>
+                Question {questionIndex + 1}
+              </div>
+              <div className="question-text">
+                {question.question}
+              </div>
+              
+              <div className="options-container">
+                {question.options.map((option, idx) => {
+                  const isSelected = userAnswers[questionIndex] === option;
+                  const isRevealed = revealed[questionIndex];
+                  const isCorrect = option === question.answer;
+                  
+                  let optionClass = "option-button";
+                  if (isRevealed) {
+                    if (isSelected && isCorrect) {
+                      optionClass += " correct";
+                    } else if (isSelected && !isCorrect) {
+                      optionClass += " incorrect";
+                    } else if (isCorrect) {
+                      optionClass += " correct-answer";
+                    }
+                  } else if (isSelected) {
+                    optionClass += " selected";
+                  }
+                  
+                  return (
+                    <button
+                      key={idx}
+                      className={optionClass}
+                      onClick={() => handleOptionClick(questionIndex, option)}
+                      disabled={isRevealed}
+                    >
+                      {option}
+                    </button>
+                  );
+                })}
+              </div>
+              
+              {revealed[questionIndex] && (
+                <div className="explanation">
+                  {userAnswers[questionIndex] === question.answer ? (
+                    <div className="correct-message">Correct! ✓</div>
+                  ) : (
+                    <div className="incorrect-message">
+                      Incorrect! ✗ <br />
+                      Correct answer: {question.answer}
+                    </div>
+                  )}
+                  <div className="explanation-text">
+                    {question.explanation}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        
+        <div className="quiz-actions" style={{ textAlign: 'center', marginTop: '2rem' }}>
+                    
+          <button 
+            className="nav-button secondary" 
+            onClick={resetQuiz}
+            style={{ 
+              backgroundColor: '#6c757d',
+              color: 'white',
+              padding: '1rem 2rem',
+              borderRadius: '8px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '1.1rem',
+              fontWeight: 'bold'
+            }}
+          >
+            Reset Quiz
+          </button>
+        </div>
       </div>
     </div>
   );

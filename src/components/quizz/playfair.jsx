@@ -1,7 +1,6 @@
 import React, { useState } from 'react'; 
 import { Link } from 'react-router-dom';
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import './QuizStyles.css';
 
 const PlayfairCipherQuiz = () => {
   const questions = [
@@ -161,221 +160,169 @@ const PlayfairCipherQuiz = () => {
     }
   ];
 
-  const [current, setCurrent] = useState(0);
-  const [selected, setSelected] = useState(null);
-  const [score, setScore] = useState(0);
-  const [showResult, setShowResult] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [userAnswers, setUserAnswers] = useState(Array(questions.length).fill(null));
+  const [revealed, setRevealed] = useState(Array(questions.length).fill(false));
 
-  const handleOptionClick = (option) => {
-    if (!submitted) {
-      setSelected(option);
-    }
+  const handleOptionClick = (questionIndex, option) => {
+    if (revealed[questionIndex]) return;
+    
+    const newAnswers = [...userAnswers];
+    newAnswers[questionIndex] = option;
+    setUserAnswers(newAnswers);
+    
+    // Auto-reveal after selection
+    const newRevealed = [...revealed];
+    newRevealed[questionIndex] = true;
+    setRevealed(newRevealed);
+  };
+  
+  const resetQuiz = () => {
+    setUserAnswers(Array(questions.length).fill(null));
+    setRevealed(Array(questions.length).fill(false));
+  };
+  
+
+  
+  const calculateScore = () => {
+    return userAnswers.filter((answer, index) => 
+      answer === questions[index].answer
+    ).length;
   };
 
-  const handleNext = () => {
-    if (!submitted) {
-      if (selected === questions[current].answer) {
-        setScore(score + 1);
-      }
-      setSubmitted(true);
-    } else {
-      if (current < questions.length - 1) {
-        setCurrent(current + 1);
-        setSelected(null);
-        setSubmitted(false);
-      } else {
-        setShowResult(true);
-      }
-    }
-  };
-
-  const handleRestart = () => {
-    setCurrent(0);
-    setSelected(null);
-    setShowResult(false);
-    setSubmitted(false);
-  };
-
-  const downloadPDF = () => {
-    const doc = new jsPDF();
-    
-    // Add title
-    doc.setFontSize(20);
-    doc.text('Playfair Cipher Quiz Results', 105, 15, { align: 'center' });
-    doc.setFontSize(12);
-    doc.text('Your completed quiz with answers and explanations', 105, 25, { align: 'center' });
-    
-    // Add date
-    const today = new Date();
-    doc.setFontSize(10);
-    doc.text(`Generated on: ${today.toLocaleDateString()}`, 105, 35, { align: 'center' });
-    
-    // Add content for each question
-    let yPos = 45;
-    
-    questions.forEach((q, index) => {
-      // Add question
-      doc.setFontSize(12);
-      doc.setFont(undefined, 'bold');
-      doc.text(`Question ${index + 1}: ${q.question}`, 15, yPos);
-      yPos += 10;
-      
-      // Add options
-      doc.setFont(undefined, 'normal');
-      q.options.forEach((opt, idx) => {
-        const isCorrect = opt === q.answer;
-        doc.setTextColor(isCorrect ? [0, 128, 0] : [0, 0, 0]);
-        doc.text(`${String.fromCharCode(65 + idx)}. ${opt}${isCorrect ? ' ✓' : ''}`, 20, yPos);
-        yPos += 7;
-      });
-      
-      // Add explanation
-      doc.setTextColor(0, 0, 150);
-      doc.setFont(undefined, 'italic');
-      
-      // Split explanation text to fit within page width
-      const splitExplanation = doc.splitTextToSize(q.explanation, 170);
-      doc.text(splitExplanation, 20, yPos);
-      yPos += splitExplanation.length * 7 + 10;
-      
-      // Reset text color
-      doc.setTextColor(0, 0, 0);
-      
-      // Add a new page if needed
-      if (yPos > 270 && index < questions.length - 1) {
-        doc.addPage();
-        yPos = 20;
-      }
-    });
-    
-    // Save the PDF
-    doc.save('playfair_cipher_quiz.pdf');
+  const calculatePercentage = () => {
+    const score = calculateScore();
+    return Math.round((score / questions.length) * 100);
   };
 
   return (
-    <div className="main-container" style={{ maxWidth: 600, margin: '2rem auto', padding: '1rem' }}>
-      
-
-      <Link to="/c2-playfair" className="nav-button" style={{ position: 'absolute', top: '20px', left: '20px' }}>
-        ← Back
-      </Link>
+    <div className="main-container">
+      <div className="back-nav">
+        <Link to="/c2-playfair" className="nav-button" style={{ minWidth: 'auto' }}>
+          ← Back
+        </Link>
+      </div>
 
       <div className="tool-container">
         <h1 className="tool-title">Playfair Cipher Quiz</h1>
-
-        {!showResult ? (
-          <>
-            <div className="input-group">
-              <label>Question {current + 1} of {questions.length}</label>
-              <div className="result-box" style={{ padding: '1rem', fontWeight: 'bold' }}>
-                {questions[current].question}
-              </div>
-            </div>
-
-            <div className="input-group">
-              {questions[current].options.map((opt, idx) => {
-                let style = {
-                  width: '100%',
-                  marginBottom: '0.5rem',
-                  cursor: submitted ? 'default' : 'pointer',
-                  pointerEvents: submitted ? 'none' : 'auto',
-                  border: '3px solid transparent',
-                  backgroundColor: 'white',
-                  color: 'black',
-                  textAlign: 'left',
-                  padding: '0.6rem 1rem',
-                  fontSize: '1rem',
-                  borderRadius: '5px',
-                  transition: 'all 0.3s ease',
-                };
-
-                if (!submitted && selected === opt) {
-                  style.backgroundColor = '#cce5ff'; // light blue
-                  style.borderColor = '#339af0'; // blue border
-                }
-
-                if (submitted) {
-                  if (opt === questions[current].answer) {
-                    style.borderColor = 'green';
-                    style.backgroundColor = '#d4edda'; // light green
-                    style.color = 'green';
-                  } else if (opt === selected) {
-                    style.borderColor = 'red';
-                    style.backgroundColor = '#f8d7da'; // light red
-                    style.color = 'red';
-                  }
-                }
-
-                return (
-                  <div key={idx}>
-                    <button
-                      onClick={() => handleOptionClick(opt)}
-                      className="nav-button"
-                      style={{
-                        ...style,
-                        minHeight: '60px',
-                        whiteSpace: 'normal',
-                        textAlign: 'left',
-                        wordBreak: 'break-word'
-                      }}
-                    >
-                      {opt}
-                    </button>
-
-                    {submitted && selected === opt && (
-                      <div style={{ marginTop: '0.3rem', color: style.borderColor, fontStyle: 'italic' }}>
-                        {questions[current].explanation}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
-              <button
-                onClick={handlePrevious}
-                disabled={current === 0}
-                className="nav-button"
-                style={{ width: '48%' }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M15 18l-6-6 6-6"/>
-                </svg>
-              </button>
-              <button
-                onClick={handleNext}
-                disabled={!submitted}
-                className="nav-button"
-                style={{ width: '48%' }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 18l6-6-6-6"/>
-                </svg>
-              </button>
-            </div>
-          </>
-        ) : (
-          <div className="input-group" style={{ textAlign: 'center' }}>
-            <div className="result-box" style={{ padding: '1.5rem', fontSize: '1.2rem', marginBottom: '1rem' }}>
-              You've completed the quiz!
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <a href="/playfair-quiz.pdf" className="nav-button" target="_blank" rel="noopener noreferrer" style={{ marginBottom: '0.5rem' }}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" style={{ marginRight: '8px' }} viewBox="0 0 16 16">
-                  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                </svg>
-                Download Quiz PDF
-              </a>
-              <button className="nav-button" onClick={handleRestart} style={{ marginBottom: '0.5rem' }}>
-                Restart Quiz
-              </button>
-              
+        
+        {/* Score and Download Bar */}
+        <div className="quiz-header-bar">
+          <div className="quiz-progress">
+            <span className="progress-text">
+              Progress: {userAnswers.filter(answer => answer !== null && answer !== '').length}/{questions.length} questions
+            </span>
+            <div className="progress-bar">
+              <div 
+                className="progress-fill" 
+                style={{ 
+                  width: `${(userAnswers.filter(answer => answer !== null && answer !== '').length / questions.length) * 100}%` 
+                }}
+              ></div>
             </div>
           </div>
-        )}
+          
+          <div className="quiz-actions-header">
+            <div className="current-score">
+              Score: {calculateScore()}/{questions.length} ({calculatePercentage()}%)
+            </div>
+            <a 
+              href="/playfair-quizq.pdf" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="download-questions-button"
+              title="Download quiz questions as PDF"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+              Download Questions
+            </a>
+          </div>
+        </div>
+
+        {/* All Questions */}
+        <div className="questions-container">
+          {questions.map((question, questionIndex) => (
+            <div key={questionIndex} className="question-card">
+              <div className="question-header">
+                <span className="question-number">Question {questionIndex + 1}</span>
+              </div>
+              
+              <div className="question-text">
+                {question.question}
+              </div>
+              
+              <div className="options-container">
+                {question.options.map((option, idx) => {
+                  const isSelected = userAnswers[questionIndex] === option;
+                  const isRevealed = revealed[questionIndex];
+                  const isCorrect = option === question.answer;
+                  
+                  let optionClass = "option-button";
+                  if (isRevealed) {
+                    if (isSelected && isCorrect) {
+                      optionClass += " correct";
+                    } else if (isSelected && !isCorrect) {
+                      optionClass += " incorrect";
+                    } else if (isCorrect) {
+                      optionClass += " correct-answer";
+                    }
+                  } else if (isSelected) {
+                    optionClass += " selected";
+                  }
+                  
+                  return (
+                    <button
+                      key={idx}
+                      className={optionClass}
+                      onClick={() => handleOptionClick(questionIndex, option)}
+                      disabled={isRevealed}
+                    >
+                      {option}
+                    </button>
+                  );
+                })}
+              </div>
+              
+              {revealed[questionIndex] && (
+                <div className="explanation">
+                  {userAnswers[questionIndex] === question.answer ? (
+                    <div className="correct-message">Correct! ✓</div>
+                  ) : (
+                    <div className="incorrect-message">
+                      Incorrect! ✗ <br />
+                      Correct answer: {question.answer}
+                    </div>
+                  )}
+                  <div className="explanation-text">
+                    {question.explanation}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        
+        <div className="quiz-actions" style={{ textAlign: 'center', marginTop: '2rem' }}>
+                   
+          <button 
+            className="nav-button secondary" 
+            onClick={resetQuiz}
+            style={{ 
+              backgroundColor: '#6c757d',
+              color: 'white',
+              padding: '1rem 2rem',
+              borderRadius: '8px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '1.1rem',
+              fontWeight: 'bold'
+            }}
+          >
+            Reset Quiz
+          </button>
+        </div>
       </div>
     </div>
   );
