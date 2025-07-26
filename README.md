@@ -174,8 +174,9 @@ Intelligent assistant for cryptography help:
 1. Clone or download this project
 2. Open terminal in project folder
 3. Run: `npm install` (installs all required packages)
-4. Run: `npm run dev` (starts development server)
-5. Open browser to `http://localhost:5173`
+4. create .env file and add VITE_GEMINI_API_KEY="--provide your key here--"
+5. Run: `npm run dev` (starts development server)
+6. Open browser to `http://localhost:5173`
 
 ### Project Configuration
 - **Vite** - Fast development server and build tool
